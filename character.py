@@ -3,12 +3,15 @@ from pico2d import *
 
 class Character:
     def __init__(self, x=100, y=100):
+        self.frame_timer = 0
+        self.frame_interval = 0.3
         # 위치
         self.x = x
         self.y = y
 
         #크기
         self.scale=150
+
         # 이동 방향
         self.dirX = 0
         self.dirY = 0
@@ -70,11 +73,14 @@ class Character:
                 else:
                     self.image_walking.clip_draw(self.frame * 48, 0, 48, 40, self.x, self.y,  self.scale,  self.scale)  # 기본값
 
-    def update_frame(self):
-        if (self.dirX == 0 and self.dirY == 0):
-            self.frame = (self.frame + 1) % 7
-        else:
-            self.frame = (self.frame + 1) % 4
+    def update_frame(self, dt=0.05):
+        self.frame_timer += dt
+        if self.frame_timer >= self.frame_interval:
+            if self.dirX == 0 and self.dirY == 0:
+                self.frame = (self.frame + 1) % 7
+            else:
+                self.frame = (self.frame + 1) % 4
+            self.frame_timer = 0
     def move(self):
         self.x += self.dirX * 5
         self.y += self.dirY * 5

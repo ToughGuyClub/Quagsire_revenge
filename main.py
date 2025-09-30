@@ -27,16 +27,17 @@ def world_reset():
     world.append(player)
 
 def world_update():
-
     handle_events(player)
-    Character.update_frame(player);
-    Character.move(player);
+    player.update_frame(0.05)
+    player.move()
 
 
 
 def wolrd_draw():
     for obj in world:
         obj.draw()
+
+
 
 
 world_reset()
@@ -48,8 +49,9 @@ while True:
     wolrd_draw()
 
 
+
     update_canvas()
-    delay(0.05)
+    delay(0.02)
 
 
 close_canvas()
