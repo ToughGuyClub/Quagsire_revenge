@@ -7,6 +7,8 @@ class Character:
         self.x = x
         self.y = y
 
+        #크기
+        self.scale=150
         # 이동 방향
         self.dirX = 0
         self.dirY = 0
@@ -29,44 +31,44 @@ class Character:
         if self.dirX == 0 and self.dirY == 0:
             # 마지막 멈춘 방향 사용
             if self.stopdirX < 0 and self.stopdirY < 0:  # 좌하
-                self.image_idle.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y,  self.scale,  self.scale)
             elif self.stopdirX < 0 and self.stopdirY == 0:  # 좌
-                self.image_idle.clip_draw(self.frame * 48, 56, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 56, 48, 56, self.x, self.y,  self.scale,  self.scale)
             elif self.stopdirX < 0 and self.stopdirY > 0:  # 좌상
-                self.image_idle.clip_draw(self.frame * 48, 112, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 112, 48, 56, self.x, self.y,  self.scale,  self.scale)
             elif self.stopdirX == 0 and self.stopdirY > 0:  # 상
-                self.image_idle.clip_draw(self.frame * 48, 168, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 168, 48, 56, self.x, self.y,  self.scale,  self.scale)
             elif self.stopdirX > 0 and self.stopdirY > 0:  # 우상
-                self.image_idle.clip_draw(self.frame * 48, 224, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 224, 48, 56, self.x, self.y,  self.scale,  self.scale)
             elif self.stopdirX > 0 and self.stopdirY == 0:  # 우
-                self.image_idle.clip_draw(self.frame * 48, 280, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 280, 48, 56, self.x, self.y,  self.scale,  self.scale)
             elif self.stopdirX > 0 and self.stopdirY < 0:  # 우하
-                self.image_idle.clip_draw(self.frame * 48, 336, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 336, 48, 56, self.x, self.y,  self.scale,  self.scale)
             elif self.stopdirX == 0 and self.stopdirY < 0:  # 하
-                self.image_idle.clip_draw(self.frame * 48, 392, 48, 56, self.x, self.y, 100, 100)
+                self.image_idle.clip_draw(self.frame * 48, 392, 48, 56, self.x, self.y,  self.scale,  self.scale)
             else:
-                self.image_idle.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y, 100, 100)  # 기본값
+                self.image_idle.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y,  self.scale,  self.scale)  # 기본값
         else:
 
                 #캐릭터 방향에 따라 다르게 그려야함 개망했노
                 if self.dirX < 0 and self.dirY < 0:  # 좌하
-                    self.image_walking.clip_draw(self.frame * 48, 0, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 0, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 elif self.dirX < 0 and self.dirY == 0:  # 좌
-                    self.image_walking.clip_draw(self.frame * 48, 40, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 40, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 elif self.dirX < 0 and self.dirY > 0:  # 좌상
-                    self.image_walking.clip_draw(self.frame * 48, 80, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 80, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 elif self.dirX == 0 and self.dirY > 0:  # 상
-                    self.image_walking.clip_draw(self.frame * 48, 120, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 120, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 elif self.dirX > 0 and self.dirY > 0:  # 우상
-                    self.image_walking.clip_draw(self.frame * 48, 160, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 160, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 elif self.dirX > 0 and self.dirY == 0:  # 우
-                    self.image_walking.clip_draw(self.frame * 48, 200, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 200, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 elif self.dirX > 0 and self.dirY < 0:  # 우하
-                    self.image_walking.clip_draw(self.frame * 48, 240, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 240, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 elif self.dirX == 0 and self.dirY < 0:  # 하
-                    self.image_walking.clip_draw(self.frame * 48, 280, 48, 40, self.x, self.y, 100, 100)
+                    self.image_walking.clip_draw(self.frame * 48, 280, 48, 40, self.x, self.y,  self.scale,  self.scale)
                 else:
-                    self.image_walking.clip_draw(self.frame * 48, 0, 48, 40, self.x, self.y, 100, 100)  # 기본값
+                    self.image_walking.clip_draw(self.frame * 48, 0, 48, 40, self.x, self.y,  self.scale,  self.scale)  # 기본값
 
     def update_frame(self):
         if (self.dirX == 0 and self.dirY == 0):

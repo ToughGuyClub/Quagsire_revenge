@@ -1,37 +1,49 @@
 from pico2d import *
 from character import Character
 
-def handle_events(player):
+
+
+# 키 입력 상태를 저장할 리스트
+pressed_keys = []
+
+def handle_events(player=None):
+    global pressed_keys
     events = get_events()
+
+
     for event in events:
+
         if event.type == SDL_QUIT:
             return False
+
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 return False
-            elif event.key == SDLK_LEFT:
-                player.dirX = -1
-                player.stopdirX = -1
-            elif event.key == SDLK_RIGHT:
-                player.dirX = 1
-                player.stopdirX = 1
-            elif event.key == SDLK_UP:
-                player.dirY = 1
-                player.stopdirY = 1
-            elif event.key == SDLK_DOWN:
-                player.dirY = -1
-                player.stopdirY = -1
-        elif event.type == SDL_KEYUP:
-            if event.key == SDLK_LEFT or event.key == SDLK_RIGHT:
+            elif event.key in (SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN):
+                if event.key not in pressed_keys:   # 중복 방지
+                    pressed_keys.append(event.key)
 
-                player.stopdirX = player.dirX
-                player.dirX = 0
-                player.stopdirY = player.dirY
-                player.dirY = 0
-            elif event.key == SDLK_UP or event.key == SDLK_DOWN:
-                player.stopdirX = player.dirX
-                player.dirX = 0
-                player.stopdirY = player.dirY
-                player.dirY = 0
+        elif event.type == SDL_KEYUP:
+            if event.key in pressed_keys:
+                pressed_keys.remove(event.key)
+
+    # 방향 업데이트 (리스트의 마지막 입력 기준)
+    if player is not None:
+        if pressed_keys:
+            last_key = pressed_keys[-1]
+            if last_key == SDLK_LEFT:
+                player.dirX, player.dirY = -1, 0
+                player.stopdirX, player.stopdirY = -1, 0
+            elif last_key == SDLK_RIGHT:
+                player.dirX, player.dirY = 1, 0
+                player.stopdirX, player.stopdirY = 1, 0
+            elif last_key == SDLK_UP:
+                player.dirX, player.dirY = 0, 1
+                player.stopdirX, player.stopdirY = 0, 1
+            elif last_key == SDLK_DOWN:
+                player.dirX, player.dirY = 0, -1
+                player.stopdirX, player.stopdirY = 0, -1
+        else:
+            player.dirX, player.dirY = 0, 0  # 아무 키도 안 눌렸으면 멈춤
 
     return True
