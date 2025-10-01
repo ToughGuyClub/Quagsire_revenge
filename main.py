@@ -23,6 +23,8 @@ def world_reset():
     town = Town()
     world.append(town)
 
+
+
     player = Character(200, 200)
     world.append(player)
 
@@ -34,9 +36,9 @@ def world_update():
 
 
 def wolrd_draw():
+
     for obj in world:
         obj.draw()
-
 
 
 
