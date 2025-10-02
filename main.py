@@ -1,8 +1,10 @@
 from pico2d import *
 from background import Background
 from character import Character
+from character import Bubble
 from handeEvent import handle_events
 from Town import Town
+
 
 width, height =  1400, 800
 frame_character=0
@@ -29,8 +31,11 @@ def world_reset():
     world.append(player)
 
 def world_update():
-    handle_events(player)
+    handle_events(player,world)
     player.update_frame(0.05)
+    for obj in world:
+        if isinstance(obj, Bubble):
+            obj.update()
     player.move()
 
 

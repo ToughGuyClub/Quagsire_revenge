@@ -1,12 +1,12 @@
 from pico2d import *
 from character import Character
+from character import Bubble
 
-
-
+width, height =  1400, 800
 # 키 입력 상태를 저장할 리스트
 pressed_keys = []
 
-def handle_events(player=None):
+def handle_events(player,world):
     global pressed_keys
     events = get_events()
 
@@ -15,6 +15,11 @@ def handle_events(player=None):
 
         if event.type == SDL_QUIT:
             return False
+        if event.type == SDL_MOUSEBUTTONDOWN:
+            #기본공격 생성
+            x, y = event.x, height - 1 - event.y
+            bubble=Bubble(player.x,player.y,player.get_angle(x,y))
+            world.append(bubble)
 
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
@@ -47,3 +52,4 @@ def handle_events(player=None):
             player.dirX, player.dirY = 0, 0  # 아무 키도 안 눌렸으면 멈춤
 
     return True
+

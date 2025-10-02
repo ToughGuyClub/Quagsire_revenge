@@ -1,6 +1,27 @@
 from pico2d import *
 
 
+width, height =  1400, 800
+class Bubble:
+    def __init__(self, x, y, degree):
+        self.x = x
+        self.y = y
+        self.degree = degree
+        self.speed = 10
+        self.image = load_image('bubble.png')
+        self.scale=32
+        self.active=True
+
+    def update(self):
+        #각도를 기준으로 이동
+        self.x += math.cos(self.degree) * self.speed
+        self.y += math.sin(self.degree) * self.speed
+        if self.x < 0 or self.x > width or self.y < 0 or self.y > height:
+            self.active = False
+
+    def draw(self):
+        self.image.draw(self.x, self.y,self.scale,self.scale)
+
 class Character:
     def __init__(self, x=100, y=100):
         self.frame_timer = 0
@@ -8,21 +29,20 @@ class Character:
         # 위치
         self.x = x
         self.y = y
-
-        #크기
-        self.scale=150
+        self.scale=150   #크기
 
         # 이동 방향
         self.dirX = 0
         self.dirY = 0
-
         # 멈춘 방향 (캐릭터가 마지막으로 바라본 방향)
         self.stopdirX = 0
         self.stopdirY = -1  # 기본값: 아래쪽
 
-        # 성장 관련
+        # 레벨
         self.level = 1
         self.exp = 0
+
+
 
         # 스프라이트 이미지
         self.image_walking = load_image('Walk-Anim.png')
@@ -95,3 +115,12 @@ class Character:
             self.y = 0
         elif self.y > 800:
             self.y = 800
+
+    def get_pos(self):
+        return (self.x, self.y)
+
+    def get_angle(self,mouse_x, mouse_y):
+        dx = mouse_x - self.x
+        dy = mouse_y - self.y
+        angle = math.atan2(dy, dx)  # 라디안 반환
+        return angle
