@@ -1,5 +1,5 @@
 from pico2d import *
-
+from current_map import *
 
 width, height =  1400, 800
 class Bubble:
@@ -42,7 +42,7 @@ class Character:
         self.level = 1
         self.exp = 0
 
-
+        self.bubble_cooldown=2.0
 
         # 스프라이트 이미지
         self.image_walking = load_image('Walk-Anim.png')
@@ -101,7 +101,15 @@ class Character:
             else:
                 self.frame = (self.frame + 1) % 4
             self.frame_timer = 0
-    def move(self):
+    def move(self,current_map):
+        next_x = self.x + self.dirX * 5
+        next_y = self.y + self.dirY * 5
+
+        # 마을 경계처리
+        if current_map.get_current_map() == 1:
+            if next_y >= 550 or next_y < 250:
+                if next_x < 1040:
+                    return
         self.x += self.dirX * 5
         self.y += self.dirY * 5
 
@@ -115,6 +123,7 @@ class Character:
             self.y = 0
         elif self.y > 800:
             self.y = 800
+
 
     def get_pos(self):
         return (self.x, self.y)
