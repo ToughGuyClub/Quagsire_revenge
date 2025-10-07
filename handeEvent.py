@@ -2,11 +2,12 @@ from pico2d import *
 from character import Character
 from character import Bubble
 from character import AttackManager
+from current_map import *
 width, height =  1400, 800
 # 키 입력 상태를 저장할 리스트
 pressed_keys = []
 
-def handle_events(player,world):
+def handle_events(player,world,current_Map):
     global pressed_keys
     events = get_events()
 
@@ -15,6 +16,14 @@ def handle_events(player,world):
 
         if event.type == SDL_QUIT:
             return False
+        if current_Map.get_current_map()==0:
+            if event.type == SDL_MOUSEBUTTONDOWN:
+                x, y = event.x, height - 1 - event.y
+                if 540 <= x <= 840 and 300 <= y <= 500:
+                    current_Map.change_map(1)
+                    return True
+                else:
+                    return True
         if event.type == SDL_MOUSEBUTTONDOWN:
             #기본공격 생성
             if(player.attack_manager.trigger_attack(get_time())):
