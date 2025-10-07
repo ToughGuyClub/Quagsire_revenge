@@ -1,7 +1,7 @@
 from pico2d import *
 from character import Character
 from character import Bubble
-
+from character import AttackManager
 width, height =  1400, 800
 # 키 입력 상태를 저장할 리스트
 pressed_keys = []
@@ -17,10 +17,26 @@ def handle_events(player,world):
             return False
         if event.type == SDL_MOUSEBUTTONDOWN:
             #기본공격 생성
-            x, y = event.x, height - 1 - event.y
-            bubble=Bubble(player.x,player.y,player.get_angle(x,y))
-            world.append(bubble)
-
+            if(player.attack_manager.trigger_attack(get_time())):
+                x, y = event.x, height - 1 - event.y
+                bubble=Bubble(player.x,player.y,player.get_angle(x,y))
+                player.motion_state = 'normal_attack'
+                player.attack_anim_timer=1.5
+                world.append(bubble)
+                # 각도에 따라 방향 갱신
+                angle = player.get_angle(x, y)
+                dx = math.cos(angle)
+                dy = math.sin(angle)
+                if abs(dx) > abs(dy):
+                    player.stopdirX = int(round(dx))
+                    player.stopdirY = 0
+                elif abs(dy) > abs(dx):
+                    player.stopdirX = 0
+                    player.stopdirY = int(round(dy))
+                else:
+                    player.stopdirX = int(round(dx))
+                    player.stopdirY = int(round(dy))
+                player.frame = 0
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 return False
@@ -33,7 +49,7 @@ def handle_events(player,world):
                 pressed_keys.remove(event.key)
 
     # 방향 업데이트 (리스트의 마지막 입력 기준)
-    if player is not None:
+    if player.motion_state == 'idle' and player is not None :
         if pressed_keys:
             last_key = pressed_keys[-1]
             if last_key == SDLK_LEFT:
