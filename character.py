@@ -146,7 +146,7 @@ class Character:
         self.frame_timer += dt
         if self.frame_timer >= self.frame_interval:
             if self.motion_state == 'normal_attack':
-                self.frame = (self.frame + 1) % 10  # 공격 애니메이션은 11프레임
+                self.frame = (self.frame + 4) % 5  # 공격 애니메이션은 11프레임
             elif self.dirX == 0 and self.dirY == 0:
                 self.frame = (self.frame + 1) % 7  # idle은 7프레임
             else:
@@ -158,6 +158,7 @@ class Character:
             if self.attack_anim_timer <= 0.0:
                 self.attack_anim_timer = 0.0
                 self.motion_state = 'idle'
+                self.frame=0
 
     def move(self,current_map):
         next_x = self.x + self.dirX * 5

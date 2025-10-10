@@ -19,9 +19,18 @@ def handle_events(player,world,current_Map):
         if current_Map.get_current_map()==0:
             if event.type == SDL_MOUSEBUTTONDOWN:
                 x, y = event.x, height - 1 - event.y
-                if 540 <= x <= 840 and 300 <= y <= 500:
+                if 540 <= x <= 840 and 360 <= y <= 450:
                     current_Map.change_map(1)
                     return True
+                # 컨티뉴 버튼 영역
+                elif 540 <= x <= 840 and 250 <= y <= 330:
+                    #current_Map.change_map(2)  # 예시: 컨티뉴 맵 번호
+
+                    return True
+                # 종료 버튼 영역
+                elif 540 <= x <= 840 and 150 <= y <= 230:
+                    close_canvas()
+                    return False
                 else:
                     return True
         if event.type == SDL_MOUSEBUTTONDOWN:
