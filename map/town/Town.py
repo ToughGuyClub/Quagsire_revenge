@@ -8,7 +8,7 @@ class Tree:
         self.x = x
         self.y = y
         self.treetype = treetype
-        self.image = load_image('trees.png')
+        self.image = load_image(os.path.join('asset/map/town','trees.png'))
 
     def draw(self):
         self.image.clip_draw(0+ 47* self.treetype, 464 , 46, 48, self.x, self.y,100,100)
@@ -16,7 +16,7 @@ class Tree:
 
 class Town:
     def __init__(self):
-        self.image = load_image('town_tile.png')
+        self.image = load_image(os.path.join('asset/map/town','town_tile.png'))
         tree_data = [
             (50, 50, 0),
             (50, 100, 0),

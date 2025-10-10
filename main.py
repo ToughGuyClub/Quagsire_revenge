@@ -3,7 +3,7 @@ from screen.background import Background
 from player.character import Character
 from player.character import Bubble
 from handeEvent import handle_events
-from Town import Town
+from map.town.Town import Town
 from current_map import CurrentMap
 from screen.mainScreen import main_screen
 width, height =  1400, 800
