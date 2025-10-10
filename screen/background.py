@@ -3,7 +3,7 @@ from pico2d import *
 
 class Background:
     def __init__(self):
-        self.image = load_image('background.png')
+        self.image = load_image(os.path.join('asset/screen','background.png'))
 
     def draw(self):
         width, height = 1400, 800

@@ -28,7 +28,7 @@ class Bubble:
         self.y = y
         self.degree = degree
         self.speed = 10
-        self.image = load_image('bubble.png')
+        self.image = load_image(os.path.join('asset/player','bubble.png'))
         self.scale=32
         self.active=True
 
@@ -68,9 +68,9 @@ class Character:
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
 
         # 스프라이트 이미지
-        self.image_walking = load_image('Walk-Anim.png')
-        self.image_idle = load_image('Idle-Anim.png')
-        self.image_normal_attack = load_image('Shoot-Anim.png')
+        self.image_walking = load_image(os.path.join('asset/player', 'Walk-Anim.png'))
+        self.image_idle = load_image(os.path.join('asset/player', 'Idle-Anim.png'))
+        self.image_normal_attack = load_image(os.path.join('asset/player', 'Shoot-Anim.png'))
         self.frame = 0
 
     def draw(self):

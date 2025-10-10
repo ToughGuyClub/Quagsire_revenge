@@ -1,11 +1,11 @@
 from pico2d import *
-from background import Background
-from character import Character
-from character import Bubble
+from screen.background import Background
+from player.character import Character
+from player.character import Bubble
 from handeEvent import handle_events
 from Town import Town
 from current_map import CurrentMap
-from mainScreen import main_screen
+from screen.mainScreen import main_screen
 width, height =  1400, 800
 frame_character=0
 open_canvas(width, height)
