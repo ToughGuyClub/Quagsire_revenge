@@ -108,7 +108,8 @@ class Town:
         ]
         self.trees = [Tree(x, y, treetype) for x, y, treetype in tree_data]
 
-
+    def update(self):
+        pass
     def draw(self):
             self.image.draw(width // 2, height // 2, width, height)  # 화면 전체에 맞게 그림
             for tree in sorted(self.trees, key=lambda tree: tree.y, reverse=True):

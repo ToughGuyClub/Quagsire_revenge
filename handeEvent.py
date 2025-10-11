@@ -34,6 +34,9 @@ def handle_events(player,world,current_Map):
                     return False
                 else:
                     return True
+        if current_Map.get_current_map()==1:
+            if event.type == SDL_MOUSEBUTTONDOWN:
+                return 'next'
         if event.type == SDL_MOUSEBUTTONDOWN:
             #기본공격 생성
             if(player.attack_manager.trigger_attack(get_time())):
@@ -46,15 +49,9 @@ def handle_events(player,world,current_Map):
                 angle = player.get_angle(x, y)
                 dx = math.cos(angle)
                 dy = math.sin(angle)
-                if abs(dx) > abs(dy):
-                    player.stopdirX = int(round(dx))
-                    player.stopdirY = 0
-                elif abs(dy) > abs(dx):
-                    player.stopdirX = 0
-                    player.stopdirY = int(round(dy))
-                else:
-                    player.stopdirX = int(round(dx))
-                    player.stopdirY = int(round(dy))
+
+                player.stopdirX = int(round(dx))
+                player.stopdirY = int(round(dy))
                 player.frame = 0
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
