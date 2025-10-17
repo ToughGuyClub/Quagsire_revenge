@@ -83,7 +83,6 @@ def world_update():
             else:
                 obj.update()
 
-
 def wolrd_draw():
 
     for obj in world:

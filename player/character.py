@@ -29,7 +29,6 @@ def key_down(e):
             pressed_keys.add(key)
         return True
     return False
-
 def key_up(e):
     if e[0] == 'INPUT' and e[1].type == SDL_KEYUP:
         key = e[1].key
@@ -37,7 +36,10 @@ def key_up(e):
             pressed_keys.discard(key)
         return True
     return False
-
+def click_left_down(e):
+    return e[0]=='INPUT' and e[1].type == SDL_MOUSEBUTTONDOWN and e[1].button ==1
+def click_left_up(e):
+    return e[0]=='INPUT' and e[1].type == SDL_MOUSEBUTTONUP and e[1].button ==1
 
 class AttackManager:
     def __init__(self, cooldown_time):
@@ -111,14 +113,20 @@ class Character:
             self.IDLE,  # <-시작상태 지정
             {
                 self.IDLE: {
-                    key_down: self.RUN
+                    key_down: self.RUN,
+                    click_left_down: self.ATTACK
                 },
                 self.RUN: {
                     key_down: self.RUN,
-                    key_up: self.RUN
+                    key_up: self.RUN,
+                    click_left_down: self.ATTACK
 
                 },
-                self.ATTACK: {}
+                self.ATTACK: {
+                    click_left_up: self.RUN,
+                    key_down: self.RUN,
+                    key_up: self.RUN,
+                }
             }
 
         )
@@ -129,74 +137,17 @@ class Character:
         self.frame = 0
 
     def draw(self):
-        if(self.motion_state == 'idle'):
-            # clip_draw(잘라낼 시작x, 시작y, w, h, 그릴x, 그릴y)
-            if self.dirX == 0 and self.dirY == 0:
-                pass
-                # 마지막 멈춘 방향 사용
-                if self.stopdirX < 0 and self.stopdirY < 0:  # 좌하
-                    self.image_idle.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                elif self.stopdirX < 0 and self.stopdirY == 0:  # 좌
-                    self.image_idle.clip_draw(self.frame * 48, 56, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                elif self.stopdirX < 0 and self.stopdirY > 0:  # 좌상
-                    self.image_idle.clip_draw(self.frame * 48, 112, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                elif self.stopdirX == 0 and self.stopdirY > 0:  # 상
-                    self.image_idle.clip_draw(self.frame * 48, 168, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                elif self.stopdirX > 0 and self.stopdirY > 0:  # 우상
-                    self.image_idle.clip_draw(self.frame * 48, 224, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                elif self.stopdirX > 0 and self.stopdirY == 0:  # 우
-                    self.image_idle.clip_draw(self.frame * 48, 280, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                elif self.stopdirX > 0 and self.stopdirY < 0:  # 우하
-                    self.image_idle.clip_draw(self.frame * 48, 336, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                elif self.stopdirX == 0 and self.stopdirY < 0:  # 하
-                    self.image_idle.clip_draw(self.frame * 48, 392, 48, 56, self.x, self.y,  self.scale,  self.scale)
-                else:
-                    self.image_idle.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y,  self.scale,  self.scale)  # 기본값
-            else:
 
-                #캐릭터 방향에 따라 다르게 그려야함 개망했노
-                if self.dirX < 0 and self.dirY < 0:  # 좌하
-                    self.image_walking.clip_draw(self.frame * 48, 0, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                elif self.dirX < 0 and self.dirY == 0:  # 좌
-                    self.image_walking.clip_draw(self.frame * 48, 40, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                elif self.dirX < 0 and self.dirY > 0:  # 좌상
-                    self.image_walking.clip_draw(self.frame * 48, 80, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                elif self.dirX == 0 and self.dirY > 0:  # 상
-                    self.image_walking.clip_draw(self.frame * 48, 120, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                elif self.dirX > 0 and self.dirY > 0:  # 우상
-                    self.image_walking.clip_draw(self.frame * 48, 160, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                elif self.dirX > 0 and self.dirY == 0:  # 우
-                    self.image_walking.clip_draw(self.frame * 48, 200, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                elif self.dirX > 0 and self.dirY < 0:  # 우하
-                    self.image_walking.clip_draw(self.frame * 48, 240, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                elif self.dirX == 0 and self.dirY < 0:  # 하
-                    self.image_walking.clip_draw(self.frame * 48, 280, 48, 40, self.x, self.y,  self.scale,  self.scale)
-                else:
-                    self.image_walking.clip_draw(self.frame * 48, 0, 48, 40, self.x, self.y,  self.scale,  self.scale)  # 기본값
-
-
-
-        # 공격 애니메이션 방향별 출력 (스탑dir 기준)
+        # 공격 애니메이션 우선
         if self.motion_state == 'normal_attack':
-            if self.stopdirX < 0 and self.stopdirY < 0:  # 좌하
-                self.image_normal_attack.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y, self.scale, self.scale)
-            elif self.stopdirX < 0 and self.stopdirY == 0:  # 좌
-                self.image_normal_attack.clip_draw(self.frame * 48, 56, 48, 56, self.x, self.y, self.scale, self.scale)
-            elif self.stopdirX < 0 and self.stopdirY > 0:  # 좌상
-                self.image_normal_attack.clip_draw(self.frame * 48, 112, 48, 56, self.x, self.y, self.scale, self.scale)
-            elif self.stopdirX == 0 and self.stopdirY > 0:  # 상
-                self.image_normal_attack.clip_draw(self.frame * 48, 168, 48, 56, self.x, self.y, self.scale, self.scale)
-            elif self.stopdirX > 0 and self.stopdirY > 0:  # 우상
-                self.image_normal_attack.clip_draw(self.frame * 48, 224, 48, 56, self.x, self.y, self.scale, self.scale)
-            elif self.stopdirX > 0 and self.stopdirY == 0:  # 우
-                self.image_normal_attack.clip_draw(self.frame * 48, 280, 48, 56, self.x, self.y, self.scale, self.scale)
-            elif self.stopdirX > 0 and self.stopdirY < 0:  # 우하
-                self.image_normal_attack.clip_draw(self.frame * 48, 336, 48, 56, self.x, self.y, self.scale, self.scale)
-            elif self.stopdirX == 0 and self.stopdirY < 0:  # 하
-                self.image_normal_attack.clip_draw(self.frame * 48, 392, 48, 56, self.x, self.y, self.scale, self.scale)
-            else:
-                self.image_normal_attack.clip_draw(self.frame * 48, 0, 48, 56, self.x, self.y, self.scale,
-                                                   self.scale)  # 기본값
+            self.ATTACK.draw()
+            return
+
+        # 눌린 이동키가 있으면 RUN, 없으면 IDLE 호출
+        if pressed_keys:
+            self.RUN.draw()
+        else:
+            self.IDLE.draw()
     def update(self, current_map,event=None):
         self.state_machine.update(current_map)
 
@@ -245,7 +196,28 @@ class IDLE:
         pass
 
     def draw(self):
-        pass
+        p = self.player
+
+        if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
+            p.image_idle.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
+            p.image_idle.clip_draw(p.frame * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
+            p.image_idle.clip_draw(p.frame * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
+            p.image_idle.clip_draw(p.frame * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
+            p.image_idle.clip_draw(p.frame * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
+            p.image_idle.clip_draw(p.frame * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
+            p.image_idle.clip_draw(p.frame * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
+            p.image_idle.clip_draw(p.frame * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
+        else:
+            p.image_idle.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
+
+
 class RUN:
 
     def __init__(self, player):
@@ -278,7 +250,8 @@ class RUN:
 
         # 눌린 키가 없으면 IDLE 상태로
         if not pressed_keys:
-
+            self.player.stopdirX = self.player.dirX
+            self.player.stopdirY = self.player.dirY
             self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
             return
 
@@ -314,7 +287,27 @@ class RUN:
 
 
     def draw(self):
-      pass
+        p = self.player
+        if p.dirX < 0 and p.dirY < 0:  # 좌하
+            p.image_walking.clip_draw(p.frame * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX < 0 and p.dirY == 0:  # 좌
+            p.image_walking.clip_draw(p.frame * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX < 0 and p.dirY > 0:  # 좌상
+            p.image_walking.clip_draw(p.frame * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX == 0 and p.dirY > 0:  # 상
+            p.image_walking.clip_draw(p.frame * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX > 0 and p.dirY > 0:  # 우상
+            p.image_walking.clip_draw(p.frame * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX > 0 and p.dirY == 0:  # 우
+            p.image_walking.clip_draw(p.frame * 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX > 0 and p.dirY < 0:  # 우하
+            p.image_walking.clip_draw(p.frame * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX == 0 and p.dirY < 0:  # 하
+            p.image_walking.clip_draw(p.frame * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+        else:
+            p.image_walking.clip_draw(p.frame * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+
+
 class ATTACK:
 
     def __init__(self, player):
@@ -326,8 +319,26 @@ class ATTACK:
     def exit(self,e):
         pass
 
-    def do(self):
+    def do(self,e,current_map):
         pass
 
     def draw(self):
-      pass
+        p=self.player
+        if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
+            p.image_normal_attack.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
+            p.image_normal_attack.clip_draw(p.frame * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
+            p.image_normal_attack.clip_draw(p.frame * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
+            p.image_normal_attack.clip_draw(p.frame * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
+            p.image_normal_attack.clip_draw(p.frame * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
+            p.image_normal_attack.clip_draw(p.frame * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
+            p.image_normal_attack.clip_draw(p.frame * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
+        elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
+            p.image_normal_attack.clip_draw(p.frame * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
+        else:
+            p.image_normal_attack.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
