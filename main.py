@@ -16,6 +16,7 @@ open_canvas(width, height)
 world=[]
 background = Background()
 current_Map = CurrentMap()
+current_Map.change_map(2)
 
 player = Character(200, 300)
 def world_reset():
@@ -58,6 +59,10 @@ def world_update():
              Intro_screen.text_index=0
 
         for obj in world:
+            #플레이어는 현재맵까지 전달
+            if isinstance(obj, Character):
+                obj.update(current_Map.current_map)
+            else:
                 obj.update()
 
         if Intro_screen.step==7:
@@ -71,10 +76,13 @@ def world_update():
         handle_events(player,world,current_Map)
 
         player.update_frame(0.05)
+
         for obj in world:
-             if isinstance(obj, Bubble):
+            if isinstance(obj, Character):
+                obj.update(current_Map.current_map)
+            else:
                 obj.update()
-        player.move(current_Map)
+
 
 def wolrd_draw():
 

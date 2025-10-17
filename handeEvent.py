@@ -16,6 +16,7 @@ def handle_events(player,world,current_Map):
 
         if event.type == SDL_QUIT:
             return False
+        player.handle_event(event,current_Map)
         if current_Map.get_current_map()==0:
             if event.type == SDL_MOUSEBUTTONDOWN:
                 x, y = event.x, height - 1 - event.y
@@ -61,27 +62,11 @@ def handle_events(player,world,current_Map):
                     pressed_keys.append(event.key)
 
         elif event.type == SDL_KEYUP:
-            if event.key in pressed_keys:
-                pressed_keys.remove(event.key)
-
+            if event.key in (SDLK_w, SDLK_a, SDLK_s, SDLK_d):
+                if event.key in pressed_keys:
+                    pass
     # 방향 업데이트 (리스트의 마지막 입력 기준)
-    if player.motion_state == 'idle' and player is not None :
-        if pressed_keys:
-            last_key = pressed_keys[-1]
-            if last_key == SDLK_LEFT:
-                player.dirX, player.dirY = -1, 0
-                player.stopdirX, player.stopdirY = -1, 0
-            elif last_key == SDLK_RIGHT:
-                player.dirX, player.dirY = 1, 0
-                player.stopdirX, player.stopdirY = 1, 0
-            elif last_key == SDLK_UP:
-                player.dirX, player.dirY = 0, 1
-                player.stopdirX, player.stopdirY = 0, 1
-            elif last_key == SDLK_DOWN:
-                player.dirX, player.dirY = 0, -1
-                player.stopdirX, player.stopdirY = 0, -1
-        else:
-            player.dirX, player.dirY = 0, 0  # 아무 키도 안 눌렸으면 멈춤
+
 
     return True
 
