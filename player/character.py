@@ -84,6 +84,9 @@ class Bubble:
 
 class Character:
     def __init__(self, x=100, y=100):
+        self.max_HP = 100
+        self.cur_HP = 100
+
         self.frame_timer = 0
         self.frame_interval = 0.2
         # 위치

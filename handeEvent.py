@@ -55,6 +55,7 @@ def handle_events(player,world,current_Map):
                 player.stopdirX = int(round(dx))
                 player.stopdirY = int(round(dy))
                 player.frame = 0
+                return bubble
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 return False

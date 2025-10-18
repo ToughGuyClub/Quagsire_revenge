@@ -147,7 +147,7 @@ class EnemyAttack:
         if self.timer >= self.cooldown:
             #몬스터볼 던지는거 추가
             self.timer = 0
-            ball = AttackBall(self.enemy.ball_image, self.enemy.x, self.enemy.y, self.enemy.dirX, self.enemy.dirY, speed=10)
+            ball = AttackBall(self.enemy.ball_image, self.enemy.x, self.enemy.y, self.enemy.dirX, self.enemy.dirY,self.enemy.type, speed=10,)
             return ball
     def draw(self):
         enemy = self.enemy
@@ -161,7 +161,7 @@ class EnemyAttack:
             enemy.image.clip_draw(enemy.frame * 32, 144, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
 
 class AttackBall:
-    def __init__(self, image, x, y, dirX, dirY, speed=10):
+    def __init__(self, image, x, y, dirX, dirY,level ,speed=10 ):
         self.image = image
         self.x = x
         self.y = y
@@ -170,6 +170,7 @@ class AttackBall:
         self.speed = speed
         self.scale = 32
         self. frame = 0
+        self.level = level
         self.frame_time = 0.1
     def update(self):
         self.x += self.dirX * self.speed
