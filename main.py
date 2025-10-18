@@ -7,6 +7,7 @@ from map.town.Town import Town
 from current_map import CurrentMap
 from screen.mainScreen import main_screen
 from screen.intro import intro_screen
+from enemy.Enemy import Enemy
 width, height =  1400, 800
 frame_character=0
 open_canvas(width, height)
@@ -38,12 +39,13 @@ def world_reset():
 
         global player
 
-
         town = Town()
         world.append(town)
 
         player = Character(200, 300)
         world.append(player)
+        enemy = Enemy('trainer_BURGLAR.png', 900, 400, 100)
+        world.append(enemy)
 
 def world_update():
     global current_Map
@@ -80,6 +82,8 @@ def world_update():
         for obj in world:
             if isinstance(obj, Character):
                 obj.update(current_Map.current_map)
+            elif isinstance(obj, Enemy):
+                obj.update(player,0.05)
             else:
                 obj.update()
 

@@ -1,7 +1,8 @@
 from pico2d import *
 from current_map import *
 from state_machine import StateMachine
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1
+from player.playerskill import PlayerSkills  # 추가
 
 width, height =  1400, 800
 global last_input
@@ -40,7 +41,8 @@ def click_left_down(e):
     return e[0]=='INPUT' and e[1].type == SDL_MOUSEBUTTONDOWN and e[1].button ==1
 def click_left_up(e):
     return e[0]=='INPUT' and e[1].type == SDL_MOUSEBUTTONUP and e[1].button ==1
-
+def down_1(e):# 숫자 1이 눌렸을 때
+    return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_1
 class AttackManager:
     def __init__(self, cooldown_time):
         self.cooldown_time = cooldown_time  # 공격 쿨타임
@@ -105,6 +107,7 @@ class Character:
         self.skill_points = 0
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
 
+        self.skills = PlayerSkills(self)
 
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
@@ -114,7 +117,8 @@ class Character:
             {
                 self.IDLE: {
                     key_down: self.RUN,
-                    click_left_down: self.ATTACK
+                    click_left_down: self.ATTACK,
+
                 },
                 self.RUN: {
                     key_down: self.RUN,

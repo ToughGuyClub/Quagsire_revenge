@@ -5,12 +5,13 @@ from player.character import AttackManager
 from current_map import *
 width, height =  1400, 800
 # 키 입력 상태를 저장할 리스트
-pressed_keys = []
 
+x=0
+y=0
 def handle_events(player,world,current_Map):
     global pressed_keys
     events = get_events()
-
+    global x, y
 
     for event in events:
 
@@ -57,14 +58,20 @@ def handle_events(player,world,current_Map):
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 return False
-            elif event.key in (SDLK_LEFT, SDLK_RIGHT, SDLK_UP, SDLK_DOWN):
-                if event.key not in pressed_keys:   # 중복 방지
-                    pressed_keys.append(event.key)
+            elif event.key == SDLK_1:
+                #물대포 추가예정
+
+
+
+                enemies=[]
+                used = player.skills.use('water_cannon', enemies,mouse_pos=( x,y))
+                world.append(used)  # 생성된 스킬 오브젝트들을 월드에 추가
+                pass
+
 
         elif event.type == SDL_KEYUP:
-            if event.key in (SDLK_w, SDLK_a, SDLK_s, SDLK_d):
-                if event.key in pressed_keys:
-                    pass
+            pass
+
     # 방향 업데이트 (리스트의 마지막 입력 기준)
 
 
