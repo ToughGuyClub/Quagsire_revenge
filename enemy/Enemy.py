@@ -3,11 +3,18 @@ import math
 import random
 from enemy.enemy_state_machine import EnemyStateMachine
 import os
+def level_to_image(level):
+    level_images = {
+        1: 'level1ball.png',
+        2: 'level2ball.png',
+        3: 'level3ball.png'
+    }
+    return level_images.get(level, 'level1ball.png')
 class Enemy:
     def __init__(self, image_path, x, y, type):
         self.image = load_image(os.path.join('asset/enemy', 'trainer_BURGLAR.png'))
-        #디버깅 이미지경로확인
-        print(f"Loaded enemy image from: asset/enemy/{image_path}")
+        #타입=레벨 레벨별 이미지다름
+        self.ball_image = load_image(os.path.join('asset/enemy', level_to_image(type)))
         self.x = x
         self.y = y
         self.type = type
@@ -45,7 +52,7 @@ class Enemy:
     def in_attack_range(self, e):
         player = e
         distance = math.sqrt((self.x - player.x)**2 + (self.y - player.y)**2)
-        return distance < 100  # 공격 사거리
+        return distance < 300  # 공격 사거리
 
     def lost_player(self, e):
         player = e
@@ -67,8 +74,8 @@ class Enemy:
         else:  # 수직이 더 크면 상하
             self.dirY = 1 if dy > 0 else -1
             self.dirX = 0
-        self.state_machine.update(player)
-
+        result = self.state_machine.update(player)
+        return result  # 공격 시 생성된 몬스터볼 반환
     def draw(self):
         self.state_machine.draw()
 
@@ -138,8 +145,10 @@ class EnemyAttack:
     def do(self, player):
         self.timer += 0.05
         if self.timer >= self.cooldown:
-            print(f"{self.enemy.type}이(가) 공격했다!")
+            #몬스터볼 던지는거 추가
             self.timer = 0
+            ball = AttackBall(self.enemy.ball_image, self.enemy.x, self.enemy.y, self.enemy.dirX, self.enemy.dirY, speed=10)
+            return ball
     def draw(self):
         enemy = self.enemy
         if enemy.dirX == -1:
@@ -151,3 +160,24 @@ class EnemyAttack:
         elif enemy.dirY == -1:
             enemy.image.clip_draw(enemy.frame * 32, 144, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
 
+class AttackBall:
+    def __init__(self, image, x, y, dirX, dirY, speed=10):
+        self.image = image
+        self.x = x
+        self.y = y
+        self.dirX = dirX
+        self.dirY = dirY
+        self.speed = speed
+        self.scale = 32
+        self. frame = 0
+        self.frame_time = 0.1
+    def update(self):
+        self.x += self.dirX * self.speed
+        self.y += self.dirY * self.speed
+        if self.frame_time <= 0:
+            self.frame_time = 0.1
+            self.frame = (self.frame + 1) % 8
+        self.frame_time -= 0.05
+
+    def draw(self):
+        self.image.clip_draw(self.frame * 32, 0, 32, 64, self.x, self.y, 32, 64)

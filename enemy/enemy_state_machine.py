@@ -16,7 +16,7 @@ class EnemyStateMachine:
     def update(self, player):
         """현재 상태를 수행하고, 전이 조건을 체크함."""
         # 1️⃣ 현재 상태 동작 실행
-        self.cur_state.do(player)
+        result = self.cur_state.do(player)
 
         # 2️⃣ 상태 전이 조건 검사
         for check_func, next_state in self.rules[self.cur_state].items():
@@ -29,7 +29,7 @@ class EnemyStateMachine:
                     break
             except Exception as e:
                 print(f"[EnemyStateMachine Error] {e}")
-
+        return result
     def draw(self):
         """현재 상태의 draw 호출"""
         self.cur_state.draw()

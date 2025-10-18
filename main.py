@@ -83,7 +83,11 @@ def world_update():
             if isinstance(obj, Character):
                 obj.update(current_Map.current_map)
             elif isinstance(obj, Enemy):
-                obj.update(player,0.05)
+                ball = obj.update(player,0.05)
+                if ball is not None:
+                    world.append(ball)
+                    print("볼 생성")
+
             else:
                 obj.update()
 
