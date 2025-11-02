@@ -166,3 +166,9 @@ class intro_screen:
                 if self.dialogue_index < len(lines):
                     visible = lines[self.dialogue_index][:self.text_index]
                     self.font.draw(100, 150, visible, (255, 255, 255))
+
+
+def pause():
+    pass
+def resume():
+    pass
