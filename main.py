@@ -122,7 +122,7 @@ while True:
 
 
     update_canvas()
-    delay(0.02)
+    delay(0.012)
 
 
 close_canvas()

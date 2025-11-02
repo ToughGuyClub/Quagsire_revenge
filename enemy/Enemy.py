@@ -23,7 +23,7 @@ class Enemy:
         self.dirX = 0
         self.dirY = 0
         self.frame = 0
-        self.frame_time = 0.2
+        self.frame_time = 0.3
 
         # 상태 클래스 생성
         self.IDLE = EnemyIdle(self)
@@ -63,7 +63,7 @@ class Enemy:
         # 상태 머신 업데이트 (플레이어 정보를 event로 넘김)
         self.frame_time -= frame_time
         if self.frame_time <= 0:
-            self.frame_time = 0.2
+            self.frame_time = 0.3
             self.frame = (self.frame + 1) % 4
         # 플레이어랑 위치 계산해서 dirx, diry 설정
         dx = player.x - self.x
@@ -138,7 +138,7 @@ class EnemyRun:
 class EnemyAttack:
     def __init__(self, enemy):
         self.enemy = enemy
-        self.cooldown = 2.0
+        self.cooldown = 4.0
         self.timer = 0
     def enter(self, player): self.timer = 0
     def exit(self, player): pass
@@ -171,12 +171,12 @@ class AttackBall:
         self.scale = 32
         self. frame = 0
         self.level = level
-        self.frame_time = 0.1
+        self.frame_time = 0.2
     def update(self):
         self.x += self.dirX * self.speed
         self.y += self.dirY * self.speed
         if self.frame_time <= 0:
-            self.frame_time = 0.1
+            self.frame_time = 0.2
             self.frame = (self.frame + 1) % 8
         self.frame_time -= 0.05
 
