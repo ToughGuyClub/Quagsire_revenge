@@ -158,7 +158,7 @@ class Character:
     def update(self, current_map,event=None):
         self.state_machine.update(current_map)
 
-    def update_frame(self, dt=0.05):
+    def update_frame(self, dt=0.02):
         self.frame_timer += dt
         if self.frame_timer >= self.frame_interval:
             if self.motion_state == 'normal_attack':

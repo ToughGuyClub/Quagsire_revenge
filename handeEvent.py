@@ -8,8 +8,10 @@ width, height =  1400, 800
 
 x=0
 y=0
-def handle_events(player,world,current_Map):
+def handle_events(player=None,world=None,current_Map=None):
     global pressed_keys
+    if player is None and world is None and current_Map is None:
+        return True
     events = get_events()
     global x, y
 

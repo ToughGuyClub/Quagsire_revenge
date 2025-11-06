@@ -57,7 +57,7 @@ class Enemy:
     def lost_player(self, e):
         player = e
         distance = math.sqrt((self.x - player.x)**2 + (self.y - player.y)**2)
-        return distance > 500  # 너무 멀어지면 잃음
+        return distance > 1000  # 너무 멀어지면 잃음
 
     def update(self, player, frame_time):
         # 상태 머신 업데이트 (플레이어 정보를 event로 넘김)

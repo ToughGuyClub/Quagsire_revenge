@@ -1,18 +1,13 @@
 from pico2d import *
 import play_modes.play_mode
 import screen.mainScreen
-
+import game_framework
 screen.mainScreen.init()
-while True:
-    clear_canvas()
-
-    screen.mainScreen.update()
-    screen.mainScreen.draw()
 
 
+#game_framework.run(screen.mainScreen)
+game_framework.run(play_modes.play_mode)
 
-    update_canvas()
-    delay(0.012)
 
 
 close_canvas()
