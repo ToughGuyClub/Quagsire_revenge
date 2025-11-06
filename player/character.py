@@ -60,7 +60,9 @@ class AttackManager:
         else:
             return False
 
-
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
 class Bubble:
     def __init__(self, x, y, degree):
         self.x = x
