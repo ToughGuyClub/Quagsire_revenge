@@ -3,6 +3,7 @@ import time
 import game_framework
 from frameTimer import get_frame_time
 import play_modes.play_mode
+
 # 전역 변수들
 background = None
 professor = None
@@ -30,6 +31,13 @@ marill_size = 64
 ball_frame = 0
 truck_x = -100
 blood_y = -400
+
+
+TIME_PER_ACTION = 0.2
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 6
+
+TIME_PER_SPEED = 1
 
 def load_dialogues(filename):
     d = {}
@@ -95,27 +103,29 @@ def update():
 
     # 연출 진행
     if step == 0:
-        prof_x += 2
+        prof_x += 2*game_framework.frame_time*100.0
         if prof_x >= 800:
             step += 1
             timer = 0
     elif step == 2:
         if ball_y >= 300:
-            ball_y -= 5
-            ball_frame = (ball_frame + 1) % 6
+            ball_y -= 5*game_framework.frame_time*100.0
+            ball_frame = (ball_frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+
+
         else:
             ball_y = -100
             step += 1
     elif step == 3:
         if marill_size < 90:
-            marill_size += 2
+            marill_size += 2*game_framework.frame_time*30.0
         else:
             step += 1
             dialogue_index = 0
             text_index = 0
     elif step == 5:
         if truck_x < prof_x:
-            truck_x += 15
+            truck_x += 15*game_framework.frame_time*100.0
         else:
             step += 1
             dialogue_index = 0
@@ -139,7 +149,7 @@ def draw():
         ball_x = prof_x - 150
 
     elif step == 2:
-        ball.clip_draw(ball_frame * 32, 0, 32, 64, ball_x, ball_y, 64, 128)
+        ball.clip_draw(int(ball_frame) * 32, 0, 32, 64, ball_x, ball_y, 64, 128)
         if ball_y < 0:
             ballOpen.draw(ball_x, 200, 64, 128)
     elif step == 3:

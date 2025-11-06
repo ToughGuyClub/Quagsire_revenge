@@ -5,8 +5,8 @@ import game_framework
 screen.mainScreen.init()
 
 
-#game_framework.run(screen.mainScreen)
-game_framework.run(play_modes.play_mode)
+game_framework.run(screen.mainScreen)
+#game_framework.run(play_modes.play_mode)
 
 
 
