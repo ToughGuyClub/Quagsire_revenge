@@ -3,7 +3,7 @@ from current_map import *
 from state_machine import StateMachine
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1
 from player.playerskill import PlayerSkills  # 추가
-
+import game_framework
 width, height =  1400, 800
 global last_input
 pressed_keys = set()
@@ -60,15 +60,18 @@ class AttackManager:
         else:
             return False
 
-TIME_PER_ACTION = 0.5
+TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 8
+
+TIME_PER_SPEED = 1
+
 class Bubble:
     def __init__(self, x, y, degree):
         self.x = x
         self.y = y
         self.degree = degree
-        self.speed = 10
+        self.speed = 100
         self.image = load_image(os.path.join('asset/player','bubble.png'))
         self.scale=32
         self.active=True
@@ -76,8 +79,8 @@ class Bubble:
     def update(self):
         #각도를 기준으로 이동
 
-        self.x += math.cos(self.degree) * self.speed
-        self.y += math.sin(self.degree) * self.speed
+        self.x += math.cos(self.degree) * self.speed*game_framework.frame_time*10
+        self.y += math.sin(self.degree) * self.speed*game_framework.frame_time*10
         if self.x < 0 or self.x > width or self.y < 0 or self.y > height:
             self.active = False
 
@@ -99,6 +102,7 @@ class Character:
         # 이동 방향
         self.dirX = 0
         self.dirY = 0
+        self.speed = 50.0
         # 현재 모션 상태
         self.motion_state = 'idle'
         self.attack_anim_timer = 0
@@ -160,24 +164,30 @@ class Character:
     def update(self, current_map,event=None):
         self.state_machine.update(current_map)
 
-    def update_frame(self, dt=0.02):
-        self.frame_timer += dt
-        if self.frame_timer >= self.frame_interval:
-            if self.motion_state == 'normal_attack':
-                self.frame = (self.frame + 4) % 5  # 공격 애니메이션은 11프레임
-            elif self.dirX == 0 and self.dirY == 0:
-                self.frame = (self.frame + 1) % 7  # idle은 7프레임
-            else:
-                self.frame = (self.frame + 1) % 4  # 걷기는 4프레임
-            self.frame_timer = 0
+    def update_frame(self):
+        # 공격, 이동, 대기 상태별로 다르게 처리
+        if self.motion_state == 'normal_attack':
+            TIME_PER_ACTION = 0.4  # 공격 애니메이션 한 번 도는 데 걸리는 시간
+            FRAMES_PER_ACTION = 5
+        elif self.dirX == 0 and self.dirY == 0:
+            TIME_PER_ACTION = 0.8  # idle은 느리게
+            FRAMES_PER_ACTION = 7
+        else:
+            TIME_PER_ACTION = 0.5  # 걷기는 보통 속도
+            FRAMES_PER_ACTION = 4
 
+        ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+
+        # 실제 프레임 시간 기반으로 프레임 계산
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+
+        # 공격 애니메이션 끝나면 idle로 복귀
         if self.attack_anim_timer > 0.0:
-            self.attack_anim_timer -= 0.1
+            self.attack_anim_timer -= game_framework.frame_time
             if self.attack_anim_timer <= 0.0:
                 self.attack_anim_timer = 0.0
                 self.motion_state = 'idle'
-                self.frame=0
-
+                self.frame = 0
 
     def handle_event(self, event,current_map):
         self.state_machine.handle_state_event(('INPUT',event),current_map)
@@ -208,23 +218,23 @@ class IDLE:
         p = self.player
 
         if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
-            p.image_idle.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
-            p.image_idle.clip_draw(p.frame * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
-            p.image_idle.clip_draw(p.frame * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
-            p.image_idle.clip_draw(p.frame * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
-            p.image_idle.clip_draw(p.frame * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
-            p.image_idle.clip_draw(p.frame * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
-            p.image_idle.clip_draw(p.frame * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
-            p.image_idle.clip_draw(p.frame * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_idle.clip_draw(int(p.frame) * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
         else:
-            p.image_idle.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
+            p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
 
 
 class RUN:
@@ -270,16 +280,16 @@ class RUN:
             dx /= length
             dy /= length
             self.player.dirX, self.player.dirY = dx, dy
-        next_x = self.player.x + self.player.dirX * 5
-        next_y = self.player.y + self.player.dirY * 5
+        next_x = self.player.x + self.player.dirX * self.player.speed*game_framework.frame_time*10.0
+        next_y = self.player.y + self.player.dirY * self.player.speed*game_framework.frame_time*10.0
 
         # 마을 경계처리
         if current_map == 2:
             if next_y >= 550 or next_y < 250:
                 if next_x < 1040:
                     return
-        self.player.x += self.player.dirX * 5
-        self.player.y += self.player.dirY * 5
+        self.player.x = next_x
+        self.player.y =  next_y
 
         # 화면 경계 처리
         if self.player.x < 0:
@@ -298,23 +308,23 @@ class RUN:
     def draw(self):
         p = self.player
         if p.dirX < 0 and p.dirY < 0:  # 좌하
-            p.image_walking.clip_draw(p.frame * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.dirX < 0 and p.dirY == 0:  # 좌
-            p.image_walking.clip_draw(p.frame * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.dirX < 0 and p.dirY > 0:  # 좌상
-            p.image_walking.clip_draw(p.frame * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.dirX == 0 and p.dirY > 0:  # 상
-            p.image_walking.clip_draw(p.frame * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.dirX > 0 and p.dirY > 0:  # 우상
-            p.image_walking.clip_draw(p.frame * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.dirX > 0 and p.dirY == 0:  # 우
-            p.image_walking.clip_draw(p.frame * 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame)* 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.dirX > 0 and p.dirY < 0:  # 우하
-            p.image_walking.clip_draw(p.frame * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.dirX == 0 and p.dirY < 0:  # 하
-            p.image_walking.clip_draw(p.frame * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
         else:
-            p.image_walking.clip_draw(p.frame * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+            p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
 
 
 class ATTACK:
@@ -329,25 +339,26 @@ class ATTACK:
         pass
 
     def do(self,e,current_map):
+
         pass
 
     def draw(self):
         p=self.player
         if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
-            p.image_normal_attack.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
-            p.image_normal_attack.clip_draw(p.frame * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
-            p.image_normal_attack.clip_draw(p.frame * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
-            p.image_normal_attack.clip_draw(p.frame * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
-            p.image_normal_attack.clip_draw(p.frame * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
-            p.image_normal_attack.clip_draw(p.frame * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
-            p.image_normal_attack.clip_draw(p.frame * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
         elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
-            p.image_normal_attack.clip_draw(p.frame * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
         else:
-            p.image_normal_attack.clip_draw(p.frame * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
+            p.image_normal_attack.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값

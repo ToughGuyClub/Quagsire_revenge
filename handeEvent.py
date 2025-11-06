@@ -47,7 +47,7 @@ def handle_events(player=None,world=None,current_Map=None):
                 x, y = event.x, height - 1 - event.y
                 bubble=Bubble(player.x,player.y,player.get_angle(x,y))
                 player.motion_state = 'normal_attack'
-                player.attack_anim_timer=1.5
+                player.attack_anim_timer=0.3
                 world.append(bubble)
                 # 각도에 따라 방향 갱신
                 angle = player.get_angle(x, y)

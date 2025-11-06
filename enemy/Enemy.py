@@ -3,6 +3,13 @@ import math
 import random
 from enemy.enemy_state_machine import EnemyStateMachine
 import os
+import game_framework
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 4
+
+TIME_PER_SPEED = 1
+
 def level_to_image(level):
     level_images = {
         1: 'level1ball.png',
@@ -18,7 +25,7 @@ class Enemy:
         self.x = x
         self.y = y
         self.type = type
-        self.speed = 2
+        self.speed = 2.0
         self.scale = 100
         self.dirX = 0
         self.dirY = 0
@@ -61,10 +68,8 @@ class Enemy:
 
     def update(self, player, frame_time):
         # 상태 머신 업데이트 (플레이어 정보를 event로 넘김)
-        self.frame_time -= frame_time
-        if self.frame_time <= 0:
-            self.frame_time = 0.3
-            self.frame = (self.frame + 1) % 4
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+
         # 플레이어랑 위치 계산해서 dirx, diry 설정
         dx = player.x - self.x
         dy = player.y - self.y
@@ -115,8 +120,8 @@ class EnemyRun:
         dist = math.sqrt(dx ** 2 + dy ** 2)
         if dist > 0:
             dx, dy = dx / dist, dy / dist
-            self.enemy.x += dx * self.enemy.speed
-            self.enemy.y += dy * self.enemy.speed
+            self.enemy.x += dx * self.enemy.speed*game_framework.frame_time*self.enemy.speed*10.0
+            self.enemy.y += dy * self.enemy.speed*game_framework.frame_time*self.enemy.speed*10.0
         if abs(dx) > abs(dy):  # 수평이 더 크면 좌우
             self.enemy.dirX = 1 if dx > 0 else -1
             self.enemy.dirY = 0
@@ -126,24 +131,24 @@ class EnemyRun:
     def draw(self):
         enemy = self.enemy
         if enemy.dirX == -1:
-            enemy.image.clip_draw(enemy.frame * 32, 96, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame) * 32, 96, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
         elif enemy.dirX == 1:
-            enemy.image.clip_draw(enemy.frame * 32, 48, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame) * 32, 48, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
         elif enemy.dirY == 1:
-            enemy.image.clip_draw(enemy.frame * 32, 0, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame) * 32, 0, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
         elif enemy.dirY == -1:
-            enemy.image.clip_draw(enemy.frame * 32, 144, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame) * 32, 144, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
 
 
 class EnemyAttack:
     def __init__(self, enemy):
         self.enemy = enemy
-        self.cooldown = 4.0
+        self.cooldown = 1.0
         self.timer = 0
     def enter(self, player): self.timer = 0
     def exit(self, player): pass
     def do(self, player):
-        self.timer += 0.05
+        self.timer += game_framework.frame_time
         if self.timer >= self.cooldown:
             #몬스터볼 던지는거 추가
             self.timer = 0
@@ -152,13 +157,13 @@ class EnemyAttack:
     def draw(self):
         enemy = self.enemy
         if enemy.dirX == -1:
-            enemy.image.clip_draw(enemy.frame * 32, 96, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame)* 32, 96, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
         elif enemy.dirX == 1:
-            enemy.image.clip_draw(enemy.frame * 32, 48, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame) * 32, 48, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
         elif enemy.dirY == 1:
-            enemy.image.clip_draw(enemy.frame * 32, 0, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame)* 32, 0, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
         elif enemy.dirY == -1:
-            enemy.image.clip_draw(enemy.frame * 32, 144, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
+            enemy.image.clip_draw(int(enemy.frame)* 32, 144, 32, 48, enemy.x, enemy.y, enemy.scale, enemy.scale)
 
 class AttackBall:
     def __init__(self, image, x, y, dirX, dirY,level ,speed=10 ):
@@ -173,8 +178,8 @@ class AttackBall:
         self.level = level
         self.frame_time = 0.2
     def update(self):
-        self.x += self.dirX * self.speed
-        self.y += self.dirY * self.speed
+        self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
+        self.y += self.dirY * self.speed*game_framework.frame_time* self.speed*5.0
         if self.frame_time <= 0:
             self.frame_time = 0.2
             self.frame = (self.frame + 1) % 8
