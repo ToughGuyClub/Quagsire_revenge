@@ -1,5 +1,5 @@
 
-
+import math
 world = [[] for _ in range(4)]
 
 
@@ -74,14 +74,52 @@ def add_collision_pair(group, a, b):
     if a: collision_pairs[group][0].append(a)
     if b: collision_pairs[group][1].append(b)
 
+def special_directional_collide(a, b):
+    # 방향형 스킬이 어느 쪽에 있는지 판별
+    skill, target = None, None
+    if hasattr(a, 'degree') and hasattr(a, 'player'):
+        skill, target = a, b
+    elif hasattr(b, 'degree') and hasattr(b, 'player'):
+        skill, target = b, a
+    else:
+        return False
 
+    px, py = skill.player.x, skill.player.y
+    tx, ty = target.x, target.y
+
+    dx = tx - px
+    dy = ty - py
+
+    dist = math.sqrt(dx * dx + dy * dy)
+    max_range = getattr(skill, 'distance', 200)
+
+    # 거리가 너무 멀면 충돌 X
+    if dist > max_range + 50:
+        return False
+
+    # 각도 차이 계산
+    angle_to_target = math.degrees(math.atan2(dy, dx))
+    diff = abs((angle_to_target - skill.degree + 180) % 360 - 180)
+
+    # 각도 허용 범위 (스킬에 따라 다르게 설정 가능)
+    angle_tolerance = getattr(skill, 'angle_tolerance', 25)
+
+    return diff < angle_tolerance
 def handle_collisions():
 
     # 충돌dict의 모든 그룹에 대해서 충돌검사를 수행
     for group, pairs in collision_pairs.items():
         for a in pairs[0]:  # 첫번째 리스트의 모든 객체에 대해서
             for b in pairs[1]:  # 두번째 리스트의 모든 객체에 대해서
-                if collide(a, b):
+                #  예외 처리: 물대포 같은거 전용 판정
+                if group =='cannon:enemy':
+                    if special_directional_collide(a, b):
+                        a.handle_collision(group, b)
+                        b.handle_collision(group, a)
+                    #continue  # AABB 검사 스킵
+
+                # 기본 충돌
+                elif collide(a, b):
                     a.handle_collision(group, b)  # 충돌했으면 처리는 각각의 객체가 알잘딱 처리해야함
                     b.handle_collision(group, a)  # 충돌했으면 처리는 각각의 객체가 알잘딱 처리해야함
                     # 하지만 collision_pairs에서 해당 객체가 제거가 안되었으므로 remove_collision_object함수

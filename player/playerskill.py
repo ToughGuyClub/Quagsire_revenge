@@ -47,6 +47,7 @@ class WaterCannon:
         self.x=self.player.x
         self.y=self.player.y
         self.distance=120  #플레이어로부터 떨어진 거리
+        game_world.add_collision_pair('cannon:enemy', self, None)
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -105,7 +106,7 @@ class WaterCannon:
                                        '',
                                        self.x, self.y,
                                        127, 240)
-        draw_rectangle(*self.get_bb())
+
         pass
     def handle_event(self, event):
         pass
@@ -113,27 +114,4 @@ class WaterCannon:
         pass
 
     def get_bb(self):
-        # 기본 폭/높이 설정
-        base_w, base_h = 100, 60  # 기본값 (적당히 조절 가능)
-
-        # 각도 정규화 (0~360도)
-        degree = (self.degree + 360) % 360
-
-        # 좌우 (0도 또는 180도) → 가로로 긴
-        if (degree <= 15 or degree >= 345) or (165 <= degree <= 195):
-            w, h = base_w * 2.0, base_h * 0.7
-
-        # 상하 (90도 또는 270도) → 세로로 긴
-        elif (75 <= degree <= 105) or (255 <= degree <= 285):
-            w, h = base_w * 0.7, base_h * 2.0
-
-        # 대각선 (45, 135, 225, 315 근처)
-        elif (30 <= degree <= 60) or (120 <= degree <= 150) or (210 <= degree <= 240) or (300 <= degree <= 330):
-            w, h = base_w * 1.5, base_h * 1.2
-
-        # 그 외 → 기본값
-        else:
-            w, h = base_w, base_h
-
-        # 중심 좌표 기준으로 바운딩박스 반환
-        return self.x - w / 2, self.y - h / 2, self.x + w / 2, self.y + h / 2
+        pass

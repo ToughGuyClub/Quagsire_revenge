@@ -98,6 +98,11 @@ class Enemy:
             self.HP -= 5
             if self.HP <= 0:
                 game_world.remove_object(self)
+        elif group == 'cannon:enemy':
+            self.HP -= 5
+            if self.HP <= 0:
+                game_world.remove_object(self)
+
 
 
 class EnemyIdle:
@@ -207,4 +212,5 @@ class AttackBall:
     def handle_collision(self, group, other):
         if group == 'player:enemy':
             game_world.remove_object(self)
+
 

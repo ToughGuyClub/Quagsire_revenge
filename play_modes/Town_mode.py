@@ -49,9 +49,9 @@ def init():
 
     #상호작용에 필요한 것
     game_world.add_collision_pair('player:enemy', player, None)
-    #game_world.add_collision_pair('player:enemy', None, enemy)
+    game_world.add_collision_pair('player:enemy', None, enemy)
     game_world.add_collision_pair('bubble:enemy', None, enemy)
-
+    game_world.add_collision_pair('cannon:enemy', None, enemy)
 def update():
     global current_Map
     game_world.update()
