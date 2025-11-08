@@ -88,8 +88,10 @@ class Enemy:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
-
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
 
 
 class EnemyIdle:
@@ -159,6 +161,7 @@ class EnemyAttack:
             self.timer = 0
             ball = AttackBall(self.enemy.ball_image, self.enemy.x, self.enemy.y, self.enemy.dirX, self.enemy.dirY,self.enemy.type, speed=10,)
             game_world.add_object(ball, 2)
+            game_world.add_collision_pair('player:enemy', None, ball)
     def draw(self):
         enemy = self.enemy
         if enemy.dirX == -1:
@@ -192,3 +195,9 @@ class AttackBall:
 
     def draw(self):
         self.image.clip_draw(self.frame * 32, 0, 32, 64, self.x, self.y, 32, 64)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            game_world.remove_object(self)

@@ -86,6 +86,9 @@ class Bubble:
 
     def draw(self):
         self.image.draw(self.x, self.y,self.scale,self.scale)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - 16, self.y - 16, self.x + 16, self.y + 16
 
 class Character:
     def __init__(self,cm, x=100, y=100):
@@ -166,6 +169,7 @@ class Character:
             self.RUN.draw()
         else:
             self.IDLE.draw()
+        draw_rectangle(*self.get_bb())
     def update(self):
         self.state_machine.update(self.current_map)
         self.update_frame()
@@ -205,6 +209,16 @@ class Character:
         dy = mouse_y - self.y
         angle = math.atan2(dy, dx)  # 라디안 반환
         return angle
+    def get_bb(self):
+        return self.x - 25, self.y - 20, self.x + 25, self.y + 60
+
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            self.cur_HP -= 10
+            if self.cur_HP < 0:
+                self.cur_HP = 0
+            print(f'Player HP: {self.cur_HP}/{self.max_HP}')
+
 
 class IDLE:
 

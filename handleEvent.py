@@ -52,6 +52,7 @@ def handle_events(player=None,world=None,current_Map=None):
                 player.attack_anim_timer=0.3
                 #world.append(bubble)
                 game_world.add_object(bubble, 2)
+                game_world.add_collision_pair('bubble:enemy', bubble, None)
                 # 각도에 따라 방향 갱신
                 angle = player.get_angle(x, y)
                 dx = math.cos(angle)

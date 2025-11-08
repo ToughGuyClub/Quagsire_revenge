@@ -76,6 +76,7 @@ def add_collision_pair(group, a, b):
 
 
 def handle_collisions():
+
     # 충돌dict의 모든 그룹에 대해서 충돌검사를 수행
     for group, pairs in collision_pairs.items():
         for a in pairs[0]:  # 첫번째 리스트의 모든 객체에 대해서

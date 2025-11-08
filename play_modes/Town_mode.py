@@ -34,9 +34,10 @@ def init():
 
     global player
     global player_UI
-    player_UI = Player_UI(player)
+
     town = Town()
     player = Character(current_Map,200, 300)
+    player_UI = Player_UI(player)
     enemy = Enemy('trainer_BURGLAR.png', 900, 400, 1,player)
 
     #랜더링에 필요한것
@@ -48,8 +49,8 @@ def init():
 
     #상호작용에 필요한 것
     game_world.add_collision_pair('player:enemy', player, None)
-    game_world.add_collision_pair('player:enemy', None, enemy)
-    
+    #game_world.add_collision_pair('player:enemy', None, enemy)
+    game_world.add_collision_pair('bubble:enemy', None, enemy)
 
 def update():
     global current_Map
@@ -60,7 +61,7 @@ def update():
 
     #if isinstance(temp_bubble, Bubble):
     #    bubbles.append(temp_bubble)
-
+    game_world.handle_collisions()
 
 
 def draw():
