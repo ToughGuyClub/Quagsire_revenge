@@ -3,6 +3,8 @@ from player.character import Character
 from player.character import Bubble
 from player.character import AttackManager
 from current_map import *
+
+
 width, height =  1400, 800
 # 키 입력 상태를 저장할 리스트
 
@@ -67,8 +69,7 @@ def handle_events(player=None,world=None,current_Map=None):
 
 
                 enemies=[]
-                used = player.skills.use('water_cannon', enemies,mouse_pos=( x,y))
-                world.append(used)  # 생성된 스킬 오브젝트들을 월드에 추가
+
                 pass
 
 
