@@ -8,6 +8,8 @@ width, height =  1400, 800
 
 x=0
 y=0
+last_mouse_x=0
+last_mouse_y=0
 def handle_events(player=None,world=None,current_Map=None):
     global pressed_keys
     if player is None and world is None and current_Map is None:
@@ -46,6 +48,8 @@ def handle_events(player=None,world=None,current_Map=None):
             #기본공격 생성
             if(player.attack_manager.trigger_attack(get_time())):
                 x, y = event.x, height - 1 - event.y
+                last_mouse_x=x
+                last_mouse_y=y
                 bubble=Bubble(player.x,player.y,player.get_angle(x,y))
                 player.motion_state = 'normal_attack'
                 player.attack_anim_timer=0.3

@@ -1,7 +1,7 @@
 from pico2d import *
 import game_framework
 import game_world
-
+from handleEvent import last_mouse_x, last_mouse_y
 height=800
 TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
