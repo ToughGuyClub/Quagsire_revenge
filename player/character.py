@@ -1,9 +1,11 @@
 from pico2d import *
 from current_map import *
 from state_machine import StateMachine
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1
-
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3
+from player.playerskill import PlayerSkillManager
+import current_map
 import game_framework
+import game_world
 width, height =  1400, 800
 global last_input
 pressed_keys = set()
@@ -43,6 +45,11 @@ def click_left_up(e):
     return e[0]=='INPUT' and e[1].type == SDL_MOUSEBUTTONUP and e[1].button ==1
 def down_1(e):# 숫자 1이 눌렸을 때
     return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_1
+def down_2(e):# 숫자 2이 눌렸을 때
+    return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_2
+def down_3(e):# 숫자 3이 눌렸을 때
+    return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_3
+
 class AttackManager:
     def __init__(self, cooldown_time):
         self.cooldown_time = cooldown_time  # 공격 쿨타임
@@ -90,6 +97,10 @@ class Bubble:
     def get_bb(self):
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
 
+    def handle_collision(self, group, other):
+        if group == 'bubble:enemy':
+            game_world.remove_object(self)
+
 class Character:
     def __init__(self,cm, x=100, y=100):
         #필요한 정보
@@ -126,27 +137,28 @@ class Character:
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
         self.ATTACK = ATTACK(self)
+        self.SKILL=PlayerSkillManager(self)
         self.state_machine = StateMachine(
             self.IDLE,  # <-시작상태 지정
             {
                 self.IDLE: {
                     key_down: self.RUN,
                     click_left_down: self.ATTACK,
-
+                    down_1: self.SKILL,
 
                 },
                 self.RUN: {
                     key_down: self.RUN,
                     key_up: self.RUN,
                     click_left_down: self.ATTACK,
-
+                    down_1: self.SKILL
 
                 },
                 self.ATTACK: {
                     click_left_up: self.RUN,
                     key_down: self.RUN,
                     key_up: self.RUN,
-
+                    down_1: self.SKILL
                 }
             }
 
@@ -304,7 +316,8 @@ class RUN:
         next_y = self.player.y + self.player.dirY * self.player.speed*game_framework.frame_time*10.0
 
         # 마을 경계처리
-        if current_map == 2:
+        if current_map.get_current_map() == 2:
+        #if current_map.get_current_map == 2:
             if next_y >= 550 or next_y < 250:
                 if next_x < 1040:
                     return

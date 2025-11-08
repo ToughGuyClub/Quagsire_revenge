@@ -1,5 +1,5 @@
 
-from player.character import Character
+
 from pico2d import *
 
 

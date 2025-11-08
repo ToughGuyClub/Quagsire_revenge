@@ -1,7 +1,6 @@
 from pico2d import *
-from player.character import Character
+
 from player.character import Bubble
-from player.character import AttackManager
 from current_map import *
 
 import game_world

@@ -23,6 +23,7 @@ class Enemy:
     def __init__(self, image_path, x, y, type,player):
         self.image = load_image(os.path.join('asset/enemy', 'trainer_BURGLAR.png'))
         #타입=레벨 레벨별 이미지다름
+        self.HP = type * 2
         self.ball_image = load_image(os.path.join('asset/enemy', level_to_image(type)))
         self.x = x
         self.y = y
@@ -92,6 +93,11 @@ class Enemy:
 
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'bubble:enemy':
+            self.HP -= 5
+            if self.HP <= 0:
+                game_world.remove_object(self)
 
 
 class EnemyIdle:
@@ -201,3 +207,4 @@ class AttackBall:
     def handle_collision(self, group, other):
         if group == 'player:enemy':
             game_world.remove_object(self)
+

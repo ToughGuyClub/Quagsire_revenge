@@ -1,5 +1,5 @@
-from player.player_UI import Player_UI
-import handleEvent
+
+
 world = [[] for _ in range(4)]
 
 
