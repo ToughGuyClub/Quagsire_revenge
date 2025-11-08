@@ -7,3 +7,7 @@ class CurrentMap:
         self.current_map = new_map
     def get_current_map(self):
         return self.current_map
+    def update(self):
+        pass
+    def draw(self):
+        pass

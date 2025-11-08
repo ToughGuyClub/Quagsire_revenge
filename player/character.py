@@ -88,7 +88,10 @@ class Bubble:
         self.image.draw(self.x, self.y,self.scale,self.scale)
 
 class Character:
-    def __init__(self, x=100, y=100):
+    def __init__(self,cm, x=100, y=100):
+        #필요한 정보
+        self.current_map = cm
+
         self.max_HP = 100
         self.cur_HP = 100
 
@@ -163,8 +166,9 @@ class Character:
             self.RUN.draw()
         else:
             self.IDLE.draw()
-    def update(self, current_map,event=None):
-        self.state_machine.update(current_map)
+    def update(self):
+        self.state_machine.update(self.current_map)
+        self.update_frame()
 
     def update_frame(self):
         # 공격, 이동, 대기 상태별로 다르게 처리

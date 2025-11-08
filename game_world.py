@@ -1,3 +1,5 @@
+from player.player_UI import Player_UI
+import handleEvent
 world = [[] for _ in range(4)]
 
 
@@ -10,9 +12,11 @@ def add_objects(ol, depth=0):
 
 
 def update():
+
     for layer in world:
         for o in layer:
             o.update()
+
 
 
 def render():

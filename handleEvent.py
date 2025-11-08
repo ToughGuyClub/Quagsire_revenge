@@ -4,7 +4,7 @@ from player.character import Bubble
 from player.character import AttackManager
 from current_map import *
 
-
+import game_world
 width, height =  1400, 800
 # 키 입력 상태를 저장할 리스트
 
@@ -50,7 +50,8 @@ def handle_events(player=None,world=None,current_Map=None):
                 bubble=Bubble(player.x,player.y,player.get_angle(x,y))
                 player.motion_state = 'normal_attack'
                 player.attack_anim_timer=0.3
-                world.append(bubble)
+                #world.append(bubble)
+                game_world.add_object(bubble, 2)
                 # 각도에 따라 방향 갱신
                 angle = player.get_angle(x, y)
                 dx = math.cos(angle)

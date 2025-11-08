@@ -1,6 +1,8 @@
 from pico2d import *
 import math
 import random
+
+import game_world
 from enemy.enemy_state_machine import EnemyStateMachine
 import os
 import game_framework
@@ -18,7 +20,7 @@ def level_to_image(level):
     }
     return level_images.get(level, 'level1ball.png')
 class Enemy:
-    def __init__(self, image_path, x, y, type):
+    def __init__(self, image_path, x, y, type,player):
         self.image = load_image(os.path.join('asset/enemy', 'trainer_BURGLAR.png'))
         #타입=레벨 레벨별 이미지다름
         self.ball_image = load_image(os.path.join('asset/enemy', level_to_image(type)))
@@ -31,6 +33,9 @@ class Enemy:
         self.dirY = 0
         self.frame = 0
         self.frame_time = 0.3
+
+        #플레이어 위치를 위한 참조
+        self.target_player = player
 
         # 상태 클래스 생성
         self.IDLE = EnemyIdle(self)
@@ -64,23 +69,23 @@ class Enemy:
     def lost_player(self, e):
         player = e
         distance = math.sqrt((self.x - player.x)**2 + (self.y - player.y)**2)
-        return distance > 1000  # 너무 멀어지면 잃음
+        return distance > 500  # 너무 멀어지면 잃음
 
-    def update(self, player, frame_time):
+    def update(self):
         # 상태 머신 업데이트 (플레이어 정보를 event로 넘김)
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
 
         # 플레이어랑 위치 계산해서 dirx, diry 설정
-        dx = player.x - self.x
-        dy = player.y - self.y
+        dx =  self.target_player.x - self.x
+        dy =  self.target_player.y - self.y
         if abs(dx) > abs(dy):  # 수평이 더 크면 좌
             self.dirX = 1 if dx > 0 else -1
             self.dirY = 0
         else:  # 수직이 더 크면 상하
             self.dirY = 1 if dy > 0 else -1
             self.dirX = 0
-        result = self.state_machine.update(player)
-        return result  # 공격 시 생성된 몬스터볼 반환
+        self.state_machine.update(self.target_player)
+
     def draw(self):
         self.state_machine.draw()
 
@@ -89,9 +94,9 @@ class Enemy:
 
 class EnemyIdle:
     def __init__(self, enemy): self.enemy = enemy
-    def enter(self, player): self.enemy.dirX = self.enemy.dirY = 0
-    def exit(self, player): pass
-    def do(self, player):
+    def enter(self,player): self.enemy.dirX = self.enemy.dirY = 0
+    def exit(self,player): pass
+    def do(self,player):
         # 가끔 랜덤 움직임
         if random.random() < 0.02:
             self.enemy.x += random.choice([-1, 0, 1]) * self.enemy.speed
@@ -145,15 +150,15 @@ class EnemyAttack:
         self.enemy = enemy
         self.cooldown = 1.0
         self.timer = 0
-    def enter(self, player): self.timer = 0
-    def exit(self, player): pass
-    def do(self, player):
+    def enter(self,player): self.timer = 0
+    def exit(self,player): pass
+    def do(self,player):
         self.timer += game_framework.frame_time
         if self.timer >= self.cooldown:
             #몬스터볼 던지는거 추가
             self.timer = 0
             ball = AttackBall(self.enemy.ball_image, self.enemy.x, self.enemy.y, self.enemy.dirX, self.enemy.dirY,self.enemy.type, speed=10,)
-            return ball
+            game_world.add_object(ball, 2)
     def draw(self):
         enemy = self.enemy
         if enemy.dirX == -1:

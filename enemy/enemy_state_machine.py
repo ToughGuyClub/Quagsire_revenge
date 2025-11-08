@@ -11,7 +11,7 @@ class EnemyStateMachine:
         """
         self.cur_state = start_state
         self.rules = rules
-        self.cur_state.enter(None)
+        self.cur_state.enter(player=None)  # 초기 상태 진입 시 더미 player 전달
 
     def update(self, player):
         """현재 상태를 수행하고, 전이 조건을 체크함."""

@@ -2,7 +2,7 @@ from pico2d import *
 import time
 import game_framework
 from frameTimer import get_frame_time
-import play_modes.play_mode
+import play_modes.Town_mode
 
 # 전역 변수들
 background = None
@@ -134,7 +134,7 @@ def update():
             blood_y = prof_y
     elif step == 7:
         #메인게임화면으로 넘어감
-        game_framework.change_mode(play_modes.play_mode)
+        game_framework.change_mode(play_modes.Town_mode)
 def draw():
     global ball_x
     clear_canvas()
