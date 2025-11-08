@@ -73,6 +73,7 @@ FRAMES_PER_ACTION = 8
 
 TIME_PER_SPEED = 1
 
+
 class Bubble:
     def __init__(self, x, y, degree):
         self.x = x
@@ -137,28 +138,36 @@ class Character:
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
         self.ATTACK = ATTACK(self)
-        self.SKILL=PlayerSkillManager(self)
+        self.SKILL=SKILL(self)
         self.state_machine = StateMachine(
             self.IDLE,  # <-시작상태 지정
             {
                 self.IDLE: {
+                    down_1: self.SKILL,
                     key_down: self.RUN,
                     click_left_down: self.ATTACK,
-                    down_1: self.SKILL,
+
 
                 },
                 self.RUN: {
+                    down_1: self.SKILL,
                     key_down: self.RUN,
                     key_up: self.RUN,
                     click_left_down: self.ATTACK,
-                    down_1: self.SKILL
+
 
                 },
                 self.ATTACK: {
+                    down_1: self.SKILL,
                     click_left_up: self.RUN,
                     key_down: self.RUN,
                     key_up: self.RUN,
-                    down_1: self.SKILL
+
+                },
+                self.SKILL:{
+                    key_down: self.RUN,
+                    key_up: self.RUN,
+                    click_left_down: self.ATTACK,
                 }
             }
 
@@ -395,3 +404,34 @@ class ATTACK:
             p.image_normal_attack.clip_draw(int(p.frame) * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
         else:
             p.image_normal_attack.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
+
+#스킬도 상태로 구현하기위한 그런거
+class SKILL:
+
+    def __init__(self, player):
+        self.player = player
+        self.timer=0.0
+        self.skill_manager=None
+    def enter(self,e):
+        self.timer=0.0
+        #입력된 이벤트에 따라 해당 스킬 생성
+        if down_1(e):
+            #마우스 좌표 계산 후 전달
+            self.skill_manager = PlayerSkillManager(self.player)
+            self.skill_manager.use_skill(1,)
+        pass
+
+    def exit(self,e):
+        pass
+
+    def do(self,e,current_map):
+        self.skill_manager.update()
+        if self.skill_manager.timer<0.0:
+            #IDLE상태로
+            self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
+
+        pass
+
+    def draw(self):
+        self.player.IDLE.draw()
+        pass

@@ -1,5 +1,4 @@
 from pico2d import *
-
 from player.character import Bubble
 from current_map import *
 
@@ -43,6 +42,7 @@ def handle_events(player=None,world=None,current_Map=None):
             if event.type == SDL_MOUSEBUTTONDOWN:
                 return 'next'
         if event.type == SDL_MOUSEBUTTONDOWN:
+
             #기본공격 생성
             if(player.attack_manager.trigger_attack(get_time())):
                 x, y = event.x, height - 1 - event.y
