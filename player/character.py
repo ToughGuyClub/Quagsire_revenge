@@ -1,4 +1,6 @@
 from pico2d import *
+
+import handleEvent
 from current_map import *
 from state_machine import StateMachine
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3
@@ -375,7 +377,13 @@ class ATTACK:
         self.player = player
 
     def enter(self,e):
-        pass
+        if self.player.attack_manager.trigger_attack(get_time()):
+            (x, y) = handleEvent.get_mouse_pos()
+            print(f'Attack at mouse position: ({x}, {y})')
+            bubble = Bubble(self.player.x, self.player.y, self.player.get_angle(x, y))
+            game_world.add_object(bubble, 2)
+            game_world.add_collision_pair('bubble:enemy', bubble, None)
+            pass
 
     def exit(self,e):
         pass

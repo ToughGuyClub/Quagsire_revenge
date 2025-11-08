@@ -1,7 +1,7 @@
 from pico2d import *
 import game_framework
 import game_world
-from handleEvent import last_mouse_x, last_mouse_y
+from handleEvent import get_mouse_pos
 height=800
 TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -38,7 +38,7 @@ class PlayerSkillManager:
 class WaterCannon:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'water_cannon.png'))
-        self.duration = 1.0  # 지속 3초
+        self.duration = 5.0  # 지속 3초
         self.player=player
         self.dirX=0
         self.dirY=0
@@ -62,29 +62,33 @@ class WaterCannon:
             return
         # 플레이어 방향(8방향)에 따라 방향 설정
         self.dirX, self.dirY = self.player.dirX, self.player.dirY
-        # dirX, dirY로 회전 각도 계산 (라디안 → 도)
-        self.degree = math.degrees(math.atan2(self.dirY, self.dirX)) if not (self.dirX == 0 and self.dirY == 0) else 0
+        last_mouse_x, last_mouse_y = get_mouse_pos()
+        dx = last_mouse_x - self.player.x
+        dy =  last_mouse_y - self.player.y  # y좌표 보정 (pico2d는 아래→위)
+        self.degree = math.degrees(math.atan2(dy, dx))
+        #플레이어 방향수정
+        if abs(dx) < 10 and abs(dy) < 10:
+            pass  # 너무 가까우면 방향 유지
+        else:
+            # atan2는 라디안 기준 → 방향을 정규화해서 -1, 0, 1 중 가장 가까운 값으로 설정
+            if dx > 10:
+                self.player.dirX = 1
+            elif dx < -10:
+                self.player.dirX = -1
+            else:
+                self.player.dirX = 0
 
-        # 8방향 보정 (정확히 위/아래/좌/우 등일 때)
-        if self.dirX == 0 and self.dirY > 0:
-            self.degree = 90
-        elif self.dirX == 0 and self.dirY < 0:
-            self.degree = -90
-        elif self.dirX > 0 and self.dirY == 0:
-            self.degree = 0
-        elif self.dirX < 0 and self.dirY == 0:
-            self.degree = 180
-        elif self.dirX > 0 and self.dirY > 0:
-            self.degree = 45
-        elif self.dirX < 0 and self.dirY > 0:
-            self.degree = 135
-        elif self.dirX > 0 and self.dirY < 0:
-            self.degree = -45
-        elif self.dirX < 0 and self.dirY < 0:
-            self.degree = -135
+            if dy > 10:
+                self.player.dirY = 1
+            elif dy < -10:
+                self.player.dirY = -1
+            else:
+                self.player.dirY = 0
+        # 위치 갱신 (플레이어 앞쪽 distance만큼)
         rad = math.radians(self.degree)
         self.x = self.player.x + self.distance * math.cos(rad)
         self.y = self.player.y + self.distance * math.sin(rad)
+
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
 
         pass
@@ -101,10 +105,35 @@ class WaterCannon:
                                        '',
                                        self.x, self.y,
                                        127, 240)
+        draw_rectangle(*self.get_bb())
         pass
     def handle_event(self, event):
         pass
     def handle_collision(self, group, other):
         pass
+
     def get_bb(self):
-        pass
+        # 기본 폭/높이 설정
+        base_w, base_h = 100, 60  # 기본값 (적당히 조절 가능)
+
+        # 각도 정규화 (0~360도)
+        degree = (self.degree + 360) % 360
+
+        # 좌우 (0도 또는 180도) → 가로로 긴
+        if (degree <= 15 or degree >= 345) or (165 <= degree <= 195):
+            w, h = base_w * 2.0, base_h * 0.7
+
+        # 상하 (90도 또는 270도) → 세로로 긴
+        elif (75 <= degree <= 105) or (255 <= degree <= 285):
+            w, h = base_w * 0.7, base_h * 2.0
+
+        # 대각선 (45, 135, 225, 315 근처)
+        elif (30 <= degree <= 60) or (120 <= degree <= 150) or (210 <= degree <= 240) or (300 <= degree <= 330):
+            w, h = base_w * 1.5, base_h * 1.2
+
+        # 그 외 → 기본값
+        else:
+            w, h = base_w, base_h
+
+        # 중심 좌표 기준으로 바운딩박스 반환
+        return self.x - w / 2, self.y - h / 2, self.x + w / 2, self.y + h / 2

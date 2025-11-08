@@ -1,5 +1,5 @@
 from pico2d import *
-from player.character import Bubble
+
 from current_map import *
 
 import game_world
@@ -12,6 +12,7 @@ last_mouse_x=0
 last_mouse_y=0
 def handle_events(player=None,world=None,current_Map=None):
     global pressed_keys
+    global last_mouse_x, last_mouse_y
     if player is None and world is None and current_Map is None:
         return True
     events = get_events()
@@ -43,19 +44,26 @@ def handle_events(player=None,world=None,current_Map=None):
         if current_Map.get_current_map()==1:
             if event.type == SDL_MOUSEBUTTONDOWN:
                 return 'next'
+        if event.type == SDL_MOUSEMOTION:
+            x, y = event.x, height - 1 - event.y
+
+            last_mouse_x = x
+            last_mouse_y = y
         if event.type == SDL_MOUSEBUTTONDOWN:
 
+            x, y = event.x, height - 1 - event.y
+
+            last_mouse_x = x
+            last_mouse_y = y
             #기본공격 생성
             if(player.attack_manager.trigger_attack(get_time())):
-                x, y = event.x, height - 1 - event.y
-                last_mouse_x=x
-                last_mouse_y=y
-                bubble=Bubble(player.x,player.y,player.get_angle(x,y))
+
+                #bubble=Bubble(player.x,player.y,player.get_angle(x,y))
                 player.motion_state = 'normal_attack'
                 player.attack_anim_timer=0.3
                 #world.append(bubble)
-                game_world.add_object(bubble, 2)
-                game_world.add_collision_pair('bubble:enemy', bubble, None)
+                #game_world.add_object(bubble, 2)
+                #game_world.add_collision_pair('bubble:enemy', bubble, None)
                 # 각도에 따라 방향 갱신
                 angle = player.get_angle(x, y)
                 dx = math.cos(angle)
@@ -64,7 +72,7 @@ def handle_events(player=None,world=None,current_Map=None):
                 player.stopdirX = int(round(dx))
                 player.stopdirY = int(round(dy))
                 player.frame = 0
-                return bubble
+
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 return False
@@ -86,3 +94,5 @@ def handle_events(player=None,world=None,current_Map=None):
 
     return True
 
+def get_mouse_pos():
+    return last_mouse_x, last_mouse_y
