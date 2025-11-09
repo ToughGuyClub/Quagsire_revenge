@@ -102,6 +102,10 @@ class Enemy:
             self.HP -= 5
             if self.HP <= 0:
                 game_world.remove_object(self)
+        elif group == 'EQ:enemy':
+            self.HP -= 10
+            if self.HP <= 0:
+                game_world.remove_object(self)
 
 
 
@@ -191,6 +195,7 @@ class EnemyAttack:
             )
             game_world.add_object(ball, 2)
             game_world.add_collision_pair('player:enemy', None, ball)
+            game_world.add_collision_pair('EQ:enemy', None, ball)
     def draw(self):
         enemy = self.enemy
         if enemy.dirX == -1:
@@ -232,6 +237,8 @@ class AttackBall:
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
         if group == 'player:enemy':
+            game_world.remove_object(self)
+        elif group == 'EQ:enemy':
             game_world.remove_object(self)
 
 

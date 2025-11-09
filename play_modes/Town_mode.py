@@ -76,6 +76,7 @@ def init():
   #  game_world.add_collision_pair('player:enemy', None, enemy)
     game_world.add_collision_pair('bubble:enemy', None, enemy)
     game_world.add_collision_pair('cannon:enemy', None, enemy)
+    game_world.add_collision_pair('EQ:enemy', None, enemy)
 def update():
     global current_Map
     game_world.update()

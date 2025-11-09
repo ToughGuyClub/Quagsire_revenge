@@ -148,6 +148,7 @@ class Character:
                 self.IDLE: {
                     down_1: self.SKILL,
                     down_2: self.SKILL,
+                    down_3: self.SKILL,
                     key_down: self.RUN,
                     click_left_down: self.ATTACK,
 
@@ -156,6 +157,7 @@ class Character:
                 self.RUN: {
                     down_1: self.SKILL,
                     down_2: self.SKILL,
+                    down_3: self.SKILL,
                     key_down: self.RUN,
                     key_up: self.RUN,
                     click_left_down: self.ATTACK,
@@ -165,6 +167,7 @@ class Character:
                 self.ATTACK: {
                     down_1: self.SKILL,
                     down_2: self.SKILL,
+                    down_3: self.SKILL,
                     click_left_up: self.RUN,
                     key_down: self.RUN,
                     key_up: self.RUN,
@@ -438,6 +441,8 @@ class SKILL:
             self.player.skill_manager.use_skill(1)
         elif down_2(e):
             self.player.skill_manager.use_skill(2)
+        elif down_3(e):
+            self.player.skill_manager.use_skill(3)
         pass
 
     def exit(self,e):

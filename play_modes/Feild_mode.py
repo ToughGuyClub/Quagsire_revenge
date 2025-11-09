@@ -18,6 +18,7 @@ def init():
         for o in layer:
             if isinstance(o,Character):  # 예시) Character 클래스에 player_flag=True 넣어두면 탐색 가능
                 player = o
+                game_world.add_collision_pair('player:enemy', player, None)
             if isinstance(o, CurrentMap):
                 current_Map = o
 

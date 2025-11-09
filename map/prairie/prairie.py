@@ -18,6 +18,8 @@ class PRAIRIE01:
         game_world.add_collision_pair('bubble:enemy', None, e2)
         game_world.add_collision_pair('cannon:enemy', None, e1)
         game_world.add_collision_pair('cannon:enemy', None, e2)
+        game_world.add_collision_pair('EQ:enemy', None, e1)
+        game_world.add_collision_pair('EQ:enemy', None, e2)
     def update(self):
         pass
 

@@ -131,6 +131,41 @@ def special_directional_collide(a, b):
     angle_tolerance = getattr(skill, 'angle_tolerance', 25)
 
     return diff < angle_tolerance
+
+def special_area_collide(a, b):
+    """
+    원형(범위형) 스킬 충돌 판정.
+    스킬의 중심(a.x, a.y)과 대상(b)의 중심 거리 계산 후,
+    스킬 범위(a.distance) 내에 있으면 True 반환.
+    """
+    # 스킬과 대상 구분 (a,b 순서 상관없이 처리)
+    skill, target = None, None
+    if hasattr(a, 'distance') and hasattr(a, 'player'):
+        skill, target = a, b
+    elif hasattr(b, 'distance') and hasattr(b, 'player'):
+        skill, target = b, a
+    else:
+        return False
+
+    # 스킬 중심
+    sx, sy = skill.x, skill.y
+    # 대상 중심
+    if hasattr(target, 'x') and hasattr(target, 'y'):
+        tx, ty = target.x, target.y
+    else:
+        return False
+
+    # 두 점 거리 계산
+    dx = tx - sx
+    dy = ty - sy
+    dist = math.sqrt(dx * dx + dy * dy)
+
+    # 충돌 거리 기준 (스킬 범위 + 적 크기 보정)
+    radius = getattr(skill, 'distance', 100)/4
+    hitbox = 50  # 적 반지름 대략치 (필요시 enemy.get_bb로 동적계산 가능)
+
+    return dist <= radius + hitbox
+
 def handle_collisions():
 
     # 충돌dict의 모든 그룹에 대해서 충돌검사를 수행
@@ -142,6 +177,12 @@ def handle_collisions():
                     if special_directional_collide(a, b):
                         a.handle_collision(group, b)
                         b.handle_collision(group, a)
+                    #continue  # AABB 검사 스킵
+                elif group =='EQ:enemy':
+                    if special_area_collide(a, b):
+                        a.handle_collision(group, b)
+                        b.handle_collision(group, a)
+
                     #continue  # AABB 검사 스킵
 
                 # 기본 충돌
