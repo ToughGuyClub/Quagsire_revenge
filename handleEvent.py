@@ -1,7 +1,7 @@
 from pico2d import *
 
 from current_map import *
-
+from play_modes import Status_mode
 import game_world
 width, height =  1400, 800
 # 키 입력 상태를 저장할 리스트
@@ -77,8 +77,11 @@ def handle_events(player=None,world=None,current_Map=None):
             if event.key == SDLK_ESCAPE:
                 return False
 
-
+            elif event.key == SDLK_t:
+                game_framework.push_mode(Status_mode)
                 pass
+                #스텟창 띄울 예정
+
 
 
         elif event.type == SDL_KEYUP:

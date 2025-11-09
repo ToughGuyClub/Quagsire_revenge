@@ -3,9 +3,9 @@ from pico2d import *
 import handleEvent
 from current_map import *
 from state_machine import StateMachine
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3,SDLK_4
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3,SDLK_4,SDLK_t
 from player.playerskill import PlayerSkillManager
-
+from player.status import Status
 import current_map
 import game_framework
 import game_world
@@ -54,6 +54,8 @@ def down_3(e):# 숫자 3이 눌렸을 때
     return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_3
 def down_4(e):# 숫자 4이 눌렸을 때
     return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_4
+def down_t(e):# 숫자 T가 눌렸을 때
+    return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_t
 class AttackManager:
     def __init__(self, cooldown_time):
         self.cooldown_time = cooldown_time  # 공격 쿨타임
@@ -134,10 +136,15 @@ class Character:
 
         # 레벨
         self.level = 1
+        self.max_exp = 100
         self.exp = 0
-        self.skill_points = 0
+        self.skill_points = 2
+        self.status=Status()
+
+        #공격 및 스킬
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
         self.skill_manager=PlayerSkillManager(self)
+
 
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
@@ -207,6 +214,7 @@ class Character:
     def update(self):
         self.state_machine.update(self.current_map)
         self.update_frame()
+        self.skill_manager.update()
 
     def update_frame(self):
         # 공격, 이동, 대기 상태별로 다르게 처리
@@ -253,6 +261,20 @@ class Character:
                 self.cur_HP = 0
             print(f'Player HP: {self.cur_HP}/{self.max_HP}')
 
+    def gain_exp(self, amount):
+        self.exp += amount
+        print(f"EXP +{amount} ({self.exp}/{self.max_exp})")
+
+        #  레벨업 체크
+        while self.exp >= self.max_exp:
+            self.exp -= self.max_exp
+            self.level_up()
+
+    def level_up(self):
+        self.level += 1
+        self.skill_points += 1  # 스킬 포인트 지급
+        self.max_exp = int(self.max_exp * 1.2)
+        print(f" LEVEL UP! Lv.{self.level} | Next EXP: {self.max_exp}")
 
 class IDLE:
 

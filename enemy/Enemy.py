@@ -96,16 +96,16 @@ class Enemy:
     def handle_collision(self, group, other):
         if group == 'bubble:enemy':
             self.HP -= 5
-            if self.HP <= 0:
-                game_world.remove_object(self)
         elif group == 'cannon:enemy':
             self.HP -= 10
-            if self.HP <= 0:
-                game_world.remove_object(self)
         elif group == 'EQ:enemy':
             self.HP -= 10
-            if self.HP <= 0:
-                game_world.remove_object(self)
+
+        if self.HP <= 0:
+            #사망 처리 전에 경험치 지급
+            if hasattr(self.target_player, "gain_exp"):
+                self.target_player.gain_exp(self.type * 20)  # type에 비례해서 EXP 보상
+            game_world.remove_object(self)
 
 
 

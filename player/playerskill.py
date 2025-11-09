@@ -20,17 +20,16 @@ class PlayerSkillManager:
             1: {  # 1번 슬롯
                      # 레벨 1일 때
                1: WaterBeam,         # 레벨 2일 때
-
+               2: WaterCannon,       # 레벨 3일 때
             },
             2: {
-                1: WaterCannon,
+                1: None,
                 2: None,
                 3: None
             },
             3: {
-                #1: EarthQuake,
-                1: WaterShield,
-                2: None,
+                1: EarthQuake,
+                2: WaterShield,
                 3: None
             },
             4: {}
@@ -39,7 +38,7 @@ class PlayerSkillManager:
         self.skill_cooltimes = {
             1: 3.0,  # WaterBeam 쿨타임 3초
             2: 5.0,  # WaterCannon 쿨타임 5초
-            3: 8.0,  # WaterShield 쿨타임 8초
+            3: 1.0,  # WaterShield 쿨타임 8초
             4: 0.0,
         }
 
@@ -91,6 +90,7 @@ class WaterCannon:
         self.x=self.player.x
         self.y=self.player.y
         self.distance=120  #플레이어로부터 떨어진 거리
+        self.icon_clip = (0, 0, 85, 120)  # 아이콘 클립좌표
         game_world.add_collision_pair('cannon:enemy', self, None)
     def can_use(self, current_time):
         #쿨타임 체크
@@ -157,6 +157,8 @@ class WaterCannon:
     def handle_collision(self, group, other):
         pass
 
+    def get_icon_clip(self):
+        return self.image, self.icon_clip
     def get_bb(self):
         pass
 class WaterBeam:
@@ -173,6 +175,7 @@ class WaterBeam:
         self.x=self.player.x
         self.y=self.player.y
         self.distance=120  #플레이어로부터 떨어진 거리
+        self.icon_clip = (200, 200, 200, 200)#아이콘 클립좌표
         game_world.add_collision_pair('cannon:enemy', self, None)
     def can_use(self, current_time):
         #쿨타임 체크
@@ -237,6 +240,8 @@ class WaterBeam:
     def handle_collision(self, group, other):
         pass
 
+    def get_icon_clip(self):
+        return self.image, self.icon_clip
     def get_bb(self):
         pass
 class EarthQuake:
@@ -248,6 +253,7 @@ class EarthQuake:
         self.x=self.player.x
         self.y=self.player.y
         self.distance=400  #사거리
+        self.icon_clip = (0, 0, 60, 60)  # 아이콘 클립좌표
         game_world.add_collision_pair('EQ:enemy', self, None)
     def can_use(self, current_time):
         #쿨타임 체크
@@ -284,6 +290,8 @@ class EarthQuake:
     def handle_collision(self, group, other):
         pass
 
+    def get_icon_clip(self):
+        return self.image, self.icon_clip
     def get_bb(self):
         pass
 class WaterShield:
@@ -296,6 +304,7 @@ class WaterShield:
         self.x=self.player.x
         self.y=self.player.y
         self.distance=200  #사거리
+        self.icon_clip = (100, 100, 100, 100)  # 아이콘 클립좌표
         game_world.add_collision_pair('EQ:enemy', self, None)
     def can_use(self, current_time):
         #쿨타임 체크
@@ -333,5 +342,7 @@ class WaterShield:
     def handle_collision(self, group, other):
         pass
 
+    def get_icon_clip(self):
+        return self.image, self.icon_clip
     def get_bb(self):
         pass
