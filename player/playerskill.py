@@ -35,17 +35,49 @@ class PlayerSkillManager:
             },
             4: {}
         }
+        # 스킬별 쿨타임 설정 (초 단위)
+        self.skill_cooltimes = {
+            1: 3.0,  # WaterBeam 쿨타임 3초
+            2: 5.0,  # WaterCannon 쿨타임 5초
+            3: 8.0,  # WaterShield 쿨타임 8초
+            4: 0.0,
+        }
+
+        # 현재 남은 쿨타임 (0이면 사용 가능)
+        self.cooldowns = {
+            1: 0.0,
+            2: 0.0,
+            3: 0.0,
+            4: 0.0,
+        }
     def use_skill(self, slot_number):
+        """스킬 사용 시도"""
+        # 1쿨타임 체크
+        if self.cooldowns[slot_number] > 0:
+            print(f"Skill {slot_number} is cooling down: {self.cooldowns[slot_number]:.1f}s left")
+            return  # 쿨타임 중이라면 사용 불가
+
+        # 2 스킬 정보 가져오기
         skill_level = self.current_skills[slot_number - 1]
         skill_class = self.skills.get(slot_number, {}).get(skill_level, None)
+
         if skill_class:
             new_skill = skill_class(self.player)
             new_skill.use()
+
+            # 3 쿨타임 시작
+            self.cooldowns[slot_number] = self.skill_cooltimes[slot_number]
+            print(f"Skill {slot_number} used! Cooldown started ({self.skill_cooltimes[slot_number]}s)")
         else:
             print(f"No skill equipped in slot {slot_number} at level {skill_level}.")
     def update(self):
-        #스킬 시전시간관리 다 끝나면 exit을 위해서임
-        self.timer-=game_framework.frame_time
+        dt = game_framework.frame_time
+        for slot in self.cooldowns:
+            if self.cooldowns[slot] > 0:
+                self.cooldowns[slot] = max(0.0, self.cooldowns[slot] - dt)
+
+        # 기존 타이머 로직
+        self.timer -= dt
 
 class WaterCannon:
     def __init__(self,player):

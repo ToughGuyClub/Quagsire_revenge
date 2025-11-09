@@ -3,7 +3,7 @@ from pico2d import *
 import handleEvent
 from current_map import *
 from state_machine import StateMachine
-from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3
+from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3,SDLK_4
 from player.playerskill import PlayerSkillManager
 
 import current_map
@@ -52,7 +52,8 @@ def down_2(e):# 숫자 2이 눌렸을 때
     return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_2
 def down_3(e):# 숫자 3이 눌렸을 때
     return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_3
-
+def down_4(e):# 숫자 4이 눌렸을 때
+    return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key ==SDLK_4
 class AttackManager:
     def __init__(self, cooldown_time):
         self.cooldown_time = cooldown_time  # 공격 쿨타임
@@ -149,6 +150,7 @@ class Character:
                     down_1: self.SKILL,
                     down_2: self.SKILL,
                     down_3: self.SKILL,
+                    down_4: self.SKILL,
                     key_down: self.RUN,
                     click_left_down: self.ATTACK,
 
@@ -158,6 +160,7 @@ class Character:
                     down_1: self.SKILL,
                     down_2: self.SKILL,
                     down_3: self.SKILL,
+                    down_4: self.SKILL,
                     key_down: self.RUN,
                     key_up: self.RUN,
                     click_left_down: self.ATTACK,
@@ -168,6 +171,7 @@ class Character:
                     down_1: self.SKILL,
                     down_2: self.SKILL,
                     down_3: self.SKILL,
+                    down_4: self.SKILL,
                     click_left_up: self.RUN,
                     key_down: self.RUN,
                     key_up: self.RUN,
@@ -443,6 +447,8 @@ class SKILL:
             self.player.skill_manager.use_skill(2)
         elif down_3(e):
             self.player.skill_manager.use_skill(3)
+        elif down_4(e):
+            self.player.skill_manager.use_skill(4)
         pass
 
     def exit(self,e):
