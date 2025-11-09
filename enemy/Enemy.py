@@ -99,7 +99,7 @@ class Enemy:
             if self.HP <= 0:
                 game_world.remove_object(self)
         elif group == 'cannon:enemy':
-            self.HP -= 5
+            self.HP -= 10
             if self.HP <= 0:
                 game_world.remove_object(self)
         elif group == 'EQ:enemy':

@@ -3,15 +3,19 @@ import game_framework
 import game_world
 from handleEvent import get_mouse_pos
 height=800
-TIME_PER_ACTION = 0.2
+TIME_PER_ACTION = 0.5
 TIME_PER_ACTION_EARTH_QUAKE = 1.0/0.5
+
+TIME_PER_ACTION_WATER_SHEILD = 0.5
+ACTION_PER_TIME_WATER_SHIELD = 1.0 / TIME_PER_ACTION_WATER_SHEILD
+
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 4
 class PlayerSkillManager:
     def __init__(self, player):
         self.player = player
         self.timer=2.0
-        self.current_skills = {1,1,1,1}  # 현재 장착된 스킬들
+        self.current_skills = [1,1,1,1]  # 현재 장착된 스킬들
         self.skills = {
             1: {  # 1번 슬롯
                      # 레벨 1일 때
@@ -24,14 +28,15 @@ class PlayerSkillManager:
                 3: None
             },
             3: {
-                1: EarthQuake,
+                #1: EarthQuake,
+                1: WaterShield,
                 2: None,
                 3: None
             },
             4: {}
         }
     def use_skill(self, slot_number):
-        skill_level = 1
+        skill_level = self.current_skills[slot_number - 1]
         skill_class = self.skills.get(slot_number, {}).get(skill_level, None)
         if skill_class:
             new_skill = skill_class(self.player)
@@ -125,13 +130,14 @@ class WaterCannon:
 class WaterBeam:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'water_beam.png'))
-        self.duration = 5.0  # 지속 3초
+        self.duration = 2.0  # 지속 2초
         self.player=player
         self.dirX=0
         self.dirY=0
         self.degree=0
         self.frameX=0.0
-        self.frameY=0.0
+        self.frameY=2.0
+
         self.x=self.player.x
         self.y=self.player.y
         self.distance=120  #플레이어로부터 떨어진 거리
@@ -179,8 +185,10 @@ class WaterBeam:
         self.y = self.player.y + self.distance * math.sin(rad)
 
         self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
-        if self.frameX >= 3 and self.frameY==0:
-            self.frameY = (self.frameY + 1)
+        if self.frameX >= 3 and self.frameY==2:
+            self.frameY = (self.frameY - 1)
+        if self.duration<=0.5:
+            self.frameY=0
         pass
     def draw(self):
         rad = math.radians(self.degree)
@@ -235,6 +243,55 @@ class EarthQuake:
 
 
         self.image.clip_draw(int(self.frame) * 60, 0, 60, 60,
+                                           self.x, self.y,
+                                           self.distance,self.distance)
+
+        pass
+    def handle_event(self, event):
+        pass
+    def handle_collision(self, group, other):
+        pass
+
+    def get_bb(self):
+        pass
+class WaterShield:
+    def __init__(self,player):
+        self.image = load_image(os.path.join('asset/player/skill', 'water_sheild.png'))
+        self.duration = 5.0  # 지속 3초
+        self.player=player
+        self.frameX=0.0
+        self.frameY=0.0
+        self.x=self.player.x
+        self.y=self.player.y
+        self.distance=200  #사거리
+        game_world.add_collision_pair('EQ:enemy', self, None)
+    def can_use(self, current_time):
+        #쿨타임 체크
+        pass
+
+    def use(self):
+
+        game_world.add_object(self, 3)
+
+    def update(self):
+        self.duration -= game_framework.frame_time
+        self.x = self.player.x
+        self.y = self.player.y
+        if self.duration <= 0:
+            game_world.remove_object(self)
+            return
+        self.frameX = (self.frameX + FRAMES_PER_ACTION* ACTION_PER_TIME_WATER_SHIELD * game_framework.frame_time) % 4
+        if self.duration>=4.5:
+            self.frameY=0.0
+        elif self.duration>=3.0:
+            self.frameY=1.0
+        elif self.duration<=0.5:
+            self.frameY=2.0
+
+    def draw(self):
+
+
+        self.image.clip_draw(int(self.frameX) * 100, int(self.frameY)*100, 100, 100,
                                            self.x, self.y,
                                            self.distance,self.distance)
 
