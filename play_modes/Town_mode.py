@@ -18,16 +18,15 @@ open_canvas(width, height)
 
 
 background = Background()
-current_Map = CurrentMap()
+
 #current_Map.change_map(2)
-current_Map.current_map=2
-current_Map.current_map_id=2
+
 bubbles = []
 enemies = []
 enemies_balls = []
 player_UI=None
-
-player = Character(200, 300)
+player = None
+current_Map = None
 def init():
     global current_Map
 
@@ -36,22 +35,45 @@ def init():
 
     global player
     global player_UI
+    # persistent layer에서 이미 존재하는 객체를 찾기
+    for layer in game_world.world_persistent:
+        for o in layer:
+            if isinstance(o, Character):
+                player = o
+            elif isinstance(o, Player_UI):
+                player_UI = o
+            elif isinstance(o, CurrentMap):
+                current_Map = o
+
+    # 혹시 없을 경우에만 새로 생성
+    if current_Map is None:
+        current_Map = CurrentMap()
+        current_Map.current_map = 2
+        current_Map.current_map_id = 2
+        game_world.add_object(current_Map, 1, True)
+    if player is None:
+        player = Character(current_Map, 200, 300)
+        game_world.add_object(player, 0, True)  # persistent=True로 등록
+        game_world.add_collision_pair('player:enemy', player, None)
+
+    if player_UI is None:
+        player_UI = Player_UI(player)
+        game_world.add_object(player_UI, 1, True)
+
 
     town = Town()
-    player = Character(current_Map,200, 300)
-    player_UI = Player_UI(player)
+
     enemy = Enemy('trainer_BURGLAR.png', 900, 400, 1,player)
 
     #랜더링에 필요한것
     game_world.add_object(town, 0)
-    game_world.add_object(current_Map, 1,True)
-    game_world.add_object(player, 0,True)
+
     game_world.add_object(enemy, 2)
-    game_world.add_object(player_UI, 1,True)
+
 
     #상호작용에 필요한 것
-    game_world.add_collision_pair('player:enemy', player, None)
-    game_world.add_collision_pair('player:enemy', None, enemy)
+
+  #  game_world.add_collision_pair('player:enemy', None, enemy)
     game_world.add_collision_pair('bubble:enemy', None, enemy)
     game_world.add_collision_pair('cannon:enemy', None, enemy)
 def update():
