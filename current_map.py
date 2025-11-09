@@ -12,8 +12,12 @@ class CurrentMap:
         #self.current_map[self.current_map_id].on_exit()  # 현재 맵 나가기
         game_world.clear_temporary()
         self.current_map_id = new_map_id
+        import play_modes.Town_mode
         import play_modes.Feild_mode
-        game_framework.change_mode(play_modes.Feild_mode)
+        if new_map_id == 2:  # Town
+            game_framework.change_mode(play_modes.Town_mode)
+        else:  # Field
+            game_framework.change_mode(play_modes.Feild_mode)
 
 
 
@@ -35,13 +39,14 @@ class MapConnection:
         # current_map_id : {"direction": (next_map_id, spawn_x, spawn_y)}
         self.links = {
             2: {  # Town Map
-                "east":  (4, 100, 400),   # 오른쪽 끝 → 숲맵
+                "east":  (3, 100, 400),   # 오른쪽 끝 → 숲맵
             },
             3: {
-
+                "west":  (2, 1300, 400),  # 왼쪽 끝 → 마을맵
+                "east":  (4, 100, 400),   # 오른쪽 끝 → 산맵
             },
             4: {
-
+                "west":  (3, 1300, 400),  # 왼쪽 끝 → 숲맵
             }
         }
 

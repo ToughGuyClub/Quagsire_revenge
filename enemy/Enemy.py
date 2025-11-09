@@ -168,9 +168,27 @@ class EnemyAttack:
     def do(self,player):
         self.timer += game_framework.frame_time
         if self.timer >= self.cooldown:
-            #몬스터볼 던지는거 추가
             self.timer = 0
-            ball = AttackBall(self.enemy.ball_image, self.enemy.x, self.enemy.y, self.enemy.dirX, self.enemy.dirY,self.enemy.type, speed=10,)
+            # 플레이어를 향한 실제 방향 계산
+            dx = player.x - self.enemy.x
+            dy = player.y - self.enemy.y
+            dist = math.sqrt(dx ** 2 + dy ** 2)
+            if dist != 0:
+                dirX = dx / dist
+                dirY = dy / dist
+            else:
+                dirX, dirY = 0, 0
+
+            # 그 방향으로 몬스터볼 생성
+            ball = AttackBall(
+                self.enemy.ball_image,
+                self.enemy.x,
+                self.enemy.y,
+                dirX,
+                dirY,
+                self.enemy.type,
+                speed=10,
+            )
             game_world.add_object(ball, 2)
             game_world.add_collision_pair('player:enemy', None, ball)
     def draw(self):

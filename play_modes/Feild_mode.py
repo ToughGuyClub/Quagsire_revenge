@@ -3,7 +3,7 @@ from pico2d import *
 import handleEvent
 import game_world
 width, height =  1400, 800
-from map.prairie.prairie01 import PRAIRIE01
+from map.prairie.prairie import PRAIRIE01, PRAIRIE02
 from current_map import CurrentMap
 from player.character import Character
 player = None
@@ -22,7 +22,10 @@ def init():
                 current_Map = o
 
     # 새 맵 불러오기
-    field_map = PRAIRIE01()
+    if current_Map.current_map_id==3:
+        field_map = PRAIRIE01(player)
+    elif current_Map.current_map_id==4:
+        field_map = PRAIRIE02(player)
     game_world.add_object(field_map, 0)  # 맵은 일시적 객체
 
     #상호작용에 필요한 것
