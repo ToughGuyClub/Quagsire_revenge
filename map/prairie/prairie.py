@@ -40,3 +40,18 @@ class PRAIRIE02:
         self.background.draw(width // 2, height // 2, width, height)  # 화면 전체에 맞게 그림
         self.background2.draw(width // 2, height // 2, width, height)  # 화면 전체에 맞게 그림
         self.tile.draw(width // 2, height // 2, width, height)  # 화면 전체에 맞게 그림
+
+class PRAIRIE03:
+    def __init__(self,player):
+        self.tile = load_image(os.path.join('asset/map/prairie', 'tile1-3.png'))
+        self.background = load_image(os.path.join('asset/map/prairie', 'bg1-3.png'))
+        self.background2 = load_image(os.path.join('asset/map/prairie', 'bg2-3.png'))
+
+    def update(self):
+        pass
+
+    def draw(self):
+
+        self.background.draw(width // 2, height // 2, width, height)  # 화면 전체에 맞게 그림
+        self.background2.draw(width // 2, height // 2, width, height)  # 화면 전체에 맞게 그림
+        self.tile.draw(width // 2, height // 2, width, height)  # 화면 전체에 맞게 그림
