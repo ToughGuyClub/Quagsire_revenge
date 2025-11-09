@@ -13,11 +13,12 @@ class PlayerSkillManager:
         self.current_skills = {1,1,1,1}  # 현재 장착된 스킬들
         self.skills = {
             1: {  # 1번 슬롯
-                1: WaterCannon(player),       # 레벨 1일 때
+                     # 레벨 1일 때
+               1: WaterBeam,         # 레벨 2일 때
 
             },
             2: {
-                1: None,
+                1: WaterCannon,
                 2: None,
                 3: None
             },
@@ -26,9 +27,10 @@ class PlayerSkillManager:
         }
     def use_skill(self, slot_number):
         skill_level = 1
-        skill = self.skills.get(slot_number, {}).get(skill_level, None)
-        if skill:
-            skill.use()
+        skill_class = self.skills.get(slot_number, {}).get(skill_level, None)
+        if skill_class:
+            new_skill = skill_class(self.player)
+            new_skill.use()
         else:
             print(f"No skill equipped in slot {slot_number} at level {skill_level}.")
     def update(self):
@@ -38,7 +40,7 @@ class PlayerSkillManager:
 class WaterCannon:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'water_cannon.png'))
-        self.duration = 5.0  # 지속 3초
+        self.duration = 1.0  # 지속 3초
         self.player=player
         self.dirX=0
         self.dirY=0
@@ -106,6 +108,83 @@ class WaterCannon:
                                        '',
                                        self.x, self.y,
                                        127, 240)
+
+        pass
+    def handle_event(self, event):
+        pass
+    def handle_collision(self, group, other):
+        pass
+
+    def get_bb(self):
+        pass
+class WaterBeam:
+    def __init__(self,player):
+        self.image = load_image(os.path.join('asset/player/skill', 'water_beam.png'))
+        self.duration = 5.0  # 지속 3초
+        self.player=player
+        self.dirX=0
+        self.dirY=0
+        self.degree=0
+        self.frameX=0.0
+        self.frameY=0.0
+        self.x=self.player.x
+        self.y=self.player.y
+        self.distance=120  #플레이어로부터 떨어진 거리
+        game_world.add_collision_pair('cannon:enemy', self, None)
+    def can_use(self, current_time):
+        #쿨타임 체크
+        pass
+
+    def use(self):
+
+        game_world.add_object(self, 3)
+        print("Water Cannon used!")
+    def update(self):
+        self.duration -= game_framework.frame_time
+        if self.duration <= 0:
+            game_world.remove_object(self)
+            return
+        # 플레이어 방향(8방향)에 따라 방향 설정
+        self.dirX, self.dirY = self.player.dirX, self.player.dirY
+        last_mouse_x, last_mouse_y = get_mouse_pos()
+        dx = last_mouse_x - self.player.x
+        dy =  last_mouse_y - self.player.y  # y좌표 보정 (pico2d는 아래→위)
+        self.degree = math.degrees(math.atan2(dy, dx))
+        #플레이어 방향수정
+        if abs(dx) < 10 and abs(dy) < 10:
+            pass  # 너무 가까우면 방향 유지
+        else:
+            # atan2는 라디안 기준 → 방향을 정규화해서 -1, 0, 1 중 가장 가까운 값으로 설정
+            if dx > 10:
+                self.player.dirX = 1
+            elif dx < -10:
+                self.player.dirX = -1
+            else:
+                self.player.dirX = 0
+
+            if dy > 10:
+                self.player.dirY = 1
+            elif dy < -10:
+                self.player.dirY = -1
+            else:
+                self.player.dirY = 0
+        # 위치 갱신 (플레이어 앞쪽 distance만큼)
+        rad = math.radians(self.degree)
+        self.x = self.player.x + self.distance * math.cos(rad)
+        self.y = self.player.y + self.distance * math.sin(rad)
+
+        self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        if self.frameX >= 3 and self.frameY==0:
+            self.frameY = (self.frameY + 1)
+        pass
+    def draw(self):
+        rad = math.radians(self.degree)
+
+        self.image.clip_composite_draw(int(self.frameX) * 200, int(self.frameY)*200, 200, 200,
+                                           rad ,  # 기본 이미지가 세로형이라면 -90도 보정
+                                           '',
+                                           self.x, self.y+20,
+                                           250, 240)
 
         pass
     def handle_event(self, event):

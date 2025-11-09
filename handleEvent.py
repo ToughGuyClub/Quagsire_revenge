@@ -76,12 +76,7 @@ def handle_events(player=None,world=None,current_Map=None):
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_ESCAPE:
                 return False
-            elif event.key == SDLK_1:
-                #물대포 추가예정
 
-
-
-                enemies=[]
 
                 pass
 

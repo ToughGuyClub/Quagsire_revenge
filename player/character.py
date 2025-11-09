@@ -136,7 +136,7 @@ class Character:
         self.exp = 0
         self.skill_points = 0
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
-
+        self.skill_manager=PlayerSkillManager(self)
 
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
@@ -147,6 +147,7 @@ class Character:
             {
                 self.IDLE: {
                     down_1: self.SKILL,
+                    down_2: self.SKILL,
                     key_down: self.RUN,
                     click_left_down: self.ATTACK,
 
@@ -154,6 +155,7 @@ class Character:
                 },
                 self.RUN: {
                     down_1: self.SKILL,
+                    down_2: self.SKILL,
                     key_down: self.RUN,
                     key_up: self.RUN,
                     click_left_down: self.ATTACK,
@@ -162,6 +164,7 @@ class Character:
                 },
                 self.ATTACK: {
                     down_1: self.SKILL,
+                    down_2: self.SKILL,
                     click_left_up: self.RUN,
                     key_down: self.RUN,
                     key_up: self.RUN,
@@ -428,23 +431,23 @@ class SKILL:
     def __init__(self, player):
         self.player = player
         self.timer=0.0
-        self.skill_manager=None
     def enter(self,e):
         self.timer=0.0
         #입력된 이벤트에 따라 해당 스킬 생성
         if down_1(e):
-            #마우스 좌표 계산 후 전달
-            self.skill_manager = PlayerSkillManager(self.player)
-            self.skill_manager.use_skill(1,)
+            self.player.skill_manager.use_skill(1)
+        elif down_2(e):
+            self.player.skill_manager.use_skill(2)
         pass
 
     def exit(self,e):
         pass
 
     def do(self,e,current_map):
-        self.skill_manager.update()
-        if self.skill_manager.timer<0.0:
+        self.player.skill_manager.update()
+        if self.player.skill_manager.timer<0.0:
             #IDLE상태로
+            self.player.skill_manager.timer=2.0
             self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
 
         pass
