@@ -57,6 +57,9 @@ class Player_UI:
             # 스킬 인스턴스가 아이콘 정보를 제공한다면
             temp_skill = skill_class(self.player)  # 아이콘 정보만 얻기 위해 임시 생성
             if hasattr(temp_skill, "get_icon_clip"):
+                draw_rectangle(x - skill_size // 2, y - skill_size // 2,
+                               x + skill_size // 2, y + skill_size // 2, 255, 255, 255, 255, True)
+
                 image, (sx, sy, sw, sh) = temp_skill.get_icon_clip()
                 image.clip_draw(sx, sy, sw, sh, x, y, skill_size, skill_size)
             else:
@@ -68,8 +71,8 @@ class Player_UI:
             cd = sm.cooldowns.get(slot, 0.0)
             if cd > 0:
                 draw_rectangle(x - skill_size // 2, y - skill_size // 2,
-                               x + skill_size // 2, y + skill_size // 2)
-                self.font.draw(x - 10, y - 10, f"{cd:.1f}", (255, 0, 0))
+                               x + skill_size // 2, y + skill_size // 2,0,0,0,128,True)
+                self.font.draw(x -20, y - 10, f"{cd:.1f}", (255, 0, 0))
 
 
     def update(self):
