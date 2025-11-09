@@ -1,17 +1,30 @@
 from pico2d import *
+import game_framework
+import game_world
 
 width, height = 1400, 800
 class CurrentMap:
     def __init__(self):
         self.current_map = 0
         self.current_map_id = None
+        self.map_conn = MapConnection()
     def change_map(self, new_map_id):
         #self.current_map[self.current_map_id].on_exit()  # 현재 맵 나가기
+        game_world.clear_temporary()
         self.current_map_id = new_map_id
-        #self.current_map[new_map_id].on_enter()  # 새 맵 들어가기
+        import play_modes.Feild_mode
+        game_framework.change_mode(play_modes.Feild_mode)
+
+
 
     def get_current_map(self):
-        return self.current_map
+        # 항상 현재 맵의 id를 반환하도록 통일
+        return self.current_map_id
+
+    def get_transition(self, direction):
+        # 편의 메서드: 현재 맵 id를 넣어서 map_conn에게 위임
+        return self.map_conn.get_transition(self.current_map_id, direction)
+
     def update(self):
         pass
     def draw(self):

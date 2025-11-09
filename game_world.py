@@ -1,26 +1,37 @@
 
 import math
-world = [[] for _ in range(4)]
+# 맵 바뀌면 날아가는 것들 (몬스터, 배경, 이펙트 등)
+world_temporary = [[] for _ in range(4)]
 
+# 유지되어야 하는 객체 (플레이어, UI 등)
+world_persistent = [[] for _ in range(3)]
 
-def add_object(o, depth=0):
-    world[depth].append(o)
+def add_object(o, depth=0, persistent=False):
+    if persistent:
+        world_persistent[depth].append(o)
+    else:
+        world_temporary[depth].append(o)
 
-
-def add_objects(ol, depth=0):
-    world[depth] += ol
+def add_objects(ol, depth=0, persistent=False):
+    if persistent:
+        world_persistent[depth] += ol
+    else:
+        world_temporary[depth] += ol
 
 
 def update():
-
-    for layer in world:
+    # 영속 + 임시 둘 다 업데이트
+    for layer in world_persistent + world_temporary:
         for o in layer:
             o.update()
 
 
-
 def render():
-    for layer in world:
+    # 순서: 영속 객체는 UI 등에만 사용되므로 나중에 그리면 됨
+    for layer in world_temporary:
+        for o in layer:
+            o.draw()
+    for layer in world_persistent:
         for o in layer:
             o.draw()
 
@@ -35,20 +46,35 @@ def remove_collision_object(o):
 
 
 def remove_object(o):
-    for layer in world:
+    # 임시 객체 먼저 제거 시도
+    for layer in world_temporary:
         if o in layer:
             layer.remove(o)
-            # collision_pairs(dict자료형으로 된그거)에서도 제거해야함
+            remove_collision_object(o)
+            return
+
+    # 영속 객체에서도 제거 가능
+    for layer in world_persistent:
+        if o in layer:
+            layer.remove(o)
             remove_collision_object(o)
             return
 
     raise ValueError('Cannot delete non existing object')
 
 
-def clear():
-    global world
+def clear_temporary():
+    """맵 바뀔 때 호출 → 임시 객체만 제거"""
+    global world_temporary
+    for layer in world_temporary:
+        layer.clear()
+    collision_pairs.clear()
 
-    for layer in world:
+
+def clear_all():
+    """게임 완전 종료 시 호출 → 모든 객체 제거"""
+    clear_temporary()
+    for layer in world_persistent:
         layer.clear()
 
 

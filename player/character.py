@@ -340,13 +340,13 @@ class RUN:
         transition = None
 
         if next_x > 1400:
-            transition = current_map.get_transition(current_map.get_current_map(), "east")
+            transition = current_map.get_transition( "east")
         elif next_x < 0:
-            transition = current_map.get_transition(current_map.get_current_map(), "west")
+            transition = current_map.get_transition( "west")
         elif next_y > 800:
-            transition = current_map.get_transition(current_map.get_current_map(), "north")
+            transition = current_map.get_transition( "north")
         elif next_y < 0:
-            transition = current_map.get_transition(current_map.get_current_map(), "south")
+            transition = current_map.get_transition( "south")
 
         if transition:
             next_map_id, spawn_x, spawn_y = transition

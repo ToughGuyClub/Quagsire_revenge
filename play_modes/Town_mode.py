@@ -19,7 +19,9 @@ open_canvas(width, height)
 
 background = Background()
 current_Map = CurrentMap()
-current_Map.change_map(2)
+#current_Map.change_map(2)
+current_Map.current_map=2
+current_Map.current_map_id=2
 bubbles = []
 enemies = []
 enemies_balls = []
@@ -42,10 +44,10 @@ def init():
 
     #랜더링에 필요한것
     game_world.add_object(town, 0)
-    game_world.add_object(current_Map, 1)
-    game_world.add_object(player, 2)
+    game_world.add_object(current_Map, 1,True)
+    game_world.add_object(player, 0,True)
     game_world.add_object(enemy, 2)
-    game_world.add_object(player_UI, 3)
+    game_world.add_object(player_UI, 1,True)
 
     #상호작용에 필요한 것
     game_world.add_collision_pair('player:enemy', player, None)
