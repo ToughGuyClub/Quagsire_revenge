@@ -5,6 +5,7 @@ from current_map import *
 from state_machine import StateMachine
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3
 from player.playerskill import PlayerSkillManager
+
 import current_map
 import game_framework
 import game_world
@@ -336,15 +337,23 @@ class RUN:
         self.player.y =  next_y
 
         # 화면 경계 처리
-        if self.player.x < 0:
-            self.player.x = 0
-        elif self.player.x > 1400:
-            self.player.x = 1400
+        transition = None
 
-        if self.player.y < 0:
-            self.player.y = 0
-        elif self.player.y > 800:
-            self.player.y = 800
+        if next_x > 1400:
+            transition = current_map.get_transition(current_map.get_current_map(), "east")
+        elif next_x < 0:
+            transition = current_map.get_transition(current_map.get_current_map(), "west")
+        elif next_y > 800:
+            transition = current_map.get_transition(current_map.get_current_map(), "north")
+        elif next_y < 0:
+            transition = current_map.get_transition(current_map.get_current_map(), "south")
+
+        if transition:
+            next_map_id, spawn_x, spawn_y = transition
+            print(f"🌍 맵 {current_map.get_current_map()} → {next_map_id} 이동!")
+            current_map.change_map(next_map_id)
+            self.player.x, self.player.y = spawn_x, spawn_y
+            return
 
 
 

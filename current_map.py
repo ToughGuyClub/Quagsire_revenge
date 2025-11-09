@@ -4,8 +4,12 @@ width, height = 1400, 800
 class CurrentMap:
     def __init__(self):
         self.current_map = 0
-    def change_map(self, new_map):
-        self.current_map = new_map
+        self.current_map_id = None
+    def change_map(self, new_map_id):
+        #self.current_map[self.current_map_id].on_exit()  # 현재 맵 나가기
+        self.current_map_id = new_map_id
+        #self.current_map[new_map_id].on_enter()  # 새 맵 들어가기
+
     def get_current_map(self):
         return self.current_map
     def update(self):
