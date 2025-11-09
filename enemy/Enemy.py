@@ -29,7 +29,7 @@ class Enemy:
         self.y = y
         self.type = type
         self.speed = 2.0
-        self.scale = 100
+        self.scale = 70
         self.dirX = 0
         self.dirY = 0
         self.frame = 0
@@ -203,6 +203,9 @@ class AttackBall:
             self.frame_time = 0.2
             self.frame = (self.frame + 1) % 8
         self.frame_time -= 0.05
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
 
     def draw(self):
         self.image.clip_draw(self.frame * 32, 0, 32, 64, self.x, self.y, 32, 64)

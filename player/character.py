@@ -81,7 +81,7 @@ class Bubble:
         self.x = x
         self.y = y
         self.degree = degree
-        self.speed = 100
+        self.speed = 50
         self.image = load_image(os.path.join('asset/player','bubble.png'))
         self.scale=32
         self.active=True
@@ -92,7 +92,7 @@ class Bubble:
         self.x += math.cos(self.degree) * self.speed*game_framework.frame_time*10
         self.y += math.sin(self.degree) * self.speed*game_framework.frame_time*10
         if self.x < 0 or self.x > width or self.y < 0 or self.y > height:
-            self.active = False
+            game_world.remove_object(self)
 
     def draw(self):
         self.image.draw(self.x, self.y,self.scale,self.scale)
@@ -117,12 +117,12 @@ class Character:
         # 위치
         self.x = x
         self.y = y
-        self.scale=150   #크기
+        self.scale=100   #크기
 
         # 이동 방향
         self.dirX = 0
         self.dirY = 0
-        self.speed = 50.0
+        self.speed = 20.0
         # 현재 모션 상태
         self.motion_state = 'idle'
         self.attack_anim_timer = 0
