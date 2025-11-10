@@ -6,6 +6,9 @@ world_temporary = [[] for _ in range(4)]
 # 유지되어야 하는 객체 (플레이어, UI 등)
 world_persistent = [[] for _ in range(3)]
 
+#충돌처리 완료해서 지워질거 저장
+remove_queue = []
+
 def add_object(o, depth=0, persistent=False):
     if persistent:
         world_persistent[depth].append(o)
@@ -25,6 +28,18 @@ def update():
         for o in layer:
             o.update()
 
+
+def _really_remove_object(o):
+    for layer in world_temporary:
+        if o in layer:
+            layer.remove(o)
+            remove_collision_object(o)
+            return
+    for layer in world_persistent:
+        if o in layer:
+            layer.remove(o)
+            remove_collision_object(o)
+            return
 
 def render():
     # 순서: 영속 객체는 UI 등에만 사용되므로 나중에 그리면 됨
@@ -46,6 +61,7 @@ def remove_collision_object(o):
 
 
 def remove_object(o):
+
     # 임시 객체 먼저 제거 시도
     for layer in world_temporary:
         if o in layer:
@@ -173,6 +189,7 @@ def handle_collisions():
         for a in pairs[0]:  # 첫번째 리스트의 모든 객체에 대해서
             for b in pairs[1]:  # 두번째 리스트의 모든 객체에 대해서
                 #  예외 처리: 물대포 같은거 전용 판정
+
                 if group =='cannon:enemy':
                     if special_directional_collide(a, b):
                         a.handle_collision(group, b)

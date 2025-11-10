@@ -91,13 +91,13 @@ class WaterCannon:
         self.y=self.player.y
         self.distance=120  #플레이어로부터 떨어진 거리
         self.icon_clip = (0, 0, 85, 120)  # 아이콘 클립좌표
-        game_world.add_collision_pair('cannon:enemy', self, None)
+
     def can_use(self, current_time):
         #쿨타임 체크
         pass
 
     def use(self):
-
+        game_world.add_collision_pair('cannon:enemy', self, None)
         game_world.add_object(self, 3)
         print("Water Cannon used!")
     def update(self):
@@ -176,18 +176,19 @@ class WaterBeam:
         self.y=self.player.y
         self.distance=120  #플레이어로부터 떨어진 거리
         self.icon_clip = (200, 200, 200, 200)#아이콘 클립좌표
-        game_world.add_collision_pair('cannon:enemy', self, None)
+
     def can_use(self, current_time):
         #쿨타임 체크
         pass
 
     def use(self):
-
+        game_world.add_collision_pair('cannon:enemy', self, None)
         game_world.add_object(self, 3)
         print("Water Cannon used!")
     def update(self):
         self.duration -= game_framework.frame_time
         if self.duration <= 0:
+            game_world.remove_collision_object(self)
             game_world.remove_object(self)
             return
         # 플레이어 방향(8방향)에 따라 방향 설정
@@ -254,13 +255,13 @@ class EarthQuake:
         self.y=self.player.y
         self.distance=400  #사거리
         self.icon_clip = (0, 0, 60, 60)  # 아이콘 클립좌표
-        game_world.add_collision_pair('EQ:enemy', self, None)
+
     def can_use(self, current_time):
         #쿨타임 체크
         pass
 
     def use(self):
-
+        game_world.add_collision_pair('EQ:enemy', self, None)
         game_world.add_object(self, 3)
 
     def update(self):
@@ -305,13 +306,13 @@ class WaterShield:
         self.y=self.player.y
         self.distance=200  #사거리
         self.icon_clip = (100, 100, 100, 100)  # 아이콘 클립좌표
-        game_world.add_collision_pair('EQ:enemy', self, None)
+
     def can_use(self, current_time):
         #쿨타임 체크
         pass
 
     def use(self):
-
+        game_world.add_collision_pair('EQ:enemy', self, None)
         game_world.add_object(self, 3)
 
     def update(self):
