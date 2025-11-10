@@ -12,6 +12,8 @@ import game_world
 width, height =  1400, 800
 global last_input
 pressed_keys = set()
+def reset_pressed_keys():
+    pressed_keys.clear()
 def right_down(e):
     return e[0]=='INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_d
 def left_down(e):
@@ -495,7 +497,7 @@ class SKILL:
             #IDLE상태로
             self.player.skill_manager.timer=2.0
 
-            self.player.state_machine.cur_state = self.player.Run
+            self.player.state_machine.cur_state = self.player.RUN
            # self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
 
         pass

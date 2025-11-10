@@ -6,6 +6,8 @@ world_temporary = [[] for _ in range(4)]
 # 유지되어야 하는 객체 (플레이어, UI 등)
 world_persistent = [[] for _ in range(3)]
 
+world_npc = [[] for _ in range(2)]
+
 #충돌처리 완료해서 지워질거 저장
 remove_queue = []
 
@@ -21,6 +23,8 @@ def add_objects(ol, depth=0, persistent=False):
     else:
         world_temporary[depth] += ol
 
+def add_npc(o, depth=0):
+    world_npc[depth].append(o)
 
 def update():
     # 영속 + 임시 둘 다 업데이트
@@ -50,6 +54,11 @@ def render():
         for o in layer:
             o.draw()
 
+def render_npc():
+    for layer in world_npc:
+        for o in layer:
+            o.draw()
+
 
 # collision_pairs에 있는 모든 O(객체)를 제거하는 함수임
 def remove_collision_object(o):
@@ -71,6 +80,12 @@ def remove_object(o):
 
     # 영속 객체에서도 제거 가능
     for layer in world_persistent:
+        if o in layer:
+            layer.remove(o)
+            remove_collision_object(o)
+            return
+    #npc는 리스트에서만 제거
+    for layer in world_npc:
         if o in layer:
             layer.remove(o)
             remove_collision_object(o)

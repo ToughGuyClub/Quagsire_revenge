@@ -33,8 +33,13 @@ def init():
     global current_Map
 
     global snorlax_npc
+    for layer in game_world.world_npc:
+        for o in layer:
+            if isinstance(o, Snorlax):
+                snorlax_npc = o
     if snorlax_npc is None:
         snorlax_npc = Snorlax()
+        game_world.add_npc(snorlax_npc, 0)
 
     #world.clear()
 
@@ -112,4 +117,8 @@ def handle_events():
     #npc와 상화작용 처리(바운딩박스를 이용해서 F키 입력시 push할 예정)
      if result == 'Snorlax_npc':
          if game_world.collide(player, snorlax_npc):
-             print("Snorlax와 상호작용")
+             import play_modes.Snorlax_npc_mode
+             #푸시 전에 플레이어 입력 다 false로 하기
+             from player.character import reset_pressed_keys
+             reset_pressed_keys()
+             game_framework.push_mode(play_modes.Snorlax_npc_mode)

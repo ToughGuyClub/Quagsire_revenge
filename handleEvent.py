@@ -78,6 +78,8 @@ def handle_events(player=None,world=None,current_Map=None):
                 return False
 
             elif event.key == SDLK_t:
+                from player.character import reset_pressed_keys
+                reset_pressed_keys()
                 game_framework.push_mode(Status_mode)
                 pass
                 #스텟창 띄울 예정
