@@ -76,7 +76,7 @@ def handle_events():
                     status.current_selected_skill[1] +=1
                     player.skill_manager.current_skills[status.current_selected_skill[0]] +=1
             elif event.key == SDLK_LEFT:
-                if status.current_selected_skill[1] >1:
+                if status.current_selected_skill[1] >0:
                     status.current_selected_skill[1] -=1
                     player.skill_manager.current_skills[status.current_selected_skill[0]] -=1
 
