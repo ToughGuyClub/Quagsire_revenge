@@ -347,7 +347,8 @@ class RUN:
         if not pressed_keys:
             self.player.stopdirX = self.player.dirX
             self.player.stopdirY = self.player.dirY
-            self.player.state_machine.handle_state_event(('AUTO', 'IDLE'), current_map)
+            self.player.state_machine.cur_state = self.player.IDLE
+            #self.player.state_machine.handle_state_event(('AUTO', 'IDLE'), current_map)
             return
 
         # 정규화
@@ -416,7 +417,8 @@ class ATTACK:
 
     def __init__(self, player):
         self.player = player
-
+        self.dirX=player.dirX
+        self.dirY=player.dirY
     def enter(self,e):
         if self.player.attack_manager.trigger_attack(get_time()):
             (x, y) = handleEvent.get_mouse_pos()
@@ -424,6 +426,17 @@ class ATTACK:
             bubble = Bubble(self.player.x, self.player.y, self.player.get_angle(x, y))
             game_world.add_object(bubble, 2)
             game_world.add_collision_pair('bubble:enemy', bubble, None)
+            #버블방향에 맞게 플레이어 각도수정
+            if x - self.player.x !=0 or y - self.player.y !=0:
+                dx = x - self.player.x
+                dy = y - self.player.y
+                length = math.sqrt(dx ** 2 + dy ** 2)
+                if length != 0:
+                    dx /= length
+                    dy /= length
+                    self.dirX=self.player.dirX=self.player.stopdirX = int(round(dx))
+                    self.dirY=self.player.dirY=self.player.stopdirY = int(round(dy))
+
             pass
 
     def exit(self,e):
@@ -481,7 +494,8 @@ class SKILL:
         if self.player.skill_manager.timer<0.0:
             #IDLE상태로
             self.player.skill_manager.timer=2.0
-            self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
+            self.player.state_machine.cur_state = self.player.IDLE
+           # self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
 
         pass
 
