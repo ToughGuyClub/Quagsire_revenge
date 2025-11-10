@@ -13,7 +13,7 @@ import game_world
 width, height =  1400, 800
 frame_character=0
 open_canvas(width, height)
-
+from map.town.town_npc import Snorlax
 
 
 
@@ -24,12 +24,16 @@ background = Background()
 bubbles = []
 enemies = []
 enemies_balls = []
+snorlax_npc= None
 player_UI=None
 player = None
 current_Map = None
 def init():
     global current_Map
 
+    global snorlax_npc
+    if snorlax_npc is None:
+        snorlax_npc = Snorlax()
 
     #world.clear()
 
@@ -86,12 +90,14 @@ def update():
 
     #if isinstance(temp_bubble, Bubble):
     #    bubbles.append(temp_bubble)
+    snorlax_npc.update()
     game_world.handle_collisions()
 
 
 def draw():
     clear_canvas()
     game_world.render()
+    snorlax_npc.draw()
     update_canvas()
 
 def finish():
