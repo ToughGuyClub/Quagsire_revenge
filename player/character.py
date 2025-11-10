@@ -494,7 +494,8 @@ class SKILL:
         if self.player.skill_manager.timer<0.0:
             #IDLE상태로
             self.player.skill_manager.timer=2.0
-            self.player.state_machine.cur_state = self.player.IDLE
+
+            self.player.state_machine.cur_state = self.player.Run
            # self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
 
         pass

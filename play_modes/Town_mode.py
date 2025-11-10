@@ -10,6 +10,7 @@ import screen.intro
 from enemy.Enemy import Enemy
 from player.player_UI import Player_UI
 import game_world
+import game_framework
 width, height =  1400, 800
 frame_character=0
 open_canvas(width, height)
@@ -107,4 +108,8 @@ def pause():
 def resume():
     pass
 def handle_events():
-    handleEvent.handle_events(player,game_world,current_Map)
+     result = handleEvent.handle_events(player,game_world,current_Map)
+    #npc와 상화작용 처리(바운딩박스를 이용해서 F키 입력시 push할 예정)
+     if result == 'Snorlax_npc':
+         if game_world.collide(player, snorlax_npc):
+             print("Snorlax와 상호작용")

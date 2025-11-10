@@ -86,6 +86,10 @@ def handle_events(player=None,world=None,current_Map=None):
 
         elif event.type == SDL_KEYUP:
             pass
+        if current_Map.get_current_map() == 2:
+            if event.type==SDL_KEYDOWN:
+                if event.key==SDLK_f:
+                    return 'Snorlax_npc'
 
     # 방향 업데이트 (리스트의 마지막 입력 기준)
 
