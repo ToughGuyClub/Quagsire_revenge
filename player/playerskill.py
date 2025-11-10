@@ -23,7 +23,7 @@ class PlayerSkillManager:
                2: WaterCannon,       # 레벨 3일 때
             },
             2: {
-                1: None,
+                1: WaterShield,
                 2: None,
                 3: None
             },
@@ -32,7 +32,10 @@ class PlayerSkillManager:
                 2: WaterShield,
                 3: None
             },
-            4: {}
+            4: {
+                1:WaterCannon,
+                2:None,
+            }
         }
         # 스킬별 쿨타임 설정 (초 단위)
         self.skill_cooltimes = {

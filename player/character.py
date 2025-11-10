@@ -139,7 +139,7 @@ class Character:
         self.max_exp = 100
         self.exp = 0
         self.skill_points = 2
-        self.status=Status()
+
 
         #공격 및 스킬
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
@@ -347,7 +347,7 @@ class RUN:
         if not pressed_keys:
             self.player.stopdirX = self.player.dirX
             self.player.stopdirY = self.player.dirY
-            self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
+            self.player.state_machine.handle_state_event(('AUTO', 'IDLE'), current_map)
             return
 
         # 정규화
