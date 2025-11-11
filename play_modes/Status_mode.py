@@ -71,17 +71,24 @@ def handle_events():
             if event.key == SDLK_DOWN:
                 if status.current_selected_skill[0] <3:
                     status.current_selected_skill[0] +=1
+                    cur_slot = status.current_selected_skill[0]
+                    status.current_selected_skill[1] = player.skill_manager.current_skills[cur_slot] - 1
             elif event.key == SDLK_UP:
                 if status.current_selected_skill[0] >0:
                     status.current_selected_skill[0] -=1
+                    cur_slot = status.current_selected_skill[0]
+                    status.current_selected_skill[1] = player.skill_manager.current_skills[cur_slot] - 1
             elif event.key == SDLK_RIGHT:
-                if status.current_selected_skill[1] <3:
-                    status.current_selected_skill[1] +=1
-                    player.skill_manager.current_skills[status.current_selected_skill[0]] +=1
+                slot = status.current_selected_skill[0]
+                if status.current_selected_skill[1] < 2:
+                    status.current_selected_skill[1] += 1
+                    player.skill_manager.current_skills[slot] = status.current_selected_skill[1] + 1
+
             elif event.key == SDLK_LEFT:
-                if status.current_selected_skill[1] >0:
-                    status.current_selected_skill[1] -=1
-                    player.skill_manager.current_skills[status.current_selected_skill[0]] -=1
+                slot = status.current_selected_skill[0]
+                if status.current_selected_skill[1] > 0:
+                    status.current_selected_skill[1] -= 1
+                    player.skill_manager.current_skills[slot] = status.current_selected_skill[1] + 1
 
 
 
