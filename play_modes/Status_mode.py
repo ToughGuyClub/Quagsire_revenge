@@ -15,15 +15,16 @@ def init():
         for o in layer:
             if isinstance(o, Character):  # 예시) Character 클래스에 player_flag=True 넣어두면 탐색 가능
                 player = o
-                status = Status(player)
-                game_world.add_object(status, 2,True)
+                if status is None:
+                    status = Status(player)
+                #game_world.add_object(status, 2,True)
 
 
     pass
 
 def finish():
     #스테이터스 찾아서 삭제
-    game_world.remove_object(status)
+    #game_world.remove_object(status)
     pass
 
 def update():
@@ -33,6 +34,7 @@ def update():
 def draw():
     clear_canvas()
     game_world.render()
+    status.draw()
     #기본 스텟창이 될 사각형 그리기
 
     update_canvas()

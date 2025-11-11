@@ -3,7 +3,9 @@ from pico2d import *
 class Status:
     def __init__(self,player):
         self.current_selected_skill=[0,0]
-        self.player=player
+        self.player = player
+
+
         self.arrowR_image=load_image(os.path.join('asset/player/UI', 'arrow_right.png'))
         self.arrowL_image=load_image(os.path.join('asset/player/UI', 'arrow_left.png'))
     def draw(self):
