@@ -17,6 +17,7 @@ def init():
                 player = o
                 if status is None:
                     status = Status(player)
+                    pass
                 #game_world.add_object(status, 2,True)
 
 

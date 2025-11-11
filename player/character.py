@@ -115,7 +115,6 @@ class Character:
     def __init__(self,cm, x=100, y=100):
         #필요한 정보
         self.current_map = cm
-
         self.max_HP = 100
         self.cur_HP = 100
 
@@ -502,9 +501,9 @@ class SKILL:
             self.player.skill_manager.timer=2.0
 
             self.player.state_machine.cur_state = self.player.RUN
-           # self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
+            self.player.state_machine.handle_state_event(('AUTO', 'TO_IDLE'), current_map)
 
-        pass
+
 
     def draw(self):
         if isinstance(self.player.skill_manager.cur_using_skill,HekirekiIssen):

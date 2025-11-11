@@ -101,6 +101,7 @@ class WaterCannon:
         self.distance=250  #플레이어로부터 떨어진 거리
         self.icon_clip = (0, 0, 85, 120)  # 아이콘 클립좌표
         self.damage=10
+        print("캐논호출호출")
     def can_use(self, current_time):
         #쿨타임 체크
         pass
