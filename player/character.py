@@ -5,6 +5,7 @@ from current_map import *
 from state_machine import StateMachine
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3,SDLK_4,SDLK_t
 from player.playerskill import PlayerSkillManager
+from player.playerskill import HekirekiIssen
 from player.status import Status
 import current_map
 import game_framework
@@ -146,7 +147,7 @@ class Character:
         #공격 및 스킬
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
         self.skill_manager=PlayerSkillManager(self)
-
+        self.lock_move=False
 
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
@@ -244,6 +245,7 @@ class Character:
                 self.frame = 0
 
     def handle_event(self, event,current_map):
+
         self.state_machine.handle_state_event(('INPUT',event),current_map)
     def get_pos(self):
         return (self.x, self.y)
@@ -332,7 +334,8 @@ class RUN:
         pass
 
     def do(self,e,current_map):
-
+        if self.player.lock_move:
+            return
         dx, dy = 0, 0
 
         # 눌린 키 전부 반영
@@ -475,6 +478,7 @@ class SKILL:
     def __init__(self, player):
         self.player = player
         self.timer=0.0
+
     def enter(self,e):
         self.timer=0.0
         #입력된 이벤트에 따라 해당 스킬 생성
@@ -503,5 +507,8 @@ class SKILL:
         pass
 
     def draw(self):
-        self.player.IDLE.draw()
+        if isinstance(self.player.skill_manager.cur_using_skill,HekirekiIssen):
+            return
+        else:
+            self.player.IDLE.draw()
         pass

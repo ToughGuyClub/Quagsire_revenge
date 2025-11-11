@@ -2,6 +2,7 @@ from pico2d import *
 import game_framework
 import game_world
 from handleEvent import get_mouse_pos
+from play_modes import Thunder_mode
 width, height =  1400, 800
 TIME_PER_ACTION = 0.5
 TIME_PER_ACTION_EARTH_QUAKE = 1.0/0.5
@@ -16,6 +17,7 @@ class PlayerSkillManager:
         self.player = player
         self.timer=2.0
         self.current_skills = [1,1,1,1]  # 현재 장착된 스킬들
+        self.cur_using_skill = None
         self.skills = {
             1: {  # 1번 슬롯
                      # 레벨 1일 때
@@ -31,7 +33,7 @@ class PlayerSkillManager:
             3: {
                 1: IceSpear,        #얼음창 3개 생성 후 충전 후 발사
                 2: EarthQuake,      #해당 벡터로 여러 지진 발사
-                3: None,            #hekireki issen
+                3: HekirekiIssen,            #hekireki issen
             },
             4: {
                 1:None,         #반경 n미터 이내 적에게 낙뢰
@@ -70,7 +72,7 @@ class PlayerSkillManager:
             else:
                 new_skill = skill_class(self.player)
             new_skill.use()
-
+            cur_using_skill=new_skill
             # 3 쿨타임 시작
             self.cooldowns[slot_number] = self.skill_cooltimes[slot_number]
             print(f"Skill {slot_number} used! Cooldown started ({self.skill_cooltimes[slot_number]}s)")
@@ -255,7 +257,7 @@ class WaterBeam:
 class EarthQuake:
     def __init__(self,player,Dx=0,Dy=0,deg=0.0,step=1):
         self.image = load_image(os.path.join('asset/player/skill', 'earth_quake.png'))
-        self.duration = 2.0  # 지속 2초
+        self.duration = 1.0  # 지속 2초
         self.player=player
         self.frame=0.0
         self.x=self.player.x
@@ -312,7 +314,7 @@ class EarthQuake:
             game_world.remove_object(self)
             return
         self.frame = (self.frame + TIME_PER_ACTION_EARTH_QUAKE * ACTION_PER_TIME * game_framework.frame_time) % 2
-        if self.duration <= 1.9 and self.step>0and self.step<10:
+        if self.duration <= 0.9 and self.step>0and self.step<10:
             #self.player.skill_manager.cooldowns[3] = 0.0
             EarthQuake(self.player, self.x,self.y,self.degree,self.step + 1).use()
             self.step=0
@@ -698,21 +700,9 @@ class IceSpear:
     def get_bb(self):
         return self.x - self.sizeX/2, self.y - self.sizeX/2, self.x + self.sizeX/2, self.y + self.sizeX/2
 
-class Storm:
+class HekirekiIssen:
     def __init__(self, player ):
-        self.image = load_image(os.path.join('asset/player/skill', 'storm.png'))
-        self.duration = 3.0  # 지속 4초
-        self.player = player
-        self.dirX = 0
-        self.dirY = 0
-        self.degree = 0.0
-        self.frame = 0.0
-        self.sizeX = 150
-        self.sizeY = 300
-
-        self.x = self.player.x
-        self.y = self.player.y
-        self.distance = 100  # 플레이어로부터 떨어진 거리
+        self.image = load_image(os.path.join('asset/player/skill', 'thunder.png'))
         self.icon_clip = (0, 0, 104, 108)  # 아이콘 클립좌표
 
     def can_use(self, current_time):
@@ -720,28 +710,14 @@ class Storm:
         pass
 
     def use(self):
-
-        game_world.add_collision_pair('bubble:enemy', self, None)
-        game_world.add_object(self, 3)
+        game_framework.push_mode(Thunder_mode)  # 낙뢰 모드로 전환
+        pass
 
     def update(self):
-        self.duration -= game_framework.frame_time
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
-
-        if self.duration <= 0:
-            game_world.remove_collision_object(self)
-            game_world.remove_object(self)
-            return
-
-        self.degree += 180 * game_framework.frame_time  # 회전 속도 조절
-        self.distance += 20 * 100 * game_framework.frame_time
-        self.x= self.x+math.cos(math.radians(self.degree)) * self.distance/100
-        self.y= self.y+math.sin(math.radians(self.degree)) * self.distance/100
+        game_world.remove_object(self)
     def draw(self):
-        self.image.clip_draw(int(self.frame)*104, 0, 104, 108,
-                                       self.x, self.y,
-                                       self.sizeX, self.sizeY)
-        draw_rectangle(*self.get_bb())
+
+        pass
 
     def handle_event(self, event):
         pass
@@ -753,4 +729,4 @@ class Storm:
         return self.image, self.icon_clip
 
     def get_bb(self):
-        return self.x - self.sizeX / 2, self.y - self.sizeY / 2, self.x + self.sizeX / 2, self.y + self.sizeY / 2
+        pass

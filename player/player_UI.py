@@ -21,7 +21,7 @@ class Player_UI:
         if health_ratio > 0.5: bar_color = 2
         elif health_ratio > 0.2: bar_color = 1
         else: bar_color = 0
-        self.HP_bar_img.clip_draw(0, bar_color * 6, 96, 6, 250, 750, bar_width * health_ratio, bar_height)
+        self.HP_bar_img.clip_draw(0, bar_color * 6, 96, 6, 100+bar_width*health_ratio//2, 750, bar_width * health_ratio, bar_height)
     def draw_exp_bar(self,player):
         pass
     def draw_level(self,player):
