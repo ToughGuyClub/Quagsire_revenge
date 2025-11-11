@@ -92,7 +92,7 @@ class Bubble:
         self.image = load_image(os.path.join('asset/player','bubble.png'))
         self.scale=32
         self.active=True
-
+        self.damage=5
     def update(self):
         #각도를 기준으로 이동
 

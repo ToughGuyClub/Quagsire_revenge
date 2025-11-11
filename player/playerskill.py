@@ -98,9 +98,9 @@ class WaterCannon:
         self.frame=0.0
         self.x=self.player.x
         self.y=self.player.y
-        self.distance=120  #플레이어로부터 떨어진 거리
+        self.distance=250  #플레이어로부터 떨어진 거리
         self.icon_clip = (0, 0, 85, 120)  # 아이콘 클립좌표
-
+        self.damage=10
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -140,8 +140,8 @@ class WaterCannon:
                 self.player.dirY = 0
         # 위치 갱신 (플레이어 앞쪽 distance만큼)
         rad = math.radians(self.degree)
-        self.x = self.player.x + self.distance * math.cos(rad)
-        self.y = self.player.y + self.distance * math.sin(rad)
+        self.x = self.player.x + self.distance/1.5 * math.cos(rad)
+        self.y = self.player.y + self.distance/1.5 * math.sin(rad)
 
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
 
@@ -153,12 +153,12 @@ class WaterCannon:
                                            rad - math.pi / 2,  # 기본 이미지가 세로형이라면 -90도 보정
                                            'h',
                                            self.x, self.y,
-                                           127, 240)
+                                           130, 280)
         else: self.image.clip_composite_draw(int(self.frame) * 85, 0, 85, 120,
                                        rad - math.pi / 2,  # 기본 이미지가 세로형이라면 -90도 보정
                                        '',
                                        self.x, self.y,
-                                       127, 240)
+                                       130, 280)
 
         pass
     def handle_event(self, event):
@@ -183,9 +183,9 @@ class WaterBeam:
 
         self.x=self.player.x
         self.y=self.player.y
-        self.distance=120  #플레이어로부터 떨어진 거리
+        self.distance=500  #플레이어로부터 떨어진 거리
         self.icon_clip = (200, 200, 200, 200)#아이콘 클립좌표
-
+        self.damage=20
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -226,8 +226,14 @@ class WaterBeam:
                 self.player.dirY = 0
         # 위치 갱신 (플레이어 앞쪽 distance만큼)
         rad = math.radians(self.degree)
-        self.x = self.player.x + self.distance * math.cos(rad)
-        self.y = self.player.y + self.distance * math.sin(rad)
+        if self.duration>=1.5:
+            self.distance=90
+            self.x = self.player.x + self.distance*3 * math.cos(rad)
+            self.y = self.player.y + self.distance*3 * math.sin(rad)
+        else:
+            self.distance=500
+            self.x = self.player.x + self.distance/2 * math.cos(rad)
+            self.y = self.player.y + self.distance/2 * math.sin(rad)
 
         self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         if self.frameX >= 3 and self.frameY==2:
@@ -242,7 +248,7 @@ class WaterBeam:
                                            rad ,  # 기본 이미지가 세로형이라면 -90도 보정
                                            '',
                                            self.x, self.y+20,
-                                           250, 240)
+                                           500, 240)
 
         pass
     def handle_event(self, event):
@@ -266,6 +272,7 @@ class EarthQuake:
         self.step=step
         self.distance = 100*(step/5)  # 사거리
         self.icon_clip = (0, 0, 60, 60)  # 아이콘 클립좌표
+        self.damage=30
         # 플레이어 방향(8방향)에 따라 방향 설정
         self.dirX, self.dirY = self.player.dirX, self.player.dirY
         last_mouse_x, last_mouse_y = get_mouse_pos()
@@ -348,7 +355,7 @@ class WaterShield:
         self.y=self.player.y
         self.distance=200  #사거리
         self.icon_clip = (100, 100, 100, 100)  # 아이콘 클립좌표
-
+        self.damage=3
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -405,7 +412,7 @@ class HyperBeam:
         self.y=self.player.y
         self.distance=1500  #플레이어로부터 떨어진 거리
         self.icon_clip = (200, 200, 200, 200)#아이콘 클립좌표
-
+        self.damage=100
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -495,7 +502,7 @@ class WaterParrying:
         self.y=self.player.y
         self.distance=200  #사거리
         self.icon_clip = (0, 0, 102, 75)  # 아이콘 클립좌표
-
+        self.damage=0
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -608,7 +615,7 @@ class IceSpear:
         self.y=self.player.y
         self.distance=-100  #플레이어로부터 떨어진 거리
         self.icon_clip = (0, 0, 88, 16)#아이콘 클립좌표
-
+        self.damage=20
     def can_use(self, current_time):
         #쿨타임 체크
         pass
