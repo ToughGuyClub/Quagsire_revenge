@@ -126,11 +126,11 @@ class Enemy:
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
         if group == 'bubble:enemy':
-            self.HP -= 5
+            self.HP -= 1*other.damage
         elif group == 'cannon:enemy':
-            self.HP -= 10
+            self.HP -= 1*other.damage
         elif group == 'EQ:enemy':
-            self.HP -= 10
+            self.HP -= 1*other.damage
 
         if self.HP <= 0:
             #사망 처리 전에 경험치 지급
