@@ -58,6 +58,7 @@ class Status:
                 continue
             # 스킬 인스턴스가 아이콘 정보를 제공한다면
             else:
+
                 temp_skill = skill_class(self.player)  # 아이콘 정보만 얻기 위해 임시 생성
                 if hasattr(temp_skill, "get_icon_clip"):
                     draw_rectangle(x - skill_size // 2, y - skill_size // 2,
