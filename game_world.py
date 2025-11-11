@@ -59,6 +59,27 @@ def render_npc():
         for o in layer:
             o.draw()
 
+def render_for_thunder_mode():
+    for layer in world_temporary:
+        for o in layer:
+            o.draw()
+def render_for_thunder_mode_half():
+    for layer in world_temporary:
+        for o in layer:
+            if hasattr(o,'draw_half'):
+                o.draw_half()
+
+
+def clear_enemy():
+
+    global world_temporary, world_npc, collision_pairs
+
+
+    for layer in world_temporary:
+        for o in layer[:]:
+            if hasattr(o, 'is_enemy') and o.is_enemy:
+                layer.remove(o)
+                remove_collision_object(o)
 
 # collision_pairs에 있는 모든 O(객체)를 제거하는 함수임
 def remove_collision_object(o):

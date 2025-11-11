@@ -34,7 +34,7 @@ class Enemy:
         self.dirY = 0
         self.frame = 0
         self.frame_time = 0.3
-
+        self.is_enemy = True
         #플레이어 위치를 위한 참조
         self.target_player = player
 
@@ -90,7 +90,38 @@ class Enemy:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+    def draw_half(self):
+        enemy = self
+        from screen.thunder_scene import get_half_stack
+        step = get_half_stack()
 
+        #상부 몸체
+        if enemy.dirX == 0 and enemy.dirY == 0:
+            enemy.image.clip_draw(0, 168, 32, 24, enemy.x + step, enemy.y + enemy.scale / 4, enemy.scale,
+                                  enemy.scale / 2)
+        elif enemy.dirX == -1:
+            enemy.image.clip_draw(0, 120, 32, 24, enemy.x + step, enemy.y + enemy.scale / 4, enemy.scale,
+                                  enemy.scale / 2)
+        elif enemy.dirX == 1:
+            enemy.image.clip_draw(0, 72, 32, 24, enemy.x + step, enemy.y + enemy.scale / 4, enemy.scale,
+                                  enemy.scale / 2)
+        elif enemy.dirY == 1:
+            enemy.image.clip_draw(0, 24, 32, 24, enemy.x + step, enemy.y + enemy.scale / 4, enemy.scale, enemy.scale / 2)
+        elif enemy.dirY == -1:
+            enemy.image.clip_draw(0, 168, 32, 24, enemy.x + step, enemy.y + enemy.scale / 4, enemy.scale,
+                                  enemy.scale / 2)
+
+        #하부 몸체
+        if enemy.dirX == 0 and enemy.dirY == 0:
+            enemy.image.clip_draw(0, 144, 32, 24, enemy.x-step, enemy.y-enemy.scale/4, enemy.scale, enemy.scale/2)
+        elif enemy.dirX == -1:
+            enemy.image.clip_draw(0, 96, 32, 24, enemy.x-step, enemy.y-enemy.scale/4, enemy.scale, enemy.scale/2)
+        elif enemy.dirX == 1:
+            enemy.image.clip_draw(0, 48, 32, 24, enemy.x-step, enemy.y-enemy.scale/4, enemy.scale, enemy.scale/2)
+        elif enemy.dirY == 1:
+            enemy.image.clip_draw(0, 0, 32, 24, enemy.x-step, enemy.y-enemy.scale/4, enemy.scale, enemy.scale/2)
+        elif enemy.dirY == -1:
+            enemy.image.clip_draw(0, 144, 32, 24, enemy.x-step, enemy.y-enemy.scale/4, enemy.scale, enemy.scale/2)
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
