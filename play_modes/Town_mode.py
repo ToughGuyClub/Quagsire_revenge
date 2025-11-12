@@ -73,20 +73,12 @@ def init():
 
     town = Town()
 
-    enemy = Enemy('trainer_BURGLAR.png', 900, 400, 1,player)
 
     #랜더링에 필요한것
     game_world.add_object(town, 0)
 
-    game_world.add_object(enemy, 2)
 
 
-    #상호작용에 필요한 것
-
-  #  game_world.add_collision_pair('player:enemy', None, enemy)
-    game_world.add_collision_pair('bubble:enemy', None, enemy)
-    game_world.add_collision_pair('cannon:enemy', None, enemy)
-    game_world.add_collision_pair('EQ:enemy', None, enemy)
 def update():
     global current_Map
     game_world.update()

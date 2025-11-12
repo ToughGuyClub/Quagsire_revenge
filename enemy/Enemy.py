@@ -53,6 +53,11 @@ class Enemy:
             }
         )
 
+        game_world.add_object(self, 1)
+        game_world.add_collision_pair('bubble:enemy', None, self)
+        game_world.add_collision_pair('cannon:enemy', None, self)
+        game_world.add_collision_pair('EQ:enemy', None, self)
+
     def detect_player(self, e):
         # 플레이어가 일정 거리 내에 들어왔는가
         player = e

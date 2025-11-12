@@ -13,18 +13,7 @@ class PRAIRIE01:
         e1 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 900, 400, 1, player)
         e2 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 1200, 300, 1, player)
         e3=enemy.Enemy.Enemy('trainer_BURGLAR.png', 900, 350, 1, player)
-        game_world.add_object(e1, 1)
-        game_world.add_object(e2, 1)
-        game_world.add_object(e3, 1)
-        game_world.add_collision_pair('bubble:enemy', None, e1)
-        game_world.add_collision_pair('bubble:enemy', None, e2)
-        game_world.add_collision_pair('bubble:enemy', None, e3)
-        game_world.add_collision_pair('cannon:enemy', None, e1)
-        game_world.add_collision_pair('cannon:enemy', None, e2)
-        game_world.add_collision_pair('cannon:enemy', None, e3)
-        game_world.add_collision_pair('EQ:enemy', None, e1)
-        game_world.add_collision_pair('EQ:enemy', None, e2)
-        game_world.add_collision_pair('EQ:enemy', None, e3)
+
     def update(self):
         pass
 
@@ -41,14 +30,7 @@ class PRAIRIE02:
         # 적 배치
         e1 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 900, 400, 1, player)
         e2 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 1200, 300, 1, player)
-        game_world.add_object(e1, 1)
-        game_world.add_object(e2, 1)
-        game_world.add_collision_pair('bubble:enemy', None, e1)
-        game_world.add_collision_pair('bubble:enemy', None, e2)
-        game_world.add_collision_pair('cannon:enemy', None, e1)
-        game_world.add_collision_pair('cannon:enemy', None, e2)
-        game_world.add_collision_pair('EQ:enemy', None, e1)
-        game_world.add_collision_pair('EQ:enemy', None, e2)
+
     def update(self):
         pass
 
