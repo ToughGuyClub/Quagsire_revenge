@@ -1,80 +1,97 @@
 from pico2d import *
 
 class Status:
-    def __init__(self,player):
-        self.current_selected_skill=[0,0]
+    def __init__(self, player):
+        self.current_selected_skill = [0, 0]  # [현재 선택된 슬롯, 현재 선택된 레벨]
         self.player = player
 
+        # --- 화살표 이미지 로드 ---
+        self.arrowR_image = load_image(os.path.join('asset/player/UI', 'arrow_right.png'))
+        self.arrowL_image = load_image(os.path.join('asset/player/UI', 'arrow_left.png'))
 
-        self.arrowR_image=load_image(os.path.join('asset/player/UI', 'arrow_right.png'))
-        self.arrowL_image=load_image(os.path.join('asset/player/UI', 'arrow_left.png'))
-    def draw(self):
-        #기본 창이 될거임
-        draw_rectangle(190, 90, 1210, 710, 47, 248, 240, 255, True)
-        draw_rectangle(200,100,1200,700,0,0,0,255,True)
-        self.draw_skill_icon()
-        pass
-    def draw_skill_icon(self):
+        # --- 스킬 아이콘 정보 미리 로드 ---
+        # Player_UI에서와 같은 구조로 맞춤
+        self.skill_icons = {
+            1: {
+                1: (load_image(os.path.join('asset/player/skill', 'water_cannon.png')), (0, 0, 85, 120)),
+                2: (load_image(os.path.join('asset/player/skill', 'water_beam.png')), (200, 200, 200, 200)),
+                3: (load_image(os.path.join('asset/player/skill', 'hyper_beam.png')), (200, 200, 200, 200)),
+            },
+            2: {
+                1: (load_image(os.path.join('asset/player/skill', 'water_sheild.png')), (100, 100, 100, 100)),
+                2: (load_image(os.path.join('asset/player/skill', 'water_parrying.png')), (0, 0, 102, 75)),
+                3: (load_image(os.path.join('asset/player/skill', 'water_heal.png')), (170, 0, 85, 90))
+            },
+            3: {
+                1: (load_image(os.path.join('asset/player/skill', 'ice_spear.png')), (0, 0, 88, 16)),
+                2: (load_image(os.path.join('asset/player/skill', 'earth_quake.png')), (0, 0, 60, 60)),
+                3: (load_image(os.path.join('asset/player/skill', 'thunder.png')), (0, 0, 104, 108))
+            },
+            4: {}
+        }
+
         if not hasattr(self, 'font'):
             self.font = load_font('asset/screen/intro/introFont.ttf', 30)
 
-        skill_size = 64
-        spacing = 30
-        start_x = 500
-        start_y = 600
+        # --- UI 기본 설정 ---
+        self.skill_size = 64
+        self.spacing = 30
+        self.start_x = 500
+        self.start_y = 600
 
-        # 안전 검사
-        if not hasattr(self.player, 'skill_manager'):
-            return
+    # ==============================================
+    # 메인 draw()
+    # ==============================================
+    def draw(self):
+        # 배경 창
+        draw_rectangle(190, 90, 1210, 710, 47, 248, 240, 255, True)
+        draw_rectangle(200, 100, 1200, 700, 0, 0, 0, 255, True)
+        self.draw_skill_icon()
+
+    # ==============================================
+    # 스킬 아이콘 출력
+    # ==============================================
+    def draw_skill_icon(self):
         sm = self.player.skill_manager
 
-        # 4개의 슬롯을 순회
         for slot in range(1, 5):
-            x = start_x
-            y = start_y - (skill_size + spacing) * (slot - 1)
+            x = self.start_x
+            y = self.start_y - (self.skill_size + self.spacing) * (slot - 1)
 
-            # 현재 슬롯의 스킬 가져오기
+            # 현재 슬롯의 스킬 레벨
             skill_level = sm.current_skills[slot - 1] if slot - 1 < len(sm.current_skills) else 0
-            if skill_level == 0:
-                pass
-                #continue  # 슬롯에 스킬 없음 → 안 그림
 
-            skill_class = sm.skills.get(slot, {}).get(skill_level, None)
-            if not skill_class:
-                pass
-                #continue  # 스킬 클래스 없음 → 안 그림
-
-            #선택된 스킬 사각형으로 표시하는거임
+            # 선택 표시 (현재 선택된 슬롯이라면)
             if slot - 1 == self.current_selected_skill[0]:
-                draw_rectangle(x - skill_size // 2 - 5, y - skill_size // 2 - 5,
-                               x + skill_size // 2 + 5, y + skill_size // 2 + 5, 0, 144, 248, 255, True)
+                draw_rectangle(
+                    x - self.skill_size // 2 - 5, y - self.skill_size // 2 - 5,
+                    x + self.skill_size // 2 + 5, y + self.skill_size // 2 + 5,
+                    0, 144, 248, 255, True
+                )
 
-
-            if skill_class is None:
-                # 없으면 사각형으로 기본 표시
-                draw_rectangle(x - skill_size // 2, y - skill_size // 2,
-                               x + skill_size // 2, y + skill_size // 2,255, 255, 255, 255, True)
-                # 좌우에 화살표 그림
-                self.arrowL_image.draw(x - skill_size - 10, y)
-                self.arrowR_image.draw(x + skill_size + 10, y)
-                continue
-            # 스킬 인스턴스가 아이콘 정보를 제공한다면
+            # --- 아이콘 정보 가져오기 ---
+            icon_info = self.skill_icons.get(slot, {}).get(skill_level, None)
+            if icon_info:
+                draw_rectangle(
+                    x - self.skill_size // 2, y - self.skill_size // 2,
+                    x + self.skill_size // 2, y + self.skill_size // 2,
+                    255, 255, 255, 255, True)
+                image, (sx, sy, sw, sh) = icon_info
+                image.clip_draw(sx, sy, sw, sh, x, y, self.skill_size, self.skill_size)
             else:
+                # 없으면 기본 사각형으로
+                draw_rectangle(
+                    x - self.skill_size // 2, y - self.skill_size // 2,
+                    x + self.skill_size // 2, y + self.skill_size // 2,
+                    255, 255, 255, 255, True
+                )
 
-                temp_skill = skill_class(self.player)  # 아이콘 정보만 얻기 위해 임시 생성
-                if hasattr(temp_skill, "get_icon_clip"):
-                    draw_rectangle(x - skill_size // 2, y - skill_size // 2,
-                                   x + skill_size // 2, y + skill_size // 2, 255, 255, 255, 255, True)
+            # 좌우 화살표 표시
+            self.arrowL_image.draw(x - self.skill_size - 10, y)
+            self.arrowR_image.draw(x + self.skill_size + 10, y)
 
-                    image, (sx, sy, sw, sh) = temp_skill.get_icon_clip()
-                    image.clip_draw(sx, sy, sw, sh, x, y, skill_size, skill_size)
-                    # 좌우에 화살표 그림
-                    self.arrowL_image.draw(x - skill_size - 10, y)
-                    self.arrowR_image.draw(x + skill_size + 10, y)
-
-
-
-        pass
+    # ==============================================
+    # 업데이트 (입력, 상태변화용)
+    # ==============================================
     def update(self):
-
         pass
