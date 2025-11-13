@@ -128,7 +128,7 @@ class Character:
         # 이동 방향
         self.dirX = 0
         self.dirY = 0
-        self.speed = 20.0
+        self.speed = 100.0
         # 현재 모션 상태
         self.motion_state = 'idle'
         self.attack_anim_timer = 0

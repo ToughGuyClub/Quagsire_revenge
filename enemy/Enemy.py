@@ -11,19 +11,29 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 4
 
 TIME_PER_SPEED = 1
+def create_enemy(enemy_type, x, y, player):
+    if enemy_type == "researcher":
+        return Researcher(x, y,1,player)
+    elif enemy_type == "doctor":
+        return Doctor(x, y,2,player)
+    elif enemy_type == "ruinmaniac":
+        return Ruinmaniac(x,y,3,player)
+    elif enemy_type == "ranger":
+        return Ranger(x, y,4,player)
 
 def level_to_image(level):
     level_images = {
         1: 'level1ball.png',
         2: 'level2ball.png',
-        3: 'level3ball.png'
+        3: 'level3ball.png',
+        4: 'level4ball.png',
     }
     return level_images.get(level, 'level1ball.png')
 class Enemy:
-    def __init__(self, image_path, x, y, type,player):
-        self.image = load_image(os.path.join('asset/enemy', 'trainer_BURGLAR.png'))
+    def __init__(self, x, y, type,player,file_name=None):
+        self.image = load_image(os.path.join('asset/enemy', file_name))
         #타입=레벨 레벨별 이미지다름
-        self.HP = type * 2
+        self.HP = type * 10
         self.ball_image = load_image(os.path.join('asset/enemy', level_to_image(type)))
         self.x = x
         self.y = y
@@ -254,14 +264,14 @@ class AttackBall:
         self.scale = 32
         self. frame = 0
         self.level = level
-        self.frame_time = 0.2
+        self.frame_time = 0.1
     def update(self):
         self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
         self.y += self.dirY * self.speed*game_framework.frame_time* self.speed*5.0
         if self.frame_time <= 0:
-            self.frame_time = 0.2
+            self.frame_time = 0.1
             self.frame = (self.frame + 1) % 8
-        self.frame_time -= 0.05
+        self.frame_time -= game_framework.frame_time
         #경계처리
         if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
             game_world.remove_object(self)
@@ -278,3 +288,15 @@ class AttackBall:
             game_world.remove_object(self)
 
 
+class Researcher(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_SCIENTIST.png')
+class Doctor(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_BURGLAR.png')
+class Ruinmaniac(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_RUINMANIAC.png')
+class Ranger(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_POKEMONRANGER_F.png')

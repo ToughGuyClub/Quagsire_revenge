@@ -1,5 +1,5 @@
 from pico2d import *
-import enemy.Enemy
+from enemy.Enemy import create_enemy
 import game_world
 width, height =  1400, 800
 
@@ -10,9 +10,10 @@ class PRAIRIE01:
         self.background = load_image(os.path.join('asset/map/prairie', 'bg1-1.png'))
         self.background2 = load_image(os.path.join('asset/map/prairie', 'bg2-1.png'))
         # 적 배치
-        e1 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 900, 400, 1, player)
-        e2 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 1200, 300, 1, player)
-        e3=enemy.Enemy.Enemy('trainer_BURGLAR.png', 900, 350, 1, player)
+        create_enemy('researcher',900,400,player)
+        create_enemy('researcher', 800, 500, player)
+        create_enemy('researcher', 500, 400, player)
+       # create_enemy('doctor',1300,40,player)
 
     def update(self):
         pass
@@ -28,8 +29,11 @@ class PRAIRIE02:
         self.background = load_image(os.path.join('asset/map/prairie', 'bg1-2.png'))
         self.background2 = load_image(os.path.join('asset/map/prairie', 'bg2-2.png'))
         # 적 배치
-        e1 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 900, 400, 1, player)
-        e2 = enemy.Enemy.Enemy('trainer_BURGLAR.png', 1200, 300, 1, player)
+        create_enemy('researcher', 500, 500, player)
+        create_enemy('researcher', 650, 450, player)
+        create_enemy('researcher', 500, 100, player)
+        create_enemy('doctor',900,400,player)
+
 
     def update(self):
         pass
@@ -46,6 +50,11 @@ class PRAIRIE03:
         self.background = load_image(os.path.join('asset/map/prairie', 'bg1-3.png'))
         self.background2 = load_image(os.path.join('asset/map/prairie', 'bg2-3.png'))
 
+        create_enemy('researcher', 510, 480, player)
+        create_enemy('researcher', 510, 80, player)
+        create_enemy('doctor', 800, 460, player)
+        create_enemy('doctor', 850, 370, player)
+        create_enemy('doctor', 800, 260, player)
     def update(self):
         pass
 
