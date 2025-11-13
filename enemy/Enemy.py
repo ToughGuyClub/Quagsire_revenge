@@ -20,6 +20,10 @@ def create_enemy(enemy_type, x, y, player):
         return Ruinmaniac(x,y,3,player)
     elif enemy_type == "ranger":
         return Ranger(x, y,4,player)
+    elif enemy_type == "swimmer":
+        return Swimmer(x, y,5,player)
+    elif enemy_type == "captin":
+        return Captin(x, y,6,player)
 
 def level_to_image(level):
     level_images = {
@@ -27,6 +31,8 @@ def level_to_image(level):
         2: 'level2ball.png',
         3: 'level3ball.png',
         4: 'level4ball.png',
+        5: 'level5ball.png',
+        6: 'level6ball.png',
     }
     return level_images.get(level, 'level1ball.png')
 class Enemy:
@@ -300,3 +306,9 @@ class Ruinmaniac(Enemy):
 class Ranger(Enemy):
     def __init__(self, x, y, type,player):
         super().__init__(x, y, type,player,'trainer_POKEMONRANGER_F.png')
+class Swimmer(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_SWIMMER_M.png')
+class Captin(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_SAILOR.png')
