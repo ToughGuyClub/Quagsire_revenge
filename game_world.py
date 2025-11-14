@@ -1,7 +1,7 @@
 
 import math
 # 맵 바뀌면 날아가는 것들 (몬스터, 배경, 이펙트 등)
-world_temporary = [[] for _ in range(4)]
+world_temporary = [[] for _ in range(5)]
 
 # 유지되어야 하는 객체 (플레이어, UI 등)
 world_persistent = [[] for _ in range(3)]
@@ -46,13 +46,26 @@ def _really_remove_object(o):
             return
 
 def render():
-    # 순서: 영속 객체는 UI 등에만 사용되므로 나중에 그리면 됨
-    for layer in world_temporary:
-        for o in layer:
+    # 1) world_temporary 0,1,23 레이어 먼저 그리기
+    for layer in range(4):  # 0,1,2,3 레이어(특정스킬은 여기 3번에서 출력)
+        for o in world_temporary[layer]:
             o.draw()
-    for layer in world_persistent:
-        for o in layer:
+
+    # 2) world_persistent 0번 레이어 (플레이어)
+    if len(world_persistent) > 0:
+        for o in world_persistent[0]:
             o.draw()
+
+    # 3) world_temporary 4번 레이어 (스킬)
+    if len(world_temporary) > 4:  # 안전하게 체크
+        for o in world_temporary[3]:
+            o.draw()
+
+    # 4) world_persistent 나머지 (UI 등)
+    for layer in range(1, len(world_persistent)):
+        for o in world_persistent[layer]:
+            o.draw()
+
 
 def render_npc():
     for layer in world_npc:
