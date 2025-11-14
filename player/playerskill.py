@@ -756,6 +756,12 @@ class FLASH:
         self.state = "fade_in"
         self.active = True
         game_world.add_object(self, 4)
+        #적들 플래시상태로만들기
+        for layer in game_world.world_temporary:
+            for o in layer[:]:
+                if hasattr(o, 'is_enemy') and o.is_enemy:
+                    o.flashed=True
+
     def update(self):
         if not self.active:
             return

@@ -58,6 +58,10 @@ class Enemy:
         self.frame = 0
         self.frame_time = 0.3
 
+        #--- 상태이상 ---
+        self.flashed = False
+        self.flash_timer = 0.0
+
         # --- 플레이어 참조 ---
         self.target_player = player
 
@@ -244,6 +248,12 @@ class EnemyRun:
         pass
 
     def do(self, player):
+        if self.enemy.flashed:
+            self.enemy.flash_timer += game_framework.frame_time
+            if self.enemy.flash_timer >= 2.0:
+                self.enemy.flashed = False
+                self.enemy.flash_timer = 0.0
+            return
         e = self.enemy
         dx = player.x - e.x
         dy = player.y - e.y
@@ -291,7 +301,12 @@ class EnemyAttack:
         pass
 
     def do(self, player):
-
+        if self.enemy.flashed:
+            self.enemy.flash_timer += game_framework.frame_time
+            if self.enemy.flash_timer >= 2.0:
+                self.enemy.flashed = False
+                self.enemy.flash_timer = 0.0
+            return
         self.timer += game_framework.frame_time
         if self.timer >= self.cooldown:
             self.timer = 0

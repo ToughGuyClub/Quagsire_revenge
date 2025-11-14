@@ -23,9 +23,11 @@ class Player_UI:
             3: {
                 1: (load_image(os.path.join('asset/player/skill', 'ice_spear.png')), (0, 0, 88, 16)),
                 2: (load_image(os.path.join('asset/player/skill', 'earth_quake.png')), (0, 0, 60, 60)),
-                3: (load_image(os.path.join('asset/player/skill', 'thunder.png')), (0, 0, 104, 108))
+                3:(load_image(os.path.join('asset/player/skill', 'flash.png')), (0, 0, 256, 256)),
             },
             4: {
+                1:None,
+                2: (load_image(os.path.join('asset/player/skill', 'thunder.png')), (0, 0, 104, 108))
              }
         }   # 예: {1: (image, (0,0,64,64)), 2: (...), ...}
 

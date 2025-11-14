@@ -58,7 +58,7 @@ def render():
 
     # 3) world_temporary 4번 레이어 (스킬)
     if len(world_temporary) > 4:  # 안전하게 체크
-        for o in world_temporary[3]:
+        for o in world_temporary[4]:
             o.draw()
 
     # 4) world_persistent 나머지 (UI 등)
