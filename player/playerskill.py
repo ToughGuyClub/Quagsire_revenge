@@ -33,10 +33,10 @@ class PlayerSkillManager:
             3: {
                 1: IceSpear,        #얼음창 3개 생성 후 충전 후 발사
                 2: EarthQuake,      #해당 벡터로 여러 지진 발사
-                3: HekirekiIssen,            #hekireki issen
+                3: FLASH,            #hekireki issen
             },
             4: {
-                1:None,         #반경 n미터 이내 적에게 낙뢰
+                1:HekirekiIssen,         #반경 n미터 이내 적에게 낙뢰
                 2:None,         #메테오로 맵 전체 타격
             }
         }
@@ -736,5 +736,54 @@ class HekirekiIssen:
     def get_icon_clip(self):
         return self.image, self.icon_clip
 
+    def get_bb(self):
+        pass
+class FLASH:
+    def __init__(self,player):
+        self.image = load_image(os.path.join('asset/player/skill', 'flash.png'))
+        self.icon_clip = (0, 0, 256, 256)  # 아이콘 클립좌표
+        self.alpha = 0.0  # 현재 알파값 (0~1)
+        self.state = "idle"  # idle → fade_in → fade_out
+        self.fade_in_speed = 4.0  # 빠르게 흰색으로
+        self.fade_out_speed = 1.5  # 천천히 사라짐
+        self.active = False
+    def can_use(self, current_time):
+        #쿨타임 체크
+        pass
+
+    def use(self):
+        self.alpha = 0.0
+        self.state = "fade_in"
+        self.active = True
+        game_world.add_object(self, 4)
+    def update(self):
+        if not self.active:
+            return
+
+            # 1) 빠르게 밝아짐
+        if self.state == "fade_in":
+            self.alpha += self.fade_in_speed * game_framework.frame_time
+            if self.alpha >= 1.0:
+                self.alpha = 1.0
+                self.state = "fade_out"
+
+            # 2) 천천히 사라짐
+        elif self.state == "fade_out":
+            self.alpha -= self.fade_out_speed * game_framework.frame_time
+            if self.alpha <= 0.0:
+                self.alpha = 0.0
+                self.active = False
+                game_world.remove_object(self)
+    def draw(self):
+        if not self.active:
+            return
+        draw_rectangle(0, 0, width, height, 255, 255, 255, int(self.alpha * 255), True)
+    def handle_event(self, event):
+        pass
+    def handle_collision(self, group, other):
+        pass
+
+    def get_icon_clip(self):
+        return self.image, self.icon_clip
     def get_bb(self):
         pass
