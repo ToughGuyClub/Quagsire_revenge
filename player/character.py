@@ -142,6 +142,8 @@ class Character:
         self.exp = 0
         self.skill_points = 2
 
+        #적에게 맞았을 때 생기는 효과
+        self.slow_effect_timer=0.0
 
         #공격 및 스킬
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
@@ -217,6 +219,11 @@ class Character:
         self.state_machine.update(self.current_map)
         self.update_frame()
         self.skill_manager.update()
+        #상태이상효과 타이머 감소하는거
+        if self.slow_effect_timer>0.0:
+            self.slow_effect_timer-=game_framework.frame_time
+            if self.slow_effect_timer<0.0:
+                self.slow_effect_timer=0.0
 
     def update_frame(self):
         # 공격, 이동, 대기 상태별로 다르게 처리
@@ -259,10 +266,20 @@ class Character:
 
     def handle_collision(self, group, other):
         if group == 'player:enemy':
-            self.cur_HP -= 10
-            if self.cur_HP < 0:
-                self.cur_HP = 0
-            print(f'Player HP: {self.cur_HP}/{self.max_HP}')
+            if hasattr(other, 'swimming_mode') and getattr(other, 'swimming_mode', False):
+                # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
+                if getattr(other, 'hit_timer', 0) >= 1.0:
+                    self.cur_HP -= 10
+                    if self.cur_HP < 0:
+                        self.cur_HP = 0
+
+
+                print(f'Player HP: {self.cur_HP}/{self.max_HP}')
+            else:
+                self.cur_HP -= 10
+                if self.cur_HP < 0:
+                    self.cur_HP = 0
+                print(f'Player HP: {self.cur_HP}/{self.max_HP}')
 
     def gain_exp(self, amount):
         self.exp += amount
@@ -361,8 +378,13 @@ class RUN:
             dx /= length
             dy /= length
             self.player.dirX, self.player.dirY = dx, dy
-        next_x = self.player.x + self.player.dirX * self.player.speed*game_framework.frame_time*10.0
-        next_y = self.player.y + self.player.dirY * self.player.speed*game_framework.frame_time*10.0
+        if self.player.slow_effect_timer>0.0:
+            #느려지는 효과 적용
+            next_x = self.player.x + self.player.dirX * self.player.speed*0.5*game_framework.frame_time*10.0
+            next_y = self.player.y + self.player.dirY * self.player.speed*0.5*game_framework.frame_time*10.0
+        else:
+            next_x = self.player.x + self.player.dirX * self.player.speed*game_framework.frame_time*10.0
+            next_y = self.player.y + self.player.dirY * self.player.speed*game_framework.frame_time*10.0
 
         # 마을 경계처리
         if current_map.get_current_map() == 2:
@@ -370,6 +392,8 @@ class RUN:
             if next_y >= 550 or next_y < 250:
                 if next_x < 1040:
                     return
+        #일반 경계처리
+
         self.player.x = next_x
         self.player.y =  next_y
 
@@ -387,7 +411,7 @@ class RUN:
 
         if transition:
             next_map_id, spawn_x, spawn_y = transition
-            print(f"🌍 맵 {current_map.get_current_map()} → {next_map_id} 이동!")
+            print(f" 맵 {current_map.get_current_map()} -> {next_map_id} 이동")
             current_map.change_map(next_map_id)
             self.player.x, self.player.y = spawn_x, spawn_y
             return

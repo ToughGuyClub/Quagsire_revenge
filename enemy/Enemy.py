@@ -115,6 +115,29 @@ class Enemy:
 
         self.state_machine.update(self.target_player)
 
+    def attack_action(self, player):
+        """기본 공격: 몬스터볼 한 발"""
+        dx = player.x - self.x
+        dy = player.y - self.y
+        dist = math.sqrt(dx ** 2 + dy ** 2)
+        if dist != 0:
+            dirX = dx / dist
+            dirY = dy / dist
+        else:
+            dirX, dirY = 0, 0
+
+        ball = AttackBall(
+            self.ball_image,
+            self.x,
+            self.y,
+            dirX,
+            dirY,
+            self.type,
+            speed=10,
+        )
+        game_world.add_object(ball, 2)
+        game_world.add_collision_pair('player:enemy', None, ball)
+        game_world.add_collision_pair('EQ:enemy', None, ball)
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
@@ -268,31 +291,12 @@ class EnemyAttack:
         pass
 
     def do(self, player):
+
         self.timer += game_framework.frame_time
         if self.timer >= self.cooldown:
             self.timer = 0
-
-            dx = player.x - self.enemy.x
-            dy = player.y - self.enemy.y
-            dist = math.sqrt(dx ** 2 + dy ** 2)
-            if dist != 0:
-                dirX = dx / dist
-                dirY = dy / dist
-            else:
-                dirX, dirY = 0, 0
-
-            ball = AttackBall(
-                self.enemy.ball_image,
-                self.enemy.x,
-                self.enemy.y,
-                dirX,
-                dirY,
-                self.enemy.type,
-                speed=10,
-            )
-            game_world.add_object(ball, 2)
-            game_world.add_collision_pair('player:enemy', None, ball)
-            game_world.add_collision_pair('EQ:enemy', None, ball)
+            #  공격 행위는 Enemy 객체에 위임
+            self.enemy.attack_action(player)
 
     def draw(self):
         e = self.enemy
@@ -353,15 +357,216 @@ class Researcher(Enemy):
 class Doctor(Enemy):
     def __init__(self, x, y, type,player):
         super().__init__(x, y, type,player,'trainer_BURGLAR.png')
+
+        self.attack_count = 0
+    def attack_action(self, player):
+        self.attack_count += 1
+        if self.attack_count % 4 == 0:
+            # 폭탄 발사
+            dx = player.x - self.x
+            dy = player.y - self.y
+            dist = math.sqrt(dx ** 2 + dy ** 2)
+            if dist != 0:
+                dirX, dirY = dx / dist, dy / dist
+            else:
+                dirX, dirY = 0, 0
+            bomb = BombAttack(self.x, self.y, dirX, dirY)
+            game_world.add_object(bomb, 2)
+            game_world.add_collision_pair('player:enemy', None, bomb)
+            game_world.add_collision_pair('EQ:enemy', None, bomb)
+        else:
+            super().attack_action(player)
 class Ruinmaniac(Enemy):
     def __init__(self, x, y, type,player):
         super().__init__(x, y, type,player,'trainer_RUINMANIAC.png')
 class Ranger(Enemy):
     def __init__(self, x, y, type,player):
         super().__init__(x, y, type,player,'trainer_POKEMONRANGER_F.png')
+
+    def attack_action(self, player):
+        #거미줄 발사
+        dx = player.x - self.x
+        dy = player.y - self.y
+        dist = math.sqrt(dx ** 2 + dy ** 2)
+        if dist != 0:
+            dirX, dirY = dx / dist, dy / dist
+        else:
+            dirX, dirY = 0, 0
+        slow = SLOWATTACK(self.x, self.y, dirX, dirY)
+        game_world.add_object(slow, 2)
+        game_world.add_collision_pair('player:enemy', None, slow)
+        game_world.add_collision_pair('EQ:enemy', None, slow)
 class Swimmer(Enemy):
-    def __init__(self, x, y, type,player):
-        super().__init__(x, y, type,player,'trainer_SWIMMER_M.png')
+    def __init__(self, x, y, type, player):
+        super().__init__(x, y, type, player, 'trainer_SWIMMER_M.png')
+        self.swimming_image = load_image(os.path.join('asset/enemy', 'trainer_SWIMMER2_M.png'))
+        self.swimming_mode = False
+        self.swim_timer = 0.0
+        self.degree = 0.0
+        self.attack_count = 0
+        self.hit_timer = 0.0
+    def attack_action(self, player):
+
+        # 이미 수영중이면 공격 불가
+        if self.swimming_mode:
+            return
+
+        # 공격 카운트 증가
+        self.attack_count += 1
+
+        # 4번째마다 수영 모드 시작
+        if self.attack_count % 4 == 0:
+            self.swimming_mode = True
+            self.swim_timer = 3.0
+
+            dx = player.x - self.x
+            dy = player.y - self.y
+            self.degree = math.atan2(dy, dx)
+            #충돌박스에 추가
+            game_world.add_collision_pair('player:enemy', None, self)
+        else:
+            # 기본 공격 수행
+            super().attack_action(player)
+
+    def update(self):
+        if not self.swimming_mode:
+            super().update()
+            return
+
+        # 수영중 이동
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+
+        self.x += math.cos(self.degree) * self.speed*20.0 * game_framework.frame_time * self.speed * 10.0
+        self.y += math.sin(self.degree) * self.speed*20.0 * game_framework.frame_time * self.speed * 10.0
+        if self.hit_timer <= 1.0:
+            self.hit_timer += game_framework.frame_time
+
+            # 왼쪽/오른쪽 벽
+        if self.x < 0:
+            self.x = 0
+            self.degree = math.pi - self.degree  # 반사
+
+        elif self.x > 1600:
+            self.x = 1600
+            self.degree = math.pi - self.degree
+
+            # 위/아래 벽
+        if self.y < 0:
+            self.y = 0
+            self.degree = -self.degree
+
+        elif self.y >850:
+            self.y = 850
+            self.degree = -self.degree
+        # 방향 갱신 (draw에서 방향을 쓰기 때문에)
+        if abs(math.cos(self.degree)) > abs(math.sin(self.degree)):
+            self.dirX = 1 if math.cos(self.degree) > 0 else -1
+            self.dirY = 0
+        else:
+            self.dirY = 1 if math.sin(self.degree) > 0 else -1
+            self.dirX = 0
+
+        self.swim_timer -= game_framework.frame_time
+        if self.swim_timer <= 0:
+            self.swimming_mode = False
+            # 충돌박스 제거
+
+
+    def draw(self):
+        if not self.swimming_mode:
+            super().draw()
+            return
+
+        fw, fh = self.frame_w, self.frame_h
+        fx = int(self.frame) * fw
+
+        if self.dirX == -1:
+            fy = fh * 2
+        elif self.dirX == 1:
+            fy = fh
+        elif self.dirY == 1:
+            fy = 0
+        elif self.dirY == -1:
+            fy = fh * 3
+        else:
+            fy = fh * 3
+
+        self.swimming_image.clip_draw(fx, fy, fw, fh, self.x, self.y, self.scale, self.scale)
+    def handle_collision(self, group, other):
+        if group in ('bubble:enemy', 'cannon:enemy', 'EQ:enemy'):
+            self.HP -= 1 * other.damage
+        if self.HP <= 0:
+            if hasattr(self.target_player, "gain_exp"):
+                self.target_player.gain_exp(self.type * 20)
+            game_world.remove_object(self)
+        if group == 'player:enemy' and self.swimming_mode:
+            if self.hit_timer >= 1.0:
+                self.hit_timer = 0.0
+
 class Captin(Enemy):
     def __init__(self, x, y, type,player):
         super().__init__(x, y, type,player,'trainer_SAILOR.png')
+class BombAttack:
+    def __init__(self, x, y, dirX, dirY ):
+        self.image = load_image(os.path.join('asset/enemy', 'doctor_skill.png'))
+        self.x = x
+        self.y = y
+        self.dirX = dirX
+        self.dirY = dirY
+        self.speed = 15
+        self.scale = 64
+        self.frame = 0.0
+
+
+
+    def update(self):
+        self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
+        self.y += self.dirY * self.speed*game_framework.frame_time* self.speed*5.0
+
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame), 576, 192,192 , self.x, self.y, 64, 64)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            game_world.remove_object(self)
+        elif group == 'EQ:enemy':
+            game_world.remove_object(self)
+class SLOWATTACK:
+    def __init__(self, x, y, dirX, dirY ):
+        self.image = load_image(os.path.join('asset/enemy', 'ranger_skill.png'))
+        self.x = x
+        self.y = y
+        self.dirX = dirX
+        self.dirY = dirY
+        self.speed = 8
+        self.scale = 64
+        self.frame = 0.0
+
+
+
+    def update(self):
+        self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
+        self.y += self.dirY * self.speed*game_framework.frame_time* self.speed*5.0
+
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame), 0, 200,200 , self.x, self.y, self.scale*2,  self.scale*2)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            other.slow_effect_timer=3.0
+
+            game_world.remove_object(self)
+        elif group == 'EQ:enemy':
+            game_world.remove_object(self)
