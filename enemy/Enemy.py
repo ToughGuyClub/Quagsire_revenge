@@ -28,6 +28,8 @@ def create_enemy(enemy_type, x, y, player):
         return BOLDORE(x, y,7,player)
     elif enemy_type == "rocker":
         return ROCKER(x, y,8,player)
+    elif enemy_type == "rival":
+        return RIVAL(x, y,9,player)
 
 def level_to_image(level):
     level_images = {
@@ -39,6 +41,7 @@ def level_to_image(level):
         6: 'level6ball.png',
         7: 'level7ball.png',
         8: 'rocker_skill.png',
+        9: 'level9ball.png',
 
     }
     return level_images.get(level, 'level1ball.png')
@@ -577,6 +580,32 @@ class ROCKER(Enemy):
             MUSIC(self,player,0)
             self.skill_mode = False
             self.attack_count =0
+class RIVAL(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_RIVAL.png')
+        self.attack_count =0
+    def attack_action(self, player):
+        self.attack_count +=1
+        if self.attack_count %5 ==0:
+            #8방향으로 어택볼
+            for angle in range(0, 360, 45):
+                rad = math.radians(angle)
+                dirX = math.cos(rad)
+                dirY = math.sin(rad)
+                ball = AttackBall(
+                    self.ball_image,
+                    self.x,
+                    self.y,
+                    dirX,
+                    dirY,
+                    self.type,
+                    speed=10,
+                )
+                game_world.add_object(ball, 2)
+                game_world.add_collision_pair('player:enemy', None, ball)
+                game_world.add_collision_pair('EQ:enemy', None, ball)
+        else:
+            super().attack_action(player)
 class BombAttack:
     def __init__(self, x, y, dirX, dirY ):
         self.image = load_image(os.path.join('asset/enemy', 'doctor_skill.png'))
@@ -800,3 +829,4 @@ class MUSIC:
             game_world.remove_object(self)
         elif group == 'EQ:enemy':
             game_world.remove_object(self)
+

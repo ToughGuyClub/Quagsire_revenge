@@ -13,6 +13,7 @@ class DUNGEON01:
         # 적 배치
         create_enemy('boldore', 760, 300, player)
         create_enemy('rocker', 810, 200, player)
+        create_enemy('rival', 610, 480, player)
 
     def update(self):
         pass
