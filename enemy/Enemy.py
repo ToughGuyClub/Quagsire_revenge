@@ -24,6 +24,10 @@ def create_enemy(enemy_type, x, y, player):
         return Swimmer(x, y,5,player)
     elif enemy_type == "captin":
         return Captin(x, y,6,player)
+    elif enemy_type == "boldore":
+        return BOLDORE(x, y,7,player)
+    elif enemy_type == "rocker":
+        return ROCKER(x, y,8,player)
 
 def level_to_image(level):
     level_images = {
@@ -33,6 +37,9 @@ def level_to_image(level):
         4: 'level4ball.png',
         5: 'level5ball.png',
         6: 'level6ball.png',
+        7: 'level7ball.png',
+        8: 'rocker_skill.png',
+
     }
     return level_images.get(level, 'level1ball.png')
 class Enemy:
@@ -43,6 +50,7 @@ class Enemy:
         self.frame_h = frame_h
         self.scale = scale
         self.frame_count = frame_count
+
         # --- 스탯 관련 ---
         self.HP = type * 10
         self.ball_image = load_image(os.path.join('asset/enemy', level_to_image(type)))
@@ -541,10 +549,34 @@ class Captin(Enemy):
 
         pass
 
-class ROGGENROLA(Enemy):
+class BOLDORE(Enemy):
     def __init__(self, x, y, type,player):
-        super().__init__(x, y, type,player,'trainer_SAILOR.png',)
-
+        super().__init__(x, y, type,player,'Boldore.png',40,32,80,4)
+        self.cooldown = 4
+    def attack_action(self, player):
+        self.cooldown -= 1
+        if self.cooldown <=0:
+            self.cooldown =4
+            #원시의힘
+            ACIENTPOWER(self,player,-30,30)
+            ACIENTPOWER(self, player, -20, 40)
+            ACIENTPOWER(self, player, 30, 30)
+            ACIENTPOWER(self, player, 20, 40)
+        pass
+class ROCKER(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_ROCKER.png')
+        self.skill_mode = False
+        self.attack_count =0
+    def attack_action(self, player):
+        if not self.skill_mode:
+            self.attack_count +=1
+            if self.attack_count %3 ==0:
+                self.skill_mode = True
+        if self.skill_mode:
+            MUSIC(self,player,0)
+            self.skill_mode = False
+            self.attack_count =0
 class BombAttack:
     def __init__(self, x, y, dirX, dirY ):
         self.image = load_image(os.path.join('asset/enemy', 'doctor_skill.png'))
@@ -658,4 +690,113 @@ class SEAGULL:
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
         if group == 'player:enemy':
+            game_world.remove_object(self)
+
+class ACIENTPOWER:
+    def __init__(self,enemy,player,sx,sy ):
+        self.image = load_image(os.path.join('asset/enemy', 'boldore_skill.png'))
+        self.enemy=enemy
+        self.x = enemy.x
+        self.y = enemy.y
+        self.sx = sx
+        self.sy = sy
+        self.dirX = None
+        self.dirY = None
+        self.speed = 13
+        self.scale = 32
+        self.frame = 0.0
+        self.player = player
+        self.active = False
+        self.activation_timer = 1.0  # 발동 대기 시간
+        #월드에 넣기
+        game_world.add_object(self, 4)
+        game_world.add_collision_pair('player:enemy', None, self)
+        game_world.add_collision_pair('EQ:enemy', None, self)
+    def update(self):
+        self.activation_timer -= game_framework.frame_time
+        self.frame= (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 4
+        if self.activation_timer >=0.0:
+            self.x=self.enemy.x +self.sx
+            self.y=self.enemy.y +self.sy
+
+        elif self.activation_timer <0.0:
+            #플레이어 방향으로 직선 이동
+            if self.dirX is None and self.dirY is None:
+                dx = self.player.x - self.x
+                dy = self.player.y - self.y
+                dist = math.sqrt(dx ** 2 + dy ** 2)
+                if dist != 0:
+                    self.dirX, self.dirY = dx / dist, dy / dist
+                else:
+                    self.dirX, self.dirY = 0, 0
+            self.x += self.dirX * self.speed * game_framework.frame_time * self.speed * 5.0
+            self.y += self.dirY * self.speed * game_framework.frame_time * self.speed * 5.0
+
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
+    def draw(self):
+        if self.activation_timer >= 0:
+            self.image.clip_draw(int(self.frame), 0, 192,192 , self.x, self.y, self.scale*2,  self.scale*2)
+
+        elif self.activation_timer < 0:
+            self.image.clip_draw(int(self.frame), 192, 192, 192, self.x, self.y, self.scale*2, self.scale*2)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            game_world.remove_object(self)
+        elif group == 'EQ:enemy':
+            game_world.remove_object(self)
+
+class MUSIC:
+    def __init__(self,enemy,player,stack ):
+        self.image = load_image(os.path.join('asset/enemy', 'rocker_skill.png'))
+        self.enemy=enemy
+        self.x = enemy.x
+        self.y = enemy.y
+        self.dirX = None
+        self.dirY = None
+        self.speed = 13
+        self.scale = 64
+        self.activation_timer = 0.1  # 발동 대기 시간
+        self.stack = stack
+        self.player = player
+        self.active = False
+        #월드에 넣기
+        game_world.add_object(self, 4)
+        game_world.add_collision_pair('player:enemy', None, self)
+        game_world.add_collision_pair('EQ:enemy', None, self)
+    def update(self):
+        self.activation_timer -= game_framework.frame_time
+        if self.activation_timer<0 and self.stack<3 and self.active ==False:
+            MUSIC(self.enemy,self.player,self.stack+1)
+            self.active =True
+
+        #플레이어 방향으로 직선 이동
+        if self.dirX is None and self.dirY is None:
+            dx = self.player.x - self.x
+            dy = self.player.y - self.y
+            dist = math.sqrt(dx ** 2 + dy ** 2)
+            if dist != 0:
+                self.dirX, self.dirY = dx / dist, dy / dist
+            else:
+                self.dirX, self.dirY = 0, 0
+        self.x += self.dirX * self.speed * game_framework.frame_time * self.speed * 5.0
+        self.y += self.dirY * self.speed * game_framework.frame_time * self.speed * 5.0
+
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
+    def draw(self):
+
+        self.image.clip_draw(self.stack*192, 384, 192, 192, self.x, self.y, self.scale*2, self.scale*2)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            game_world.remove_object(self)
+        elif group == 'EQ:enemy':
             game_world.remove_object(self)

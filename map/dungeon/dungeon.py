@@ -1,5 +1,5 @@
 from pico2d import *
-import enemy.Enemy
+from enemy.Enemy import create_enemy
 import game_world
 width, height =  1400, 800
 
@@ -11,7 +11,8 @@ class DUNGEON01:
         self.background2 = load_image(os.path.join('asset/map/dungeon', 'bg2-1.png'))
         self.background3 = load_image(os.path.join('asset/map/dungeon', 'bg3.png'))
         # 적 배치
-
+        create_enemy('boldore', 760, 300, player)
+        create_enemy('rocker', 810, 200, player)
 
     def update(self):
         pass
