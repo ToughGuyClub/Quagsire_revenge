@@ -9,7 +9,7 @@ import game_framework
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 4
-
+width, height =  1400, 800
 TIME_PER_SPEED = 1
 def create_enemy(enemy_type, x, y, player):
     if enemy_type == "researcher":
@@ -36,13 +36,13 @@ def level_to_image(level):
     }
     return level_images.get(level, 'level1ball.png')
 class Enemy:
-    def __init__(self, x, y, type, player, file_name, frame_w=32, frame_h=48, scale=70):
+    def __init__(self, x, y, type, player, file_name, frame_w=32, frame_h=48, scale=70,frame_count=4):
         # --- 이미지 관련 ---
         self.image = load_image(os.path.join('asset/enemy', file_name))
         self.frame_w = frame_w
         self.frame_h = frame_h
         self.scale = scale
-
+        self.frame_count = frame_count
         # --- 스탯 관련 ---
         self.HP = type * 10
         self.ball_image = load_image(os.path.join('asset/enemy', level_to_image(type)))
@@ -521,6 +521,30 @@ class Swimmer(Enemy):
 class Captin(Enemy):
     def __init__(self, x, y, type,player):
         super().__init__(x, y, type,player,'trainer_SAILOR.png')
+
+    def attack_action(self, player):
+        #갈매기소환공격
+        #x축인지 y축인지 랜덤
+        direction = random.randint(1,4)
+        if direction ==1:   #좌에서 우로 이동
+            dirX, dirY = 1,0
+            SEAGULL(0, player.y, dirX, dirY)
+        elif direction ==2: #우에서 좌로 이동
+            dirX, dirY = -1,0
+            SEAGULL(width, player.y, dirX, dirY)
+        elif direction ==3:
+            dirX, dirY =0,1
+            SEAGULL(player.x, 0, dirX, dirY)
+        else:
+            dirX, dirY =0,-1
+            SEAGULL(player.x, height, dirX, dirY)
+
+        pass
+
+class ROGGENROLA(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_SAILOR.png',)
+
 class BombAttack:
     def __init__(self, x, y, dirX, dirY ):
         self.image = load_image(os.path.join('asset/enemy', 'doctor_skill.png'))
@@ -584,4 +608,54 @@ class SLOWATTACK:
 
             game_world.remove_object(self)
         elif group == 'EQ:enemy':
+            game_world.remove_object(self)
+class SEAGULL:
+    def __init__(self, x, y, dirX, dirY ):
+        self.image = load_image(os.path.join('asset/enemy', 'captin_skill.png'))
+        self.x = x
+        self.y = y
+        self.dirX = dirX
+        self.dirY = dirY
+        self.speed = 10
+        self.scale = 32
+        self.frame = 0.0
+        self.active = False
+        self.activation_timer = 1.0  # 발동 대기 시간
+        #월드에 넣기
+        game_world.add_object(self, 4)
+        game_world.add_collision_pair('player:enemy', None, self)
+        game_world.add_collision_pair('EQ:enemy', None, self)
+    def update(self):
+
+        self.activation_timer -= game_framework.frame_time
+        if self.activation_timer <0:
+            self.x += self.dirX * self.speed * game_framework.frame_time * self.speed * 5.0
+            self.y += self.dirY * self.speed * game_framework.frame_time * self.speed * 5.0
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 15
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
+
+    def draw(self):
+        if self.activation_timer >=0:
+            #x축인지 y축인지 결정
+            if self.dirX !=0:
+                draw_rectangle(0 , self.y - self.scale/2 ,width, self.y + self.scale/2 ,255,0,0,100,True)
+            else:
+                draw_rectangle( self.x - self.scale/2,0 , self.x + self.scale/2,height,255,0,0,100,True )
+        elif self.activation_timer <0:
+            #방향별로 다른 y좌표로
+            if self.dirX ==1:
+                self.image.clip_draw(int(self.frame)*32, 40*5, 32,40 , self.x, self.y, self.scale*2,  self.scale*2)
+            elif self.dirX ==-1:
+                self.image.clip_draw(int(self.frame)*32, 40*1, 32,40 , self.x, self.y , self.scale*2,  self.scale*2)
+            elif self.dirY ==1:
+                self.image.clip_draw(int(self.frame)*32, 40*3, 32,40 , self.x, self.y , self.scale*2,  self.scale*2)
+            elif self.dirY ==-1:
+                self.image.clip_draw(int(self.frame)*32, 40*7, 32,40 , self.x, self.y , self.scale*2,  self.scale*2)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
             game_world.remove_object(self)
