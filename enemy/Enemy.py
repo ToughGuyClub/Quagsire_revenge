@@ -36,7 +36,7 @@ def create_enemy(enemy_type, x, y, player):
         return GHOST(x, y,10,player)
     elif enemy_type=='rocketman':
         return ROCKETMAN(x, y,11,player)
-    elif enemy_type=='rockegirl':
+    elif enemy_type=='rocketgirl':
         return ROCKETGIRL(x, y,11,player)
 
 def level_to_image(level):
