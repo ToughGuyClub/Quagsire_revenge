@@ -34,6 +34,10 @@ def create_enemy(enemy_type, x, y, player):
         return BIKER(x, y,9,player)
     elif enemy_type=="ghost":
         return GHOST(x, y,10,player)
+    elif enemy_type=='rocketman':
+        return ROCKETMAN(x, y,11,player)
+    elif enemy_type=='rockegirl':
+        return ROCKETGIRL(x, y,11,player)
 
 def level_to_image(level):
     level_images = {
@@ -47,6 +51,7 @@ def level_to_image(level):
         8: 'rocker_skill.png',
         9: 'level9ball.png',
         10: 'level10ball.png',
+        11: 'level11ball.png',
 
     }
     return level_images.get(level, 'level1ball.png')
@@ -693,10 +698,10 @@ class GHOST(Enemy):
         pass
 class ROCKETMAN(Enemy):
     def __init__(self, x, y, type,player):
-        super().__init__(x, y, type,player,'trainer_ROCKETMAN.png')
+        super().__init__(x, y, type,player,'trainer_TEAMROCKET_M.png')
 class ROCKETGIRL(Enemy):
     def __init__(self, x, y, type,player):
-        super().__init__(x, y, type,player,'trainer_ROCKETGIRL.png')
+        super().__init__(x, y, type,player,'trainer_TEAMROCKET_F.png')
 class BombAttack:
     def __init__(self, x, y, dirX, dirY ):
         self.image = load_image(os.path.join('asset/enemy', 'doctor_skill.png'))
