@@ -266,16 +266,22 @@ class Character:
 
     def handle_collision(self, group, other):
         if group == 'player:enemy':
-            if hasattr(other, 'swimming_mode') and getattr(other, 'swimming_mode', False):
+            if hasattr(other, 'swimming_mode'):
                 # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
-                if getattr(other, 'hit_timer', 0) >= 1.0:
+                if getattr(other, 'hit_timer', 0) >= 0.2:
+                    self.cur_HP -= 10
+                    if self.cur_HP < 0:
+                        self.cur_HP = 0
+            elif hasattr(other, 'dashing'):
+                # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
+                if getattr(other, 'hit_timer', 0) >= 0.2:
                     self.cur_HP -= 10
                     if self.cur_HP < 0:
                         self.cur_HP = 0
 
-
                 print(f'Player HP: {self.cur_HP}/{self.max_HP}')
             else:
+
                 self.cur_HP -= 10
                 if self.cur_HP < 0:
                     self.cur_HP = 0

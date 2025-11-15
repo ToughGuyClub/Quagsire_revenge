@@ -30,6 +30,8 @@ def create_enemy(enemy_type, x, y, player):
         return ROCKER(x, y,8,player)
     elif enemy_type == "rival":
         return RIVAL(x, y,9,player)
+    elif enemy_type=="biker":
+        return BIKER(x, y,9,player)
 
 def level_to_image(level):
     level_images = {
@@ -431,6 +433,7 @@ class Swimmer(Enemy):
         self.degree = 0.0
         self.attack_count = 0
         self.hit_timer = 0.0
+        game_world.add_collision_pair('player:enemy', None, self)
     def attack_action(self, player):
 
         # 이미 수영중이면 공격 불가
@@ -449,7 +452,7 @@ class Swimmer(Enemy):
             dy = player.y - self.y
             self.degree = math.atan2(dy, dx)
             #충돌박스에 추가
-            game_world.add_collision_pair('player:enemy', None, self)
+
         else:
             # 기본 공격 수행
             super().attack_action(player)
@@ -464,7 +467,7 @@ class Swimmer(Enemy):
 
         self.x += math.cos(self.degree) * self.speed*20.0 * game_framework.frame_time * self.speed * 10.0
         self.y += math.sin(self.degree) * self.speed*20.0 * game_framework.frame_time * self.speed * 10.0
-        if self.hit_timer <= 1.0:
+        if self.hit_timer <= 0.2:
             self.hit_timer += game_framework.frame_time
 
             # 왼쪽/오른쪽 벽
@@ -525,8 +528,8 @@ class Swimmer(Enemy):
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
             game_world.remove_object(self)
-        if group == 'player:enemy' and self.swimming_mode:
-            if self.hit_timer >= 1.0:
+        if group == 'player:enemy' :
+            if self.hit_timer >= 0.2:
                 self.hit_timer = 0.0
 
 class Captin(Enemy):
@@ -606,6 +609,56 @@ class RIVAL(Enemy):
                 game_world.add_collision_pair('EQ:enemy', None, ball)
         else:
             super().attack_action(player)
+class BIKER(Enemy):
+    def __init__(self, x, y, type, player):
+        super().__init__(x, y, type, player, 'trainer_BIKER.png', 48, 48, 70, 4)
+        self.dash_speed = 12.0   # 돌진 속도
+        self.cooldown = 0.0      # 벽 충돌 후 대기 시간
+        self.dirX = 0
+        self.dirY = 0
+        self.dashing = False    # 돌진 중인지 여부
+        self.hit_timer = 0.0
+        game_world.add_collision_pair('player:enemy', None, self)
+    def update(self):
+        self.cooldown -= game_framework.frame_time
+        if self.hit_timer <= 0.2 and self.dashing:
+            self.hit_timer += game_framework.frame_time
+        if not self.dashing:
+            super().update()
+        else:
+            self.attack_action(self.target_player)
+    def attack_action(self, player):
+
+        if not self.dashing and self.cooldown <= 0.0:
+            # 돌진 시작
+            dx = player.x - self.x
+            dy = player.y - self.y
+            dist = math.sqrt(dx ** 2 + dy ** 2)
+            if dist != 0:
+                self.dirX = dx / dist
+                self.dirY = dy / dist
+            else:
+                self.dirX, self.dirY = 0, 0
+            self.dashing = True
+        if self.dashing:
+            self.x += self.dirX * self.dash_speed * game_framework.frame_time * self.dash_speed * 10.0
+            self.y += self.dirY * self.dash_speed * game_framework.frame_time * self.dash_speed * 10.0
+
+            # 벽 충돌 체크
+            if self.x < 50 or self.x > 1350 or self.y < 50 or self.y > 550:
+                self.dashing = False
+                self.cooldown = 1.0
+
+    def handle_collision(self, group, other):
+        if group in ('bubble:enemy', 'cannon:enemy', 'EQ:enemy'):
+            self.HP -= 1 * other.damage
+        if self.HP <= 0:
+            if hasattr(self.target_player, "gain_exp"):
+                self.target_player.gain_exp(self.type * 20)
+            game_world.remove_object(self)
+        if group == 'player:enemy':
+            if self.hit_timer >= 0.2:
+                self.hit_timer = 0.0
 class BombAttack:
     def __init__(self, x, y, dirX, dirY ):
         self.image = load_image(os.path.join('asset/enemy', 'doctor_skill.png'))
