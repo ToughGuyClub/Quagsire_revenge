@@ -659,6 +659,15 @@ class BIKER(Enemy):
         if group == 'player:enemy':
             if self.hit_timer >= 0.2:
                 self.hit_timer = 0.0
+class GHOST(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_GHOST.png')
+class ROCKETMAN(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_ROCKETMAN.png')
+class ROCKETGIRL(Enemy):
+    def __init__(self, x, y, type,player):
+        super().__init__(x, y, type,player,'trainer_ROCKETGIRL.png')
 class BombAttack:
     def __init__(self, x, y, dirX, dirY ):
         self.image = load_image(os.path.join('asset/enemy', 'doctor_skill.png'))
