@@ -11,10 +11,11 @@ class DUNGEON01:
         self.background2 = load_image(os.path.join('asset/map/dungeon', 'bg2-1.png'))
         self.background3 = load_image(os.path.join('asset/map/dungeon', 'bg3.png'))
         # 적 배치
-        #create_enemy('boldore', 760, 300, player)
-        #create_enemy('rocker', 810, 200, player)
+
+        create_enemy('rocker', 900, 200, player)
+        create_enemy('rocker', 320, 200, player)
         #create_enemy('rival', 610, 480, player)
-        create_enemy('biker', 630, 380, player)
+        create_enemy('biker', 120, 380, player)
     def update(self):
         pass
 
@@ -31,6 +32,11 @@ class DUNGEON02:
         self.background2 = load_image(os.path.join('asset/map/dungeon', 'bg2-2.png'))
         self.background3 = load_image(os.path.join('asset/map/dungeon', 'bg3.png'))
 
+        create_enemy('boldore', 760, 300, player)
+        create_enemy('rocker', 440, 200, player)
+        create_enemy('rocker', 810, 200, player)
+        create_enemy('biker', 520, 380, player)
+        create_enemy('biker', 600, 480, player)
     def update(self):
         pass
 
@@ -46,6 +52,15 @@ class DUNGEON03:
         self.background = load_image(os.path.join('asset/map/dungeon', 'bg1-3.png'))
         self.background2 = load_image(os.path.join('asset/map/dungeon', 'bg2-3.png'))
         self.background3 = load_image(os.path.join('asset/map/dungeon', 'bg3.png'))
+
+        create_enemy('boldore', 840, 360, player)
+        create_enemy('boldore', 540, 240, player)
+        create_enemy('rocker', 710, 120, player)
+        create_enemy('biker', 810, 330, player)
+        create_enemy('biker', 580, 280, player)
+        create_enemy('biker', 740, 180, player)
+
+
     def update(self):
         pass
 
