@@ -32,6 +32,8 @@ def create_enemy(enemy_type, x, y, player):
         return RIVAL(x, y,9,player)
     elif enemy_type=="biker":
         return BIKER(x, y,9,player)
+    elif enemy_type=="ghost":
+        return GHOST(x, y,10,player)
 
 def level_to_image(level):
     level_images = {
@@ -44,6 +46,7 @@ def level_to_image(level):
         7: 'level7ball.png',
         8: 'rocker_skill.png',
         9: 'level9ball.png',
+        10: 'level10ball.png',
 
     }
     return level_images.get(level, 'level1ball.png')
@@ -660,8 +663,34 @@ class BIKER(Enemy):
             if self.hit_timer >= 0.2:
                 self.hit_timer = 0.0
 class GHOST(Enemy):
-    def __init__(self, x, y, type,player):
-        super().__init__(x, y, type,player,'trainer_GHOST.png')
+    def __init__(self, x, y, type,player,is_parent = True):
+        super().__init__(x, y, type,player,'Ghost.png',48,64,60,12)
+        self.is_parent = is_parent
+        self.divide_cooldown = 5.0
+    def update(self):
+        super().update()
+        if self.is_parent:
+            self.divide_cooldown -= game_framework.frame_time
+            if self.divide_cooldown <=0:
+                self.divide_cooldown =5.0
+                #자식유령생성
+                child_ghost = GHOST(self.x + random.randint(-30,30), self.y + random.randint(-30,30), self.type,self.target_player,False)
+
+    def attack_action(self, player):
+        #유령특수공격
+        dx = player.x - self.x
+        dy = player.y - self.y
+        dist = math.sqrt(dx ** 2 + dy ** 2)
+        if dist != 0:
+            dirX, dirY = dx / dist, dy / dist
+        else:
+            dirX, dirY = 0, 0
+        shadowball = SHADOWBALL(self.x, self.y, dirX, dirY)
+        game_world.add_object(shadowball, 2)
+        game_world.add_collision_pair('player:enemy', None, shadowball)
+        game_world.add_collision_pair('EQ:enemy', None, shadowball)
+
+        pass
 class ROCKETMAN(Enemy):
     def __init__(self, x, y, type,player):
         super().__init__(x, y, type,player,'trainer_ROCKETMAN.png')
@@ -892,3 +921,34 @@ class MUSIC:
         elif group == 'EQ:enemy':
             game_world.remove_object(self)
 
+class SHADOWBALL:
+    def __init__(self, x, y, dirX, dirY ):
+        self.image = load_image(os.path.join('asset/enemy', 'ghost_skill.png'))
+        self.x = x
+        self.y = y
+        self.dirX = dirX
+        self.dirY = dirY
+        self.speed = 12
+        self.scale = 48
+        self.frame = 0.0
+
+
+
+    def update(self):
+        self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
+        self.y += self.dirY * self.speed*game_framework.frame_time* self.speed*5.0
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 3
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame), 0, 192,192 , self.x, self.y, self.scale,  self.scale)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            game_world.remove_object(self)
+        elif group == 'EQ:enemy':
+            game_world.remove_object(self)

@@ -1,5 +1,5 @@
 from pico2d import *
-import enemy.Enemy
+from enemy.Enemy import create_enemy
 import game_world
 width, height =  1400, 800
 
@@ -11,7 +11,7 @@ class CEMETERY01:
         self.background2 = load_image(os.path.join('asset/map/cemetery', 'bg2.png'))
 
         # 적 배치
-
+        create_enemy('ghost', 900, 200, player)
 
     def update(self):
         pass
