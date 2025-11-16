@@ -295,6 +295,11 @@ class Character:
         while self.exp >= self.max_exp:
             self.exp -= self.max_exp
             self.level_up()
+            self.hp_update()
+    def hp_update(self):
+        #레벨업시 최대체력으로회복및 최대체력1.1배증가
+        self.max_HP = int(self.max_HP * 1.1)
+        self.cur_HP = self.max_HP
 
     def level_up(self):
         self.level += 1
