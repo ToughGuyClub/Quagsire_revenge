@@ -59,6 +59,7 @@ class Enemy:
     def __init__(self, x, y, type, player, file_name, frame_w=32, frame_h=48, scale=70,frame_count=4):
         # --- 이미지 관련 ---
         self.image = load_image(os.path.join('asset/enemy', file_name))
+        self.flashed_image = load_image(os.path.join('asset/enemy', 'flashed.png'))
         self.frame_w = frame_w
         self.frame_h = frame_h
         self.scale = scale
@@ -166,6 +167,9 @@ class Enemy:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+        #상태이상 효과도 그림
+        if self.flashed:
+            self.flashed_image.clip_draw(0, 0, 192, 192, self.x, self.y+30, 64, 64)
 
     # ------------------------------
     # 상/하 분리 드로우 (thunder_scene용)
