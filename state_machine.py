@@ -24,5 +24,7 @@ class StateMachine:
                 self.cur_state = self.next_state #<-현재상태를 다음상태로 변경
                 return
         #이벤트에 대한 처리가 안됨
-        print(f'처리되지 않은 이벤트 {event_to_string(state_event)}')
+        #마우스이벤트가 아니면 출력
+
+        #print(f'처리되지 않은 이벤트 {event_to_string(state_event)}')
 

@@ -216,8 +216,21 @@ class Enemy:
 
     def handle_collision(self, group, other):
         if group in ('bubble:enemy', 'cannon:enemy', 'EQ:enemy'):
-            self.HP -= 1 * other.damage
+           # self.HP -= 1 * other.damage
+            damage = getattr(other, "damage", 0)
+            hit_interval = getattr(other, "hit_interval", None)
 
+            # --- 즉발 스킬(버블 등) ---
+            if hit_interval is None:
+                self.HP -= damage
+                print(f"Enemy HP: {self.HP}")
+            else:
+                # --- 지속 스킬: 스킬에게 데미지 허가를 물어본다 ---
+                # other.can_damage(self) 는 True/False 리턴
+                if hasattr(other, "can_damage") and other.can_damage(self):
+                    self.HP -= damage
+                    #디버깅용 몬스터 객체랑 현재 체력표시
+                    print(f"Enemy HP: {self.HP}")
         if self.HP <= 0:
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
@@ -529,16 +542,34 @@ class Swimmer(Enemy):
             fy = fh * 3
 
         self.swimming_image.clip_draw(fx, fy, fw, fh, self.x, self.y, self.scale, self.scale)
+
     def handle_collision(self, group, other):
         if group in ('bubble:enemy', 'cannon:enemy', 'EQ:enemy'):
-            self.HP -= 1 * other.damage
+
+            damage = getattr(other, "damage", 0)
+            hit_interval = getattr(other, "hit_interval", None)
+
+            # --- 즉발 스킬(쿨 없음) ---
+            if hit_interval is None:
+                self.HP -= damage
+
+            else:
+                # --- 지속 스킬은 can_damage() 체크 ---
+                if hasattr(other, "can_damage") and other.can_damage(self):
+                    self.HP -= damage
+
+            print(f"Enemy HP: {self.HP}")
+
         if self.HP <= 0:
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
             game_world.remove_object(self)
-        if group == 'player:enemy' :
+
+        # 플레이어 충돌
+        if group == 'player:enemy':
             if self.hit_timer >= 0.2:
                 self.hit_timer = 0.0
+
 
 class Captin(Enemy):
     def __init__(self, x, y, type,player):
@@ -659,14 +690,30 @@ class BIKER(Enemy):
 
     def handle_collision(self, group, other):
         if group in ('bubble:enemy', 'cannon:enemy', 'EQ:enemy'):
-            self.HP -= 1 * other.damage
+            damage = getattr(other, "damage", 0)
+            hit_interval = getattr(other, "hit_interval", None)
+
+            # --- 즉발 스킬(버블 등) ---
+            if hit_interval is None:
+                self.HP -= damage
+                print(f"Enemy HP: {self.HP}")
+
+            else:
+                # --- 지속 스킬 ---
+                if hasattr(other, "can_damage") and other.can_damage(self):
+                    self.HP -= damage
+                    print(f"Enemy HP: {self.HP}")
+
         if self.HP <= 0:
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
             game_world.remove_object(self)
+
         if group == 'player:enemy':
             if self.hit_timer >= 0.2:
                 self.hit_timer = 0.0
+
+
 class GHOST(Enemy):
     def __init__(self, x, y, type,player,is_parent = True):
         super().__init__(x, y, type,player,'Ghost.png',48,64,60,12)

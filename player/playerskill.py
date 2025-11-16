@@ -101,6 +101,8 @@ class WaterCannon:
         self.distance=250  #플레이어로부터 떨어진 거리
         self.icon_clip = (0, 0, 85, 120)  # 아이콘 클립좌표
         self.damage=10
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
         print("캐논호출호출")
     def can_use(self, current_time):
         #쿨타임 체크
@@ -112,9 +114,12 @@ class WaterCannon:
         print("Water Cannon used!")
     def update(self):
         self.duration -= game_framework.frame_time
+
         if self.duration <= 0:
             game_world.remove_object(self)
             return
+        for enemy in list(self.hit_cooldowns.keys()):
+            self.hit_cooldowns[enemy] += game_framework.frame_time
         # 플레이어 방향(8방향)에 따라 방향 설정
         self.dirX, self.dirY = self.player.dirX, self.player.dirY
         last_mouse_x, last_mouse_y = get_mouse_pos()
@@ -171,6 +176,20 @@ class WaterCannon:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.2
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
 class WaterBeam:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'water_beam.png'))
@@ -187,6 +206,8 @@ class WaterBeam:
         self.distance=500  #플레이어로부터 떨어진 거리
         self.icon_clip = (200, 200, 200, 200)#아이콘 클립좌표
         self.damage=20
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -261,6 +282,22 @@ class WaterBeam:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.2
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
+
+
 class EarthQuake:
     def __init__(self,player,Dx=0,Dy=0,deg=0.0,step=1):
         self.image = load_image(os.path.join('asset/player/skill', 'earth_quake.png'))
@@ -274,6 +311,8 @@ class EarthQuake:
         self.distance = 100*(step/5)  # 사거리
         self.icon_clip = (0, 0, 60, 60)  # 아이콘 클립좌표
         self.damage=30
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
         # 플레이어 방향(8방향)에 따라 방향 설정
         self.dirX, self.dirY = self.player.dirX, self.player.dirY
         last_mouse_x, last_mouse_y = get_mouse_pos()
@@ -345,6 +384,22 @@ class EarthQuake:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.2
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
+
+
 class WaterShield:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'water_sheild.png'))
@@ -357,6 +412,8 @@ class WaterShield:
         self.distance=200  #사거리
         self.icon_clip = (100, 100, 100, 100)  # 아이콘 클립좌표
         self.damage=3
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -397,6 +454,22 @@ class WaterShield:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.2
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
+
+
 class HyperBeam:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'hyper_beam.png'))
@@ -414,6 +487,8 @@ class HyperBeam:
         self.distance=1500  #플레이어로부터 떨어진 거리
         self.icon_clip = (200, 200, 200, 200)#아이콘 클립좌표
         self.damage=100
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -493,6 +568,22 @@ class HyperBeam:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.2
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
+
+
 class WaterParrying:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'water_parrying.png'))
@@ -504,6 +595,8 @@ class WaterParrying:
         self.distance=200  #사거리
         self.icon_clip = (0, 0, 102, 75)  # 아이콘 클립좌표
         self.damage=0
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -545,6 +638,22 @@ class WaterParrying:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성 → 첫 타 즉시 허용
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = self.hit_interval
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
+
+
 class WaterHeal:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'water_heal.png'))
@@ -555,7 +664,8 @@ class WaterHeal:
         self.y=self.player.y
         self.heal_count=40
         self.icon_clip = (170, 0, 85, 90)  # 아이콘 클립좌표
-
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -597,6 +707,19 @@ class WaterHeal:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.0
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
 
 class IceSpear:
     def __init__(self,player,angle=0.0):
@@ -617,6 +740,9 @@ class IceSpear:
         self.distance=-100  #플레이어로부터 떨어진 거리
         self.icon_clip = (0, 0, 88, 16)#아이콘 클립좌표
         self.damage=20
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
+
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -707,6 +833,21 @@ class IceSpear:
         return self.image, self.icon_clip
     def get_bb(self):
         return self.x - self.sizeX/2, self.y - self.sizeX/2, self.x + self.sizeX/2, self.y + self.sizeX/2
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.2
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
+
 
 class HekirekiIssen:
     def __init__(self, player ):
