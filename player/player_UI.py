@@ -26,8 +26,8 @@ class Player_UI:
                 3:(load_image(os.path.join('asset/player/skill', 'flash.png')), (0, 0, 256, 256)),
             },
             4: {
-                1:None,
-                2: (load_image(os.path.join('asset/player/skill', 'thunder.png')), (0, 0, 104, 108))
+                1:(load_image(os.path.join('asset/player/skill', 'meteor.png')), (0, 0, 100, 100)),
+                2: (load_image(os.path.join('asset/player/skill', 'thunder.png')), (0, 0, 104, 108)),
              }
         }   # 예: {1: (image, (0,0,64,64)), 2: (...), ...}
 
