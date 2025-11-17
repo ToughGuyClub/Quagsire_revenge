@@ -36,7 +36,7 @@ class PlayerSkillManager:
                 3: FLASH,            #hekireki issen
             },
             4: {
-                1:SURF,         #반경 n미터 이내 적에게 낙뢰
+                1:METEOR,         #반경 n미터 이내 적에게 낙뢰
                 2:HekirekiIssen,         #메테오로 맵 전체 타격
             }
         }
@@ -934,49 +934,77 @@ class FLASH:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
-class SURF:
+class METEOR:
     def __init__(self,player,stack=0):
-        self.image = load_image(os.path.join('asset/player/skill', 'surf.png'))
-        self.duration = 4.0  # 지속 4초
-        self.x=0
-        self.y=height//2
+        self.image = load_image(os.path.join('asset/player/skill', 'meteor.png'))
+        self.image_after = load_image(os.path.join('asset/player/skill', 'meteor_after.png'))
+        self.duration = 5.0  # 지속 4초
+        self.x=-100
+        self.y=-100
+        self.target_y=0
         self.frame=0.0
         self.stack=stack
-        self.sizeX=200
-        self.sizeY=900
+        self.explosion=False
+        self.initialized=False
+        self.sizeX=300
+        self.sizeY=300
         self.player=player
-        self.speed=300
+        self.speed=400
         self.icon_clip = (0, 0, 88, 16)#아이콘 클립좌표
-        self.damage=30
+        self.damage=0
         self.hit_interval = 0.2  # 적당한 데미지 주기
         self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
 
+        if game_world.get_enemy_list_length() > 0:
+            tx, ty = game_world.get_enemy_list_y(self.stack)
+            if not (tx==-1):
+
+                self.x, self.target_y = tx,ty
+
+                self.y = self.target_y + 500
+        elif game_world.get_enemy_list_length() <= 0:
+            self.stack = 200
     def can_use(self, current_time):
         #쿨타임 체크
         pass
 
     def use(self):
-
         game_world.add_collision_pair('bubble:enemy', self, None)
         game_world.add_object(self, 3)
 
     def update(self):
-        self.x+=self.speed*game_framework.frame_time
         self.duration -= game_framework.frame_time
+        if self.duration<=4.9:
+            #다음 메테오 생성
+            if self.stack!=200:
+                METEOR(self.player,self.stack+1).use()
+                self.stack=200
         if self.duration <= 0:
             game_world.remove_collision_object(self)
             game_world.remove_object(self)
             return
-        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+        if self.explosion==False:
+           self.y -= self.speed * game_framework.frame_time
+        #적과 일정거리가 되면 폭발
+        if not self.explosion and abs(self.y - self.target_y) <= 10:
+            self.explosion=True
+            self.damage=10
+            self.frame=0.0
 
-
-        if self.duration <=3.7:
-            if self.stack <10:
-                SURF(self.player,self.stack+1).use()
-            self.stack=10  #중복생성 방지
+        if self.explosion and int(self.frame)<=3:
+            self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        elif self.explosion and int(self.frame)>3:
+            self.damage=30
             pass
+
+
     def draw(self):
-        self.image.clip_draw(int(self.frame) * 98, 0, 98,100,self.x, self.y,self.sizeX,self.sizeY)
+        if not self.explosion:
+            self.image.clip_draw(int(self.frame) * 98, 0, 98,100,self.x, self.y,self.sizeX,self.sizeY)
+        elif self.explosion and int(self.frame)<=3:
+            self.image.clip_draw(int(self.frame+1) * 98, 0, 98,100,self.x, self.y,self.sizeX,self.sizeY)
+        elif self.explosion and int(self.frame)>3:
+            self.image_after.clip_draw(0,0,256,128,self.x, self.y,self.sizeX/2,self.sizeY/2)
         draw_rectangle(*self.get_bb())
     def handle_event(self, event):
         pass
@@ -986,7 +1014,7 @@ class SURF:
     def get_icon_clip(self):
         return self.image, self.icon_clip
     def get_bb(self):
-        return self.x - self.sizeX/2, self.y - self.sizeY/2, self.x + self.sizeX/2, self.y + self.sizeY/2
+        return self.x - self.sizeX/4, self.y - self.sizeY/4, self.x + self.sizeX/4, self.y + self.sizeY/4
 
     def can_damage(self, enemy):
         # interval dict 없다면 생성

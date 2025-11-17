@@ -105,7 +105,7 @@ class Enemy:
         game_world.add_collision_pair('bubble:enemy', None, self)
         game_world.add_collision_pair('cannon:enemy', None, self)
         game_world.add_collision_pair('EQ:enemy', None, self)
-
+        game_world.enemy_list.append(self)
     # ------------------------------
     # 감지 / 공격 / 잃음 범위 관련
     # ------------------------------

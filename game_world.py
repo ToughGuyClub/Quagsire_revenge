@@ -6,6 +6,9 @@ world_temporary = [[] for _ in range(5)]
 # 유지되어야 하는 객체 (플레이어, UI 등)
 world_persistent = [[] for _ in range(3)]
 
+#궁극기를 위해서 적을 저장하는거
+enemy_list = []
+
 world_npc = [[] for _ in range(2)]
 
 #충돌처리 완료해서 지워질거 저장
@@ -32,7 +35,15 @@ def update():
         for o in layer:
             o.update()
 
+def get_enemy_list_y(n):
+    if n>=len(enemy_list):
+        return (-1,-1)
+    return (enemy_list[n].x,enemy_list[n].y)
 
+def get_enemy_list_length():
+    if enemy_list is None:
+        return -1
+    return len(enemy_list)
 def _really_remove_object(o):
     for layer in world_temporary:
         if o in layer:
@@ -44,6 +55,7 @@ def _really_remove_object(o):
             layer.remove(o)
             remove_collision_object(o)
             return
+    enemy_list.clear()
 
 def render():
     # 1) world_temporary 0,1,23 레이어 먼저 그리기
@@ -94,6 +106,10 @@ def clear_enemy():
                 layer.remove(o)
                 remove_collision_object(o)
 
+    enemy_list.clear()
+
+
+
 # collision_pairs에 있는 모든 O(객체)를 제거하는 함수임
 def remove_collision_object(o):
     for pairs in collision_pairs.values():
@@ -134,7 +150,7 @@ def clear_temporary():
     for layer in world_temporary:
         layer.clear()
     collision_pairs.clear()
-
+    enemy_list.clear()
 
 def clear_all():
     """게임 완전 종료 시 호출 → 모든 객체 제거"""
