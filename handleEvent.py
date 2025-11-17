@@ -86,6 +86,12 @@ def handle_events(player=None,world=None,current_Map=None):
             elif event.key ==SDLK_SPACE:
                 if player.dash_cooldown<=0:
                     player.dash_duration=0.1
+            #발표를 위한 이속조절모드
+            elif event.key ==SDLK_LSHIFT:
+                if player.speed<150:
+                    player.speed=150
+                else:
+                    player.speed=30
 
 
 
