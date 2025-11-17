@@ -92,6 +92,9 @@ def handle_events(player=None,world=None,current_Map=None):
                     player.speed=150
                 else:
                     player.speed=30
+            #발표를 위한 스킬쿨 초기화모드
+            elif event.key ==SDLK_c:
+                player.skill_manager.cooldowns[1]=  player.skill_manager.cooldowns[2]=  player.skill_manager.cooldowns[3]=  player.skill_manager.cooldowns[4]=0
 
 
 
