@@ -238,6 +238,8 @@ class Enemy:
         if self.HP <= 0:
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
+            if self in game_world.enemy_list:
+                game_world.enemy_list.remove(self)
             game_world.remove_object(self)
 
 class EnemyIdle:

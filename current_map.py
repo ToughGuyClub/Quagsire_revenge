@@ -105,7 +105,9 @@ class MapConnection:
                 "west":  (17, 1300, 400),  # 왼쪽 끝 → 묘지2
                 "east":  (19, 100, 400),   # 오른쪽 끝 → 화산(지우)
             },
-
+            19:{
+                "west":  (18, 1300, 400),  # 왼쪽 끝 → 묘지3
+            }
         }
 
     def get_transition(self, current_map_id, direction):

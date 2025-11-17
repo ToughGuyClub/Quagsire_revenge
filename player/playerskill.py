@@ -632,6 +632,7 @@ class WaterParrying:
             #현재 플레이어가 장착중인 빔기술 발사(쿨타임 초기화 포함)
             self.player.skill_manager.cooldowns[1]=0.0
             self.player.skill_manager.use_skill(1)
+            game_world.remove_collision_object(self)
         pass
 
     def get_icon_clip(self):
@@ -988,12 +989,15 @@ class METEOR:
         #적과 일정거리가 되면 폭발
         if not self.explosion and abs(self.y - self.target_y) <= 10:
             self.explosion=True
-            self.damage=10
+            self.damage=100
             self.frame=0.0
 
         if self.explosion and int(self.frame)<=3:
             self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
         elif self.explosion and int(self.frame)>3:
+            game_world.remove_collision_object(self)
+            game_world.remove_object(self)
+
             self.damage=30
             pass
 
