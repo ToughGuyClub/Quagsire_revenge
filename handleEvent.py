@@ -83,6 +83,9 @@ def handle_events(player=None,world=None,current_Map=None):
                 game_framework.push_mode(Status_mode)
                 pass
                 #스텟창 띄울 예정
+            elif event.key ==SDLK_SPACE:
+                if player.dash_cooldown<=0:
+                    player.dash_duration=0.1
 
 
 

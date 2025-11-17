@@ -128,7 +128,10 @@ class Character:
         # 이동 방향
         self.dirX = 0
         self.dirY = 0
-        self.speed = 100.0
+        self.speed = 30.0
+        self.dash_speed=150.0
+        self.dash_duration=0.0
+        self.dash_cooldown=1.0
         # 현재 모션 상태
         self.motion_state = 'idle'
         self.attack_anim_timer = 0
@@ -224,6 +227,16 @@ class Character:
             self.slow_effect_timer-=game_framework.frame_time
             if self.slow_effect_timer<0.0:
                 self.slow_effect_timer=0.0
+        #대쉬관련
+        if self.dash_duration>0.0:
+            self.dash_duration-=game_framework.frame_time
+            if self.dash_duration<0.0:
+                self.dash_duration=0.0
+                self.dash_cooldown=1.0  #대쉬끝나면 쿨타임 시작
+        if self.dash_cooldown>0.0:
+            self.dash_cooldown-=game_framework.frame_time
+            if self.dash_cooldown<0.0:
+                self.dash_cooldown=0.0
 
     def update_frame(self):
         # 공격, 이동, 대기 상태별로 다르게 처리
@@ -393,6 +406,9 @@ class RUN:
             #느려지는 효과 적용
             next_x = self.player.x + self.player.dirX * self.player.speed*0.5*game_framework.frame_time*10.0
             next_y = self.player.y + self.player.dirY * self.player.speed*0.5*game_framework.frame_time*10.0
+        elif self.player.dash_duration>0.0:
+            next_x = self.player.x + self.player.dirX * self.player.dash_speed*game_framework.frame_time*10.0
+            next_y = self.player.y + self.player.dirY * self.player.dash_speed*game_framework.frame_time*10.0
         else:
             next_x = self.player.x + self.player.dirX * self.player.speed*game_framework.frame_time*10.0
             next_y = self.player.y + self.player.dirY * self.player.speed*game_framework.frame_time*10.0
