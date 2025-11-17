@@ -36,8 +36,8 @@ class PlayerSkillManager:
                 3: FLASH,            #hekireki issen
             },
             4: {
-                1:HekirekiIssen,         #반경 n미터 이내 적에게 낙뢰
-                2:None,         #메테오로 맵 전체 타격
+                1:SURF,         #반경 n미터 이내 적에게 낙뢰
+                2:HekirekiIssen,         #메테오로 맵 전체 타격
             }
         }
         # 스킬별 쿨타임 설정 (초 단위)
@@ -934,3 +934,70 @@ class FLASH:
         return self.image, self.icon_clip
     def get_bb(self):
         pass
+class SURF:
+    def __init__(self,player,stack=0):
+        self.image = load_image(os.path.join('asset/player/skill', 'surf.png'))
+        self.duration = 4.0  # 지속 4초
+        self.x=0
+        self.y=height//2
+        self.frame=0.0
+        self.stack=stack
+        self.sizeX=200
+        self.sizeY=900
+        self.player=player
+        self.speed=300
+        self.icon_clip = (0, 0, 88, 16)#아이콘 클립좌표
+        self.damage=30
+        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
+
+    def can_use(self, current_time):
+        #쿨타임 체크
+        pass
+
+    def use(self):
+
+        game_world.add_collision_pair('bubble:enemy', self, None)
+        game_world.add_object(self, 3)
+
+    def update(self):
+        self.x+=self.speed*game_framework.frame_time
+        self.duration -= game_framework.frame_time
+        if self.duration <= 0:
+            game_world.remove_collision_object(self)
+            game_world.remove_object(self)
+            return
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 8
+
+
+        if self.duration <=3.7:
+            if self.stack <10:
+                SURF(self.player,self.stack+1).use()
+            self.stack=10  #중복생성 방지
+            pass
+    def draw(self):
+        self.image.clip_draw(int(self.frame) * 98, 0, 98,100,self.x, self.y,self.sizeX,self.sizeY)
+        draw_rectangle(*self.get_bb())
+    def handle_event(self, event):
+        pass
+    def handle_collision(self, group, other):
+        pass
+
+    def get_icon_clip(self):
+        return self.image, self.icon_clip
+    def get_bb(self):
+        return self.x - self.sizeX/2, self.y - self.sizeY/2, self.x + self.sizeX/2, self.y + self.sizeY/2
+
+    def can_damage(self, enemy):
+        # interval dict 없다면 생성
+        if enemy not in self.hit_cooldowns:
+            self.hit_cooldowns[enemy] = 0.2
+
+        self.hit_cooldowns[enemy] += game_framework.frame_time
+
+        # 일정 시간 지나면 공격 가능
+        if self.hit_cooldowns[enemy] >= self.hit_interval:
+            self.hit_cooldowns[enemy] = 0.0
+            return True
+
+        return False
