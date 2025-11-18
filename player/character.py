@@ -299,6 +299,7 @@ class Character:
                 if self.cur_HP < 0:
                     self.cur_HP = 0
                 print(f'Player HP: {self.cur_HP}/{self.max_HP}')
+            HIT_EFFECT(self,10)
 
     def gain_exp(self, amount):
         self.exp += amount
@@ -529,6 +530,7 @@ class SKILL:
         self.player = player
         self.timer=0.0
 
+
     def enter(self,e):
         self.timer=0.0
         #입력된 이벤트에 따라 해당 스킬 생성
@@ -562,3 +564,24 @@ class SKILL:
         else:
             self.player.IDLE.draw()
         pass
+
+class HIT_EFFECT:
+    def __init__(self, player,dmg):
+        self.font = load_font('asset/screen/intro/introFont.ttf', 30)
+        self.player = player
+        self.timer=0.3  #맞는 효과 지속시간
+        self.y=player.y
+        self.dmg=dmg
+        self.offset=player.scale/2
+        game_world.add_object(self,3)
+
+    def update(self):
+        self.timer-=game_framework.frame_time
+        self.offset+=50*game_framework.frame_time
+        if self.timer<=0.0:
+            game_world.remove_object(self)
+
+
+
+    def draw(self):
+        self.font.draw(self.player.x-self.player.scale//4, self.y + self.offset, f"{self.dmg}", (255, 0, 0))
