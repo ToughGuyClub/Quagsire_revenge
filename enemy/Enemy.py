@@ -71,7 +71,7 @@ class Enemy:
         self.type = type
         self.speed = 2.0
         self.is_enemy = True
-
+        self.damage = 5*type*0.5
         # --- 위치 관련 ---
         self.x = x
         self.y = y
@@ -379,6 +379,7 @@ class AttackBall:
         self.y = y
         self.dirX = dirX
         self.dirY = dirY
+        self.damage = 5*level*0.5
         self.speed = speed
         self.scale = 32
         self. frame = 0
@@ -766,7 +767,7 @@ class BombAttack:
         self.speed = 15
         self.scale = 64
         self.frame = 0.0
-
+        self.damage = 5 * 3 * 0.5
 
 
     def update(self):
@@ -798,6 +799,7 @@ class SLOWATTACK:
         self.scale = 64
         self.frame = 0.0
 
+        self.damage = 5 * 3 * 0.5
 
 
     def update(self):
@@ -829,6 +831,7 @@ class SEAGULL:
         self.dirY = dirY
         self.speed = 10
         self.scale = 32
+        self.damage = 5 * 5 * 0.5
         self.frame = 0.0
         self.active = False
         self.activation_timer = 1.0  # 발동 대기 시간
@@ -884,6 +887,7 @@ class ACIENTPOWER:
         self.speed = 13
         self.scale = 32
         self.frame = 0.0
+        self.damage = 5 * 4 * 0.5
         self.player = player
         self.active = False
         self.activation_timer = 1.0  # 발동 대기 시간
@@ -939,6 +943,7 @@ class MUSIC:
         self.dirY = None
         self.speed = 13
         self.scale = 64
+        self.damage = 5 * 6 * 0.5
         self.activation_timer = 0.1  # 발동 대기 시간
         self.stack = stack
         self.player = player
@@ -990,7 +995,7 @@ class SHADOWBALL:
         self.speed = 12
         self.scale = 48
         self.frame = 0.0
-
+        self.damage = 5 * 10 * 0.5
 
 
     def update(self):

@@ -282,24 +282,24 @@ class Character:
             if hasattr(other, 'swimming_mode'):
                 # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
                 if getattr(other, 'hit_timer', 0) >= 0.2:
-                    self.cur_HP -= 10
+                    self.cur_HP -= other.damage
                     if self.cur_HP < 0:
                         self.cur_HP = 0
             elif hasattr(other, 'dashing'):
                 # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
                 if getattr(other, 'hit_timer', 0) >= 0.2:
-                    self.cur_HP -= 10
+                    self.cur_HP -= other.damage
                     if self.cur_HP < 0:
                         self.cur_HP = 0
 
                 print(f'Player HP: {self.cur_HP}/{self.max_HP}')
             else:
 
-                self.cur_HP -= 10
+                self.cur_HP -= other.damage
                 if self.cur_HP < 0:
                     self.cur_HP = 0
                 print(f'Player HP: {self.cur_HP}/{self.max_HP}')
-            HIT_EFFECT(self,10)
+            HIT_EFFECT(self,other.damage)
 
     def gain_exp(self, amount):
         self.exp += amount
