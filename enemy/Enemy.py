@@ -236,6 +236,7 @@ class Enemy:
                     #디버깅용 몬스터 객체랑 현재 체력표시
                     print(f"Enemy HP: {self.HP}")
         if self.HP <= 0:
+            DEATHEFFECTENEMY(self.x, self.y)
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
             if self in game_world.enemy_list:
@@ -1010,3 +1011,23 @@ class SHADOWBALL:
             game_world.remove_object(self)
         elif group == 'EQ:enemy':
             game_world.remove_object(self)
+
+
+
+class DEATHEFFECTENEMY:
+    def __init__(self, x, y ):
+        self.image = load_image(os.path.join('asset/enemy', 'normal_death.png'))
+        self.x = x
+        self.y = y
+        self.scale = 64
+        self.frame = 0.0
+
+
+        game_world.add_object(self, 4)
+    def update(self):
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time)
+        if self.frame >=4:
+            game_world.remove_object(self)
+
+    def draw(self):
+        self.image.clip_draw(int(self.frame)*68, 0, 68,91 , self.x, self.y, self.scale,  self.scale*2)
