@@ -83,7 +83,9 @@ class Enemy:
         #--- 상태이상 ---
         self.flashed = False
         self.flash_timer = 0.0
-        self.push_degree=0.0
+        self.is_hit = False
+        self.hit_effect_timer = 0.0
+        self.push_degree = 0.0
         # --- 플레이어 참조 ---
         self.target_player = player
 
@@ -138,8 +140,15 @@ class Enemy:
         else:
             self.dirY = 1 if dy > 0 else -1
             self.dirX = 0
-
-        self.state_machine.update(self.target_player)
+        if self.is_hit:
+            self.hit_effect_timer -= game_framework.frame_time
+            if self.hit_effect_timer <= 0:
+                self.is_hit = False
+            #넉백 처리
+            push_distance = 100.0 * game_framework.frame_time * 20.0 * self.hit_effect_timer
+            self.x += math.cos(self.push_degree) * push_distance
+            self.y += math.sin(self.push_degree) * push_distance
+        else: self.state_machine.update(self.target_player)
 
     def attack_action(self, player):
         """기본 공격: 몬스터볼 한 발"""
@@ -219,6 +228,7 @@ class Enemy:
         return self.x - self.scale / 2, self.y - self.scale / 2, self.x + self.scale / 2, self.y + self.scale / 2
 
     def handle_collision(self, group, other):
+        ishit=False
         if group in ('bubble:enemy', 'cannon:enemy', 'EQ:enemy'):
            # self.HP -= 1 * other.damage
             damage = getattr(other, "damage", 0)
@@ -227,14 +237,23 @@ class Enemy:
             # --- 즉발 스킬(버블 등) ---
             if hit_interval is None:
                 self.HP -= damage
+                ishit=True
                 print(f"Enemy HP: {self.HP}")
             else:
                 # --- 지속 스킬: 스킬에게 데미지 허가를 물어본다 ---
                 # other.can_damage(self) 는 True/False 리턴
                 if hasattr(other, "can_damage") and other.can_damage(self):
                     self.HP -= damage
+                    ishit = True
                     #디버깅용 몬스터 객체랑 현재 체력표시
                     print(f"Enemy HP: {self.HP}")
+        if ishit:
+            self.is_hit = True
+            self.hit_effect_timer = 0.3
+            #넉백 각도 설정
+            dx = self.x - other.x
+            dy = self.y - other.y
+            self.push_degree = math.atan2(dy, dx)
         if self.HP <= 0:
             DEATHEFFECTENEMY(self.x, self.y)
             if hasattr(self.target_player, "gain_exp"):
