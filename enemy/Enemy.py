@@ -83,7 +83,7 @@ class Enemy:
         #--- 상태이상 ---
         self.flashed = False
         self.flash_timer = 0.0
-
+        self.push_degree=0.0
         # --- 플레이어 참조 ---
         self.target_player = player
 
@@ -385,6 +385,7 @@ class AttackBall:
         self. frame = 0
         self.level = level
         self.frame_time = 0.1
+        self.push_degree= math.degrees(math.atan2(dirY, dirX))
     def update(self):
         self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
         self.y += self.dirY * self.speed*game_framework.frame_time* self.speed*5.0
@@ -462,6 +463,7 @@ class Swimmer(Enemy):
         self.degree = 0.0
         self.attack_count = 0
         self.hit_timer = 0.0
+        self.push_degree = 0.0
         game_world.add_collision_pair('player:enemy', None, self)
     def attack_action(self, player):
 
@@ -493,7 +495,7 @@ class Swimmer(Enemy):
 
         # 수영중 이동
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
-
+        self.push_degree = self.degree
         self.x += math.cos(self.degree) * self.speed*20.0 * game_framework.frame_time * self.speed * 10.0
         self.y += math.sin(self.degree) * self.speed*20.0 * game_framework.frame_time * self.speed * 10.0
         if self.hit_timer <= 0.2:
@@ -665,6 +667,7 @@ class BIKER(Enemy):
         self.dirY = 0
         self.dashing = False    # 돌진 중인지 여부
         self.hit_timer = 0.0
+        self.push_degree =0.0
         game_world.add_collision_pair('player:enemy', None, self)
     def update(self):
         self.cooldown -= game_framework.frame_time
@@ -768,7 +771,7 @@ class BombAttack:
         self.scale = 64
         self.frame = 0.0
         self.damage = 5 * 3 * 0.5
-
+        self.push_degree = math.degrees(math.atan2(dirY, dirX))
 
     def update(self):
         self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
@@ -801,6 +804,7 @@ class SLOWATTACK:
 
         self.damage = 5 * 3 * 0.5
 
+        self.push_degree = math.degrees(math.atan2(dirY, dirX))
 
     def update(self):
         self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0
@@ -835,6 +839,7 @@ class SEAGULL:
         self.frame = 0.0
         self.active = False
         self.activation_timer = 1.0  # 발동 대기 시간
+        self.push_degree = math.degrees(math.atan2(dirY, dirX))
         #월드에 넣기
         game_world.add_object(self, 4)
         game_world.add_collision_pair('player:enemy', None, self)
@@ -891,6 +896,7 @@ class ACIENTPOWER:
         self.player = player
         self.active = False
         self.activation_timer = 1.0  # 발동 대기 시간
+        self.push_degree = 0.0
         #월드에 넣기
         game_world.add_object(self, 4)
         game_world.add_collision_pair('player:enemy', None, self)
@@ -907,6 +913,7 @@ class ACIENTPOWER:
             if self.dirX is None and self.dirY is None:
                 dx = self.player.x - self.x
                 dy = self.player.y - self.y
+                self.push_degree = math.degrees(math.atan2(dy, dx))
                 dist = math.sqrt(dx ** 2 + dy ** 2)
                 if dist != 0:
                     self.dirX, self.dirY = dx / dist, dy / dist
@@ -948,6 +955,7 @@ class MUSIC:
         self.stack = stack
         self.player = player
         self.active = False
+        self.push_degree = 0.0
         #월드에 넣기
         game_world.add_object(self, 4)
         game_world.add_collision_pair('player:enemy', None, self)
@@ -962,6 +970,7 @@ class MUSIC:
         if self.dirX is None and self.dirY is None:
             dx = self.player.x - self.x
             dy = self.player.y - self.y
+            self.push_degree = math.degrees(math.atan2(dy, dx))
             dist = math.sqrt(dx ** 2 + dy ** 2)
             if dist != 0:
                 self.dirX, self.dirY = dx / dist, dy / dist
@@ -996,7 +1005,7 @@ class SHADOWBALL:
         self.scale = 48
         self.frame = 0.0
         self.damage = 5 * 10 * 0.5
-
+        self.push_degree = math.degrees(math.atan2(dirY, dirX))
 
     def update(self):
         self.x += self.dirX * self.speed*game_framework.frame_time* self.speed*5.0

@@ -132,6 +132,7 @@ class Character:
         self.dash_speed=150.0
         self.dash_duration=0.0
         self.dash_cooldown=1.0
+
         # 현재 모션 상태
         self.motion_state = 'idle'
         self.attack_anim_timer = 0
@@ -147,6 +148,9 @@ class Character:
 
         #적에게 맞았을 때 생기는 효과
         self.slow_effect_timer=0.0
+        self.is_hit=False
+        self.hit_effect_timer=0.0
+        self.push_degree=0.0
 
         #공격 및 스킬
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
@@ -156,6 +160,7 @@ class Character:
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
         self.ATTACK = ATTACK(self)
+
         self.SKILL=SKILL(self)
         self.state_machine = StateMachine(
             self.IDLE,  # <-시작상태 지정
@@ -195,7 +200,9 @@ class Character:
                     key_down: self.RUN,
                     key_up: self.RUN,
                     click_left_down: self.ATTACK,
-                }
+
+                },
+
             }
 
         )
@@ -219,7 +226,16 @@ class Character:
             self.IDLE.draw()
         draw_rectangle(*self.get_bb())
     def update(self):
-        self.state_machine.update(self.current_map)
+        if self.is_hit:
+            self.hit_effect_timer-=game_framework.frame_time
+            if self.hit_effect_timer<=0.0:
+                self.is_hit=False
+            else:
+                #넉백효과
+                push_distance=100.0*game_framework.frame_time*10.0*self.hit_effect_timer
+                self.x+=math.cos(self.push_degree)*push_distance
+                self.y+=math.sin(self.push_degree)*push_distance
+        else: self.state_machine.update(self.current_map)
         self.update_frame()
         self.skill_manager.update()
         #상태이상효과 타이머 감소하는거
@@ -278,6 +294,7 @@ class Character:
         return self.x - 25, self.y - 20, self.x + 25, self.y + 60
 
     def handle_collision(self, group, other):
+        ishit=False
         if group == 'player:enemy':
             if hasattr(other, 'swimming_mode'):
                 # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
@@ -285,20 +302,27 @@ class Character:
                     self.cur_HP -= other.damage
                     if self.cur_HP < 0:
                         self.cur_HP = 0
+                    ishit=True
             elif hasattr(other, 'dashing'):
                 # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
                 if getattr(other, 'hit_timer', 0) >= 0.2:
                     self.cur_HP -= other.damage
                     if self.cur_HP < 0:
                         self.cur_HP = 0
-
+                ishit = True
                 print(f'Player HP: {self.cur_HP}/{self.max_HP}')
             else:
 
                 self.cur_HP -= other.damage
                 if self.cur_HP < 0:
                     self.cur_HP = 0
+                ishit = True
+
                 print(f'Player HP: {self.cur_HP}/{self.max_HP}')
+        if ishit:
+            self.push_degree=math.atan2(self.y-other.y,self.x-other.x)
+            self.hit_effect_timer=0.2
+            self.is_hit=True
             HIT_EFFECT(self,other.damage)
 
     def gain_exp(self, amount):
@@ -320,6 +344,8 @@ class Character:
         self.skill_points += 1  # 스킬 포인트 지급
         self.max_exp = int(self.max_exp * 1.2)
         print(f" LEVEL UP! Lv.{self.level} | Next EXP: {self.max_exp}")
+    def hit_check(self,e):
+        return self.is_hit
 
 class IDLE:
 
@@ -376,6 +402,8 @@ class RUN:
 
     def do(self,e,current_map):
         if self.player.lock_move:
+            return
+        if self.player.is_hit:
             return
         dx, dy = 0, 0
 
@@ -522,6 +550,27 @@ class ATTACK:
             p.image_normal_attack.clip_draw(int(p.frame) * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
         else:
             p.image_normal_attack.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
+
+    def draw(self):
+        p = self.player
+        if p.dirX < 0 and p.dirY < 0:  # 좌하
+            p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX < 0 and p.dirY == 0:  # 좌
+            p.image_walking.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX < 0 and p.dirY > 0:  # 좌상
+            p.image_walking.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX == 0 and p.dirY > 0:  # 상
+            p.image_walking.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX > 0 and p.dirY > 0:  # 우상
+            p.image_walking.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX > 0 and p.dirY == 0:  # 우
+            p.image_walking.clip_draw(int(p.frame)* 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX > 0 and p.dirY < 0:  # 우하
+            p.image_walking.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.dirX == 0 and p.dirY < 0:  # 하
+            p.image_walking.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+        else:
+            p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
 
 #스킬도 상태로 구현하기위한 그런거
 class SKILL:

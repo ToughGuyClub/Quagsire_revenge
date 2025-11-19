@@ -103,6 +103,7 @@ class WaterCannon:
         self.damage=10
         self.hit_interval = 0.2  # 적당한 데미지 주기
         self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
+        self.push_degree=0.0
         print("캐논호출호출")
     def can_use(self, current_time):
         #쿨타임 체크
@@ -126,6 +127,7 @@ class WaterCannon:
         dx = last_mouse_x - self.player.x
         dy =  last_mouse_y - self.player.y  # y좌표 보정 (pico2d는 아래→위)
         self.degree = math.degrees(math.atan2(dy, dx))
+        self.push_degree=self.degree
         #플레이어 방향수정
         if abs(dx) < 10 and abs(dy) < 10:
             pass  # 너무 가까우면 방향 유지
@@ -208,6 +210,7 @@ class WaterBeam:
         self.damage=20
         self.hit_interval = 0.2  # 적당한 데미지 주기
         self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
+        self.push_degree=0.0
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -228,6 +231,7 @@ class WaterBeam:
         dx = last_mouse_x - self.player.x
         dy =  last_mouse_y - self.player.y  # y좌표 보정 (pico2d는 아래→위)
         self.degree = math.degrees(math.atan2(dy, dx))
+        self.push_degree=self.degree
         #플레이어 방향수정
         if abs(dx) < 10 and abs(dy) < 10:
             pass  # 너무 가까우면 방향 유지
@@ -320,7 +324,7 @@ class EarthQuake:
         dy = last_mouse_y - self.player.y  # y좌표 보정 (pico2d는 아래→위)
         if step==1: self.degree = math.degrees(math.atan2(dy, dx))
         else: self.degree=deg
-
+        self.push_degree=self.degree
         # 플레이어 방향수정
         if abs(dx) < 10 and abs(dy) < 10:
             pass  # 너무 가까우면 방향 유지
@@ -489,6 +493,7 @@ class HyperBeam:
         self.damage=100
         self.hit_interval = 0.2  # 적당한 데미지 주기
         self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
+        self.push_degree=0.0
     def can_use(self, current_time):
         #쿨타임 체크
         pass
@@ -519,6 +524,7 @@ class HyperBeam:
         dx = last_mouse_x - self.player.x
         dy =  last_mouse_y - self.player.y  # y좌표 보정 (pico2d는 아래→위)
         self.degree = math.degrees(math.atan2(dy, dx))
+        self.push_degree=self.degree
         #플레이어 방향수정
         if abs(dx) < 10 and abs(dy) < 10:
             pass  # 너무 가까우면 방향 유지
@@ -740,7 +746,7 @@ class IceSpear:
         self.y=self.player.y
         self.distance=-100  #플레이어로부터 떨어진 거리
         self.icon_clip = (0, 0, 88, 16)#아이콘 클립좌표
-        self.damage=20
+        self.damage=0
         self.hit_interval = 0.2  # 적당한 데미지 주기
         self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
 
@@ -798,6 +804,9 @@ class IceSpear:
             self.y = self.player.y + self.distance * math.sin(rad)
         if self.duration <=3.0:
             self.charged=True
+            self.damage=20
+            self.push_degree=self.degree +self.EXangle
+
             rad = math.radians(self.degree +self.EXangle/2)  # 발사 각도(보정 포함)
             # 이동
             self.x += math.cos(rad) * 1000 * game_framework.frame_time
