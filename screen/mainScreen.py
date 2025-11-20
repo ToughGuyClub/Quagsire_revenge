@@ -2,11 +2,14 @@ from pico2d import *
 import screen.background
 import game_framework
 import screen.intro
+import play_modes.Town_mode
 game_start = None
 game_logo = None
 running = True
 mscreen_start_time = 0.0
 background =None
+load_save=False
+
 class main_screen:
     def __init__(self):
         #self.game_start = load_image('game_start.png')
@@ -32,12 +35,19 @@ def finish():
     del game_start
     del game_logo
 def update():
+    global load_save
     # 핸들이벤트로 상태변경
     result = handle_events()
     if result == 'start':
         game_framework.change_mode(screen.intro)
+
     elif result == 'continue':
         #세이브 로드 추가 예정
+        print("Load Game")
+
+        load_save = True
+        game_framework.change_mode(play_modes.Town_mode)
+
         pass
     elif result == 'exit':
         game_framework.quit()
@@ -51,6 +61,8 @@ def draw():
     game_start.clip_draw(0,380,291,190, 1400//2, 600//2+100, 200, 100)
     game_start.clip_draw(0, 190, 291, 190, 1400 // 2, 600 // 2, 200, 100)
     game_start.clip_draw(0, 0, 291, 190, 1400 // 2, 600 // 2-100, 200, 100)
+    draw_rectangle(540, 360, 840, 450)  # 시작 버튼 영역
+    draw_rectangle(540, 250, 840, 330)  # 컨티
     update_canvas()
 def handle_events():
     global running
@@ -68,6 +80,7 @@ def handle_events():
             # 컨티뉴 버튼 영역
             elif 540 <= x <= 840 and 250 <= y <= 330:
                 #세이브 로드 추가 예정
+
                 return 'continue'
             # 종료 버튼 영역
             elif 540 <= x <= 840 and 150 <= y <= 230:
@@ -78,3 +91,6 @@ def pause():
     pass
 def resume():
     pass
+def get_load_save():
+    global load_save
+    return load_save

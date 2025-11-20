@@ -145,7 +145,7 @@ class Character:
         self.max_exp = 100
         self.exp = 0
         self.skill_points = 0
-
+        self.unlock_index=0
         #적에게 맞았을 때 생기는 효과
         self.slow_effect_timer=0.0
         self.is_hit=False
@@ -387,7 +387,49 @@ class Character:
             self.unlock_index = (self.unlock_index + 1) % 4
 
         print("모든 스킬이 이미 최대 레벨입니다.")
+    def save(self, filename="save.json"):
+        data = {
+            "player": {
 
+                "level": self.level,
+                "exp": self.exp,
+                "max_exp": self.max_exp,
+                "max_HP": self.max_HP,
+                "cur_HP": self.cur_HP,
+                "skill_points": self.skill_points,
+                "unlock_index": self.unlock_index,
+            },
+
+            "skills": {
+                "current_skills": self.skill_manager.current_skills,
+                "current_unlock_skills": self.skill_manager.current_unlock_skills
+            }
+        }
+
+        with open(filename, "w") as f:
+            json.dump(data, f, indent=4)
+
+        print("게임 저장 완료!")
+    def load(self, filename="save.json"):
+
+        with open(filename, "r") as f:
+            data = json.load(f)
+
+        # --- 캐릭터 ---
+        p = data["player"]
+        self.level = p["level"]
+        self.exp = p["exp"]
+        self.max_exp = p["max_exp"]
+        self.max_HP = p["max_HP"]
+        self.cur_HP = p["cur_HP"]
+        self.skill_points = p["skill_points"]
+        self.unlock_index = p["unlock_index"]
+        # --- 스킬 ---
+        s = data["skills"]
+        self.skill_manager.current_skills = s["current_skills"]
+        self.skill_manager.current_unlock_skills = s["current_unlock_skills"]
+
+        print("게임 로드 완료!")
 
 class IDLE:
 

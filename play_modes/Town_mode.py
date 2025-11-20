@@ -77,6 +77,11 @@ def init():
     #랜더링에 필요한것
     game_world.add_object(town, 0)
 
+    #세이브로드
+    import screen.mainScreen
+    if screen.mainScreen.get_load_save():
+        player.load()
+        handleEvent.load_save=False
 
 
 def update():

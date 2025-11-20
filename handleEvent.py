@@ -10,8 +10,11 @@ x=0
 y=0
 last_mouse_x=0
 last_mouse_y=0
+
+
 def handle_events(player=None,world=None,current_Map=None):
     global pressed_keys
+    global load_save
     global last_mouse_x, last_mouse_y
     if player is None and world is None and current_Map is None:
         return True
@@ -25,10 +28,10 @@ def handle_events(player=None,world=None,current_Map=None):
         player.handle_event(event,current_Map)
         if current_Map.get_current_map()==0:
             if event.type == SDL_MOUSEBUTTONDOWN:
-                x, y = event.x, height - 1 - event.y
+                x, y = event.x, 800 - 1 -event.y
                 #시작 버튼 영역
                 if 540 <= x <= 840 and 360 <= y <= 450:
-                    current_Map.change_map(1)
+                    #current_Map.change_map(1)
                     return True
                 # 컨티뉴 버튼 영역
                 elif 540 <= x <= 840 and 250 <= y <= 330:
@@ -37,7 +40,7 @@ def handle_events(player=None,world=None,current_Map=None):
                     return True
                 # 종료 버튼 영역
                 elif 540 <= x <= 840 and 150 <= y <= 230:
-                    close_canvas()
+                    #close_canvas()
                     return False
                 else:
                     return True
@@ -95,7 +98,10 @@ def handle_events(player=None,world=None,current_Map=None):
             #발표를 위한 스킬쿨 초기화모드
             elif event.key ==SDLK_c:
                 player.skill_manager.cooldowns[1]=  player.skill_manager.cooldowns[2]=  player.skill_manager.cooldowns[3]=  player.skill_manager.cooldowns[4]=0
-
+            elif event.key ==SDLK_l:
+                player.load()
+            elif event.key ==SDLK_b:
+                player.save()
 
 
         elif event.type == SDL_KEYUP:
@@ -112,3 +118,7 @@ def handle_events(player=None,world=None,current_Map=None):
 
 def get_mouse_pos():
     return last_mouse_x, last_mouse_y
+
+def get_load_save():
+    global load_save
+    return load_save
