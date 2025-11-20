@@ -16,8 +16,8 @@ class PlayerSkillManager:
     def __init__(self, player):
         self.player = player
         self.timer=2.0
-        self.current_skills = [1,1,1,1]  # 현재 장착된 스킬들
-        self.current_unlock_skills = [2,1,1,1] #현재 해금 된 스킬
+        self.current_skills = [0,0,0,0]  # 현재 장착된 스킬들
+        self.current_unlock_skills = [0,0,0,0] #현재 해금 된 스킬
         self.cur_using_skill = None
         self.skills = {
             1: {  # 1번 슬롯
@@ -39,6 +39,7 @@ class PlayerSkillManager:
             4: {
                 1:METEOR,         #반경 n미터 이내 적에게 낙뢰
                 2:HekirekiIssen,         #메테오로 맵 전체 타격
+                3: None,
             }
         }
         # 스킬별 쿨타임 설정 (초 단위)

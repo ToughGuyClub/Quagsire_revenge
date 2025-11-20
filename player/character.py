@@ -337,6 +337,9 @@ class Character:
             self.exp -= self.max_exp
             self.level_up()
             self.hp_update()
+
+
+
     def hp_update(self):
         #레벨업시 최대체력으로회복및 최대체력1.1배증가
         self.max_HP = int(self.max_HP * 1.1)
@@ -344,14 +347,47 @@ class Character:
 
     def level_up(self):
         self.level += 1
+        self.skill_points += 1
+        self.unlock_skill()
         #5레벨당 스킬포인트 지급
         if self.level % 5 == 0:
-            self.skill_points += 1
+            pass
+
             print(f" Skill Point +1 (Total: {self.skill_points})")
         self.max_exp = int(self.max_exp * 1.2)
         print(f" LEVEL UP! Lv.{self.level} | Next EXP: {self.max_exp}")
     def hit_check(self,e):
         return self.is_hit
+
+    def unlock_skill(self):
+
+        # 스킬 포인트가 없으면 종료
+        if self.skill_points <= 0:
+            return
+
+        # 현재 순환할 인덱스가 없으면 0부터 시작
+        if not hasattr(self, "unlock_index"):
+            self.unlock_index = 0
+
+        # 4개의 슬롯만 바라보는 순환 구조
+        for _ in range(4):
+
+            # 현재 슬롯이 아직 3레벨 이하이면 강화 가능
+            if self.skill_manager.current_unlock_skills[self.unlock_index] < 3:
+                self.skill_manager.current_unlock_skills[self.unlock_index] += 1
+                print(f"스킬 {self.unlock_index} → {self.skill_manager.current_unlock_skills[self.unlock_index]} 레벨로 상승!")
+
+                self.skill_points -= 1
+
+                # 다음 해금은 다음 슬롯에서 시작
+                self.unlock_index = (self.unlock_index + 1) % 4
+                return
+
+            # 현재 슬롯이 이미 3이면 다음 슬롯으로 넘어감
+            self.unlock_index = (self.unlock_index + 1) % 4
+
+        print("모든 스킬이 이미 최대 레벨입니다.")
+
 
 class IDLE:
 

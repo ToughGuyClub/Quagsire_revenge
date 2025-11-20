@@ -80,16 +80,23 @@ def handle_events():
                     status.current_selected_skill[1] = player.skill_manager.current_skills[cur_slot] - 1
             elif event.key == SDLK_RIGHT:
                 slot = status.current_selected_skill[0]
-                if status.current_selected_skill[1] < 2 and player.skill_manager.current_skills[slot]<player.skill_manager.current_unlock_skills[slot]:
-                    status.current_selected_skill[1] += 1
-                    player.skill_manager.current_skills[slot] = status.current_selected_skill[1] + 1
+                cur_level = player.skill_manager.current_skills[slot]
+                max_level = player.skill_manager.current_unlock_skills[slot]
+
+                # 스킬 레벨 업
+                if cur_level < max_level:
+                    player.skill_manager.current_skills[slot] += 1
+                    status.current_selected_skill[1] = player.skill_manager.current_skills[slot] - 1
+
 
             elif event.key == SDLK_LEFT:
                 slot = status.current_selected_skill[0]
-                if status.current_selected_skill[1] > 0:
-                    status.current_selected_skill[1] -= 1
-                    player.skill_manager.current_skills[slot] = status.current_selected_skill[1] + 1
+                cur_level = player.skill_manager.current_skills[slot]
 
+                # 스킬 레벨 다운 (최소 1레벨)
+                if cur_level > 1:
+                    player.skill_manager.current_skills[slot] -= 1
+                    status.current_selected_skill[1] = player.skill_manager.current_skills[slot] - 1
 
 
 def pause():
