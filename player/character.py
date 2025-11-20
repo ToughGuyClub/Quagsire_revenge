@@ -295,6 +295,9 @@ class Character:
 
     def handle_collision(self, group, other):
         ishit=False
+        if self.dash_duration>0.0:
+            #대쉬중에는 피격무시
+            return
         if group == 'player:enemy':
             if hasattr(other, 'swimming_mode'):
                 # 예: 스위머가 수영 상태이고 hit_timer가 일정 이상이면 강타
