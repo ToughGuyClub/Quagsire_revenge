@@ -17,6 +17,7 @@ class PlayerSkillManager:
         self.player = player
         self.timer=2.0
         self.current_skills = [1,1,1,1]  # 현재 장착된 스킬들
+        self.current_unlock_skills = [2,1,1,1] #현재 해금 된 스킬
         self.cur_using_skill = None
         self.skills = {
             1: {  # 1번 슬롯

@@ -80,7 +80,7 @@ def handle_events():
                     status.current_selected_skill[1] = player.skill_manager.current_skills[cur_slot] - 1
             elif event.key == SDLK_RIGHT:
                 slot = status.current_selected_skill[0]
-                if status.current_selected_skill[1] < 2:
+                if status.current_selected_skill[1] < 2 and player.skill_manager.current_skills[slot]<player.skill_manager.current_unlock_skills[slot]:
                     status.current_selected_skill[1] += 1
                     player.skill_manager.current_skills[slot] = status.current_selected_skill[1] + 1
 

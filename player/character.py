@@ -144,7 +144,7 @@ class Character:
         self.level = 1
         self.max_exp = 100
         self.exp = 0
-        self.skill_points = 2
+        self.skill_points = 0
 
         #적에게 맞았을 때 생기는 효과
         self.slow_effect_timer=0.0
@@ -344,7 +344,10 @@ class Character:
 
     def level_up(self):
         self.level += 1
-        self.skill_points += 1  # 스킬 포인트 지급
+        #5레벨당 스킬포인트 지급
+        if self.level % 5 == 0:
+            self.skill_points += 1
+            print(f" Skill Point +1 (Total: {self.skill_points})")
         self.max_exp = int(self.max_exp * 1.2)
         print(f" LEVEL UP! Lv.{self.level} | Next EXP: {self.max_exp}")
     def hit_check(self,e):
