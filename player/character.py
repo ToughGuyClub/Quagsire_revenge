@@ -6,6 +6,7 @@ from state_machine import StateMachine
 from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK_a,SDLK_w,SDLK_s,SDLK_d,SDLK_1,SDLK_2,SDLK_3,SDLK_4,SDLK_t
 from player.playerskill import PlayerSkillManager
 from player.playerskill import HekirekiIssen
+from quest.questmanager import QuestManager
 from player.status import Status
 import current_map
 import game_framework
@@ -156,6 +157,9 @@ class Character:
         self.attack_manager = AttackManager(1.5)  # 1.5초 쿨타임
         self.skill_manager=PlayerSkillManager(self)
         self.lock_move=False
+
+        #퀘스트
+        self.quest_manager=QuestManager()
 
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)

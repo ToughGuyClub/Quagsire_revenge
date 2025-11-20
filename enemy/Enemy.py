@@ -4,6 +4,7 @@ import random
 
 import game_world
 from enemy.enemy_state_machine import EnemyStateMachine
+
 import os
 import game_framework
 TIME_PER_ACTION = 0.5
@@ -256,6 +257,11 @@ class Enemy:
             self.push_degree = math.atan2(dy, dx)
         if self.HP <= 0:
             DEATHEFFECTENEMY(self.x, self.y)
+            #퀘스트를 위해 있는 부분
+            import quest.questmanager
+            if self.target_player is not None:
+                if self.type>0:
+                    self.target_player.quest_manager.check_progress(self.type)
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
             if self in game_world.enemy_list:
@@ -590,6 +596,11 @@ class Swimmer(Enemy):
             print(f"Enemy HP: {self.HP}")
 
         if self.HP <= 0:
+            # 퀘스트를 위해 있는 부분
+            import quest.questmanager
+            if self.target_player is not None:
+                if self.type > 0:
+                    self.target_player.quest_manager.check_progress(self.type)
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
             game_world.remove_object(self)
@@ -735,6 +746,11 @@ class BIKER(Enemy):
                     print(f"Enemy HP: {self.HP}")
 
         if self.HP <= 0:
+            # 퀘스트를 위해 있는 부분
+            import quest.questmanager
+            if self.target_player is not None:
+                if self.type > 0:
+                    self.target_player.quest_manager.check_progress(self.type)
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
             game_world.remove_object(self)

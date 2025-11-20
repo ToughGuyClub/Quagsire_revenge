@@ -13,10 +13,11 @@ char_index = 0             # 현재 대사에서 몇 글자까지 출력됐는�
 text_speed = 0.03          # 한 글자 출력 간격 (초)
 text_timer = 0.0           # 타이머
 font = None
+players_quest_status=None
 def init():
     global s_img
     global p_img
-    global font
+    global font,players_quest_status
     if s_img==None:
 
         s_img=load_image(os.path.join('asset/map/town/Snorlax','Normal.png'))
@@ -26,7 +27,19 @@ def init():
         font = load_font('asset/screen/intro/introFont.ttf', 30)
     global dialogue, current_index
     current_index = 0
-    dialogue = load_dialogue('asset/map/town/Snorlax/quest/q1.txt')
+
+    from player.character import Character
+    for layer in game_world.world_persistent:
+        for o in layer:
+            if isinstance(o,Character):  # 예시) Character 클래스에 player_flag=True 넣어두면 탐색 가능
+                if players_quest_status==None:
+                    players_quest_status=o.quest_manager
+                    break
+
+
+    dialogue = players_quest_status.get_current_dialogue()
+    reset_dialogue_state()
+
     pass
 
 def finish():
@@ -84,6 +97,19 @@ def handle_events():
 
                 # 대사 끝
                 if current_index >= len(dialogue):
+
+                    #  대화 종료 → 퀘스트 상태 전환
+                    q = players_quest_status.quest_list[players_quest_status.current_index]
+
+                    if q.state == "intro":
+                        q.update_state("progress")
+
+                    elif q.state == "progress" and q.current >= q.target:
+                        q.update_state("complete")
+
+                    elif q.state == "complete":
+                        players_quest_status.current_index += 1  # 다음 퀘스트로 이동
+
                     game_framework.pop_mode()
                     return
 
@@ -100,3 +126,9 @@ def load_dialogue(path):
     with open(path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
         return [line.strip() for line in lines]
+
+def reset_dialogue_state():
+    global display_text, char_index, text_timer
+    display_text = ""
+    char_index = 0
+    text_timer = 0

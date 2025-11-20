@@ -1,0 +1,25 @@
+{
+    "player": {
+        "level": 2,
+        "exp": 20,
+        "max_exp": 120,
+        "max_HP": 110,
+        "cur_HP": 110,
+        "skill_points": 0,
+        "unlock_index": 1
+    },
+    "skills": {
+        "current_skills": [
+            1,
+            0,
+            0,
+            0
+        ],
+        "current_unlock_skills": [
+            1,
+            0,
+            0,
+            0
+        ]
+    }
+}
