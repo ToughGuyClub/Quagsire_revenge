@@ -538,29 +538,32 @@ class RUN:
                     return
         #일반 경계처리
 
-        self.player.x = next_x
-        self.player.y =  next_y
+
 
         # 화면 경계 처리
         transition = None
+        if game_world.get_enemy_list_length()<=0:
+            if next_x > 1400:
+                transition = current_map.get_transition( "east")
+            elif next_x < 0:
+                transition = current_map.get_transition( "west")
+            elif next_y > 800:
+                transition = current_map.get_transition( "north")
+            elif next_y < 0:
+                transition = current_map.get_transition( "south")
 
-        if next_x > 1400:
-            transition = current_map.get_transition( "east")
-        elif next_x < 0:
-            transition = current_map.get_transition( "west")
-        elif next_y > 800:
-            transition = current_map.get_transition( "north")
-        elif next_y < 0:
-            transition = current_map.get_transition( "south")
-
-        if transition:
-            next_map_id, spawn_x, spawn_y = transition
-            print(f" 맵 {current_map.get_current_map()} -> {next_map_id} 이동")
-            current_map.change_map(next_map_id)
-            self.player.x, self.player.y = spawn_x, spawn_y
-            return
-
-
+            if transition:
+                next_map_id, spawn_x, spawn_y = transition
+                print(f" 맵 {current_map.get_current_map()} -> {next_map_id} 이동")
+                current_map.change_map(next_map_id)
+                self.player.x, self.player.y = spawn_x, spawn_y
+                return
+        else:
+            #맵 경계처리 밖으로 못나가게하는거임
+            if next_x > 1400 or next_x < 0 or next_y > 800 or next_y < 0:
+                return
+        self.player.x = next_x
+        self.player.y = next_y
 
 
     def draw(self):
