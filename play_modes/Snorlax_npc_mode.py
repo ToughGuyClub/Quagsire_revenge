@@ -4,8 +4,7 @@ import game_framework
 import game_world
 
 
-s_img=None
-p_img=None
+
 dialogue = []
 current_index = 0
 display_text = ""          # 현재 화면에 출력되는 문자열
@@ -18,11 +17,7 @@ def init():
     global s_img
     global p_img
     global font,players_quest_status
-    if s_img==None:
 
-        s_img=load_image(os.path.join('asset/map/town/Snorlax','Normal.png'))
-    if p_img==None:
-        p_img=load_image(os.path.join('asset/player/Quagsire','Angry.png'))
     if font==None:
         font = load_font('asset/screen/intro/introFont.ttf', 30)
     global dialogue, current_index
@@ -58,6 +53,8 @@ def update():
             text_timer = 0
             display_text += dialogue[current_index][char_index]
             char_index += 1
+            players_quest_status.change_step(current_index)
+            print(current_index)
 
     handle_events()
     pass
@@ -70,9 +67,11 @@ def draw():
     draw_rectangle(10,10,1390,300,0,0,0,255,True)
     draw_rectangle(1180,300,1400,520,255,255,255,255,True)
     draw_rectangle(0,310,220,520,255,255,255,255,True)
-    s_img.draw(1290,410,200,200)
-    p_img.draw(110,410,200,200)
+
     font.draw(50, 200, display_text, (255,255,255))
+    #퀘스트 캐릭터 아이콘그리는거
+    players_quest_status.draw()
+
     update_canvas()
     pass
 
@@ -108,6 +107,8 @@ def handle_events():
                         q.update_state("complete")
 
                     elif q.state == "complete":
+                        q.state=="Realcomplete"
+                        players_quest_status.clear_quest+=1
                         players_quest_status.current_index += 1  # 다음 퀘스트로 이동
 
                     game_framework.pop_mode()

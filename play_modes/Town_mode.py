@@ -81,7 +81,7 @@ def init():
     import screen.mainScreen
     if screen.mainScreen.get_load_save():
         player.load()
-        handleEvent.load_save=False
+        screen.mainScreen.set_load_save(False)
 
 
 def update():

@@ -94,3 +94,6 @@ def resume():
 def get_load_save():
     global load_save
     return load_save
+def set_load_save(value):
+    global load_save
+    load_save = value

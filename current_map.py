@@ -10,6 +10,9 @@ class CurrentMap:
         self.map_conn = MapConnection()
     def change_map(self, new_map_id):
         #self.current_map[self.current_map_id].on_exit()  # 현재 맵 나가기
+
+
+
         game_world.clear_temporary()
         self.current_map_id = new_map_id
         import play_modes.Town_mode
