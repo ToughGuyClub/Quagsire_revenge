@@ -237,8 +237,13 @@ class Character:
             else:
                 #넉백효과
                 push_distance=100.0*game_framework.frame_time*10.0*self.hit_effect_timer
-                self.x+=math.cos(self.push_degree)*push_distance
-                self.y+=math.sin(self.push_degree)*push_distance
+                next_x=self.x+math.cos(self.push_degree)*push_distance
+                next_y=self.y+math.sin(self.push_degree)*push_distance
+                #경계 처리
+                if 0<=next_x<=width and 0<=next_y<=height:
+                    self.x=next_x
+                    self.y=next_y
+
         else: self.state_machine.update(self.current_map)
         self.update_frame()
         self.skill_manager.update()
