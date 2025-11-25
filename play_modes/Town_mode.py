@@ -15,7 +15,7 @@ width, height =  1400, 800
 frame_character=0
 open_canvas(width, height)
 from map.town.town_npc import Snorlax
-
+from enemy.Onix import Onix
 
 
 background = Background()
@@ -70,7 +70,7 @@ def init():
         player_UI = Player_UI(player)
         game_world.add_object(player_UI, 1, True)
 
-
+    Onix()
     town = Town()
 
 

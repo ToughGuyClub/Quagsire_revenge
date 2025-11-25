@@ -22,10 +22,16 @@ class Onix:
         self.frameY = 0
         self.dir = 1
         self.speed = 100
+        self.size=300
         game_world.add_object(self, 2)
     def update(self):
         pass
 
     def draw(self):
-        self.image_idle.clip_draw(int(self.frameX) * 96, self.frameY * 64, 96, 104, self.x, self.y, 400, 400)
+        self.image_idle.clip_draw(int(self.frameX) * 96, self.frameY * 64, 96, 104, self.x, self.y, self.size, self.size+self.size//4)
+        draw_rectangle(*self.get_bb())
         pass
+
+
+    def get_bb(self):
+        return self.x - self.size//4, self.y - (self.size)//6, self.x + self.size//4, self.y + (self.size+self.size//5)//2
