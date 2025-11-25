@@ -560,6 +560,29 @@ class RUN:
             if transition:
                 next_map_id, spawn_x, spawn_y = transition
                 print(f" 맵 {current_map.get_current_map()} -> {next_map_id} 이동")
+
+                #퀘스트 진행도에 따른 맵변경 처리
+                #Q1중에는 늪지,빙산,던전 못감
+                #Q2중에는 빙산,던전,못감
+                #Q3중에는 빙산,던전 못감
+                #Q4중에는 던전 못감
+                #Q5중에는 다 해금
+                if self.player.quest_manager.clear_quest==0:
+                    if next_map_id in [6,10,13]:
+                        print("아직 이 지역으로 갈 수 없습니다.")
+                        return
+                elif self.player.quest_manager.clear_quest==1:
+                    if next_map_id in [10,13]:
+                        print("아직 이 지역으로 갈 수 없습니다.")
+                        return
+                elif self.player.quest_manager.clear_quest==2:
+                    if next_map_id in [10,13]:
+                        print("아직 이 지역으로 갈 수 없습니다.")
+                        return
+                elif self.player.quest_manager.clear_quest==3:
+                    if next_map_id in [13]:
+                        print("아직 이 지역으로 갈 수 없습니다.")
+                        return
                 current_map.change_map(next_map_id)
                 self.player.x, self.player.y = spawn_x, spawn_y
                 return

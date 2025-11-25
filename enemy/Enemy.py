@@ -72,7 +72,7 @@ class Enemy:
         self.type = type
         self.speed = 2.0
         self.is_enemy = True
-        self.damage = 5*type*0.5
+        self.damage = 5*type*1.5
         # --- 위치 관련 ---
         self.x = x
         self.y = y
@@ -146,9 +146,21 @@ class Enemy:
             if self.hit_effect_timer <= 0:
                 self.is_hit = False
             #넉백 처리
+            #화면 밖으로 안나가게
             push_distance = 100.0 * game_framework.frame_time * 20.0 * self.hit_effect_timer
-            self.x += math.cos(self.push_degree) * push_distance
-            self.y += math.sin(self.push_degree) * push_distance
+            next_x = self.x + math.cos(self.push_degree) * push_distance
+            next_y = self.y + math.sin(self.push_degree) * push_distance
+            if next_x < 0:
+                next_x = 0
+            elif next_x > 1600:
+                next_x = 1600
+            if next_y < 0:
+                next_y = 0
+            elif next_y > 900:
+                next_y = 900
+
+            self.x =next_x
+            self.y =next_y
         else: self.state_machine.update(self.target_player)
 
     def attack_action(self, player):
@@ -404,7 +416,7 @@ class AttackBall:
         self.y = y
         self.dirX = dirX
         self.dirY = dirY
-        self.damage = 5*level*0.5
+        self.damage = 5*level*1.5
         self.speed = speed
         self.scale = 32
         self. frame = 0
@@ -805,7 +817,7 @@ class BombAttack:
         self.speed = 15
         self.scale = 64
         self.frame = 0.0
-        self.damage = 5 * 3 * 0.5
+        self.damage = 5 * 3 * 1.5
         self.push_degree = math.degrees(math.atan2(dirY, dirX))
 
     def update(self):
@@ -837,7 +849,7 @@ class SLOWATTACK:
         self.scale = 64
         self.frame = 0.0
 
-        self.damage = 5 * 3 * 0.5
+        self.damage = 5 * 3 * 1.5
 
         self.push_degree = math.degrees(math.atan2(dirY, dirX))
 
@@ -870,7 +882,7 @@ class SEAGULL:
         self.dirY = dirY
         self.speed = 10
         self.scale = 32
-        self.damage = 5 * 5 * 0.5
+        self.damage = 5 * 5 * 1.5
         self.frame = 0.0
         self.active = False
         self.activation_timer = 1.0  # 발동 대기 시간
@@ -927,7 +939,7 @@ class ACIENTPOWER:
         self.speed = 13
         self.scale = 32
         self.frame = 0.0
-        self.damage = 5 * 4 * 0.5
+        self.damage = 5 * 4 * 1.5
         self.player = player
         self.active = False
         self.activation_timer = 1.0  # 발동 대기 시간
