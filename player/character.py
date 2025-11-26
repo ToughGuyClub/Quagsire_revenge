@@ -151,6 +151,7 @@ class Character:
         self.slow_effect_timer=0.0
         self.is_hit=False
         self.hit_effect_timer=0.0
+        self.invincible=0.0
         self.push_degree=0.0
 
         #공격 및 스킬
@@ -262,6 +263,10 @@ class Character:
             self.dash_cooldown-=game_framework.frame_time
             if self.dash_cooldown<0.0:
                 self.dash_cooldown=0.0
+        if self.invincible > 0.0:
+            self.invincible -= game_framework.frame_time
+            if self.invincible < 0.0:
+                self.invincible = 0.0
 
     def update_frame(self):
         # 공격, 이동, 대기 상태별로 다르게 처리
@@ -304,6 +309,9 @@ class Character:
 
     def handle_collision(self, group, other):
         ishit=False
+        if self.hit_effect_timer>0.1 or self.invincible>0.0:
+            #피격효과 지속중에는 피격무시
+            return
         if self.dash_duration>0.0:
             #대쉬중에는 피격무시
             return
@@ -323,6 +331,14 @@ class Character:
                         self.cur_HP = 0
                 ishit = True
                 print(f'Player HP: {self.cur_HP}/{self.max_HP}')
+            elif hasattr(other, 'is_eq') and other.is_eq:
+                #해당 객체를 충돌처리에서 제거
+                self.cur_HP -= other.damage * 2
+                if self.cur_HP < 0:
+                    self.cur_HP = 0
+                ishit = True
+                other.is_eq=False
+
             else:
 
                 self.cur_HP -= other.damage
@@ -334,6 +350,7 @@ class Character:
         if ishit:
             self.push_degree=math.atan2(self.y-other.y,self.x-other.x)
             self.hit_effect_timer=0.2
+            self.invincible=1.0
             self.is_hit=True
             HIT_EFFECT(self,other.damage)
 
@@ -585,6 +602,9 @@ class RUN:
                         return
                 current_map.change_map(next_map_id)
                 self.player.x, self.player.y = spawn_x, spawn_y
+                return
+                # 맵 경계처리 밖으로 못나가게하는거임
+            if next_x > 1400 or next_x < 0 or next_y > 800 or next_y < 0:
                 return
         else:
             #맵 경계처리 밖으로 못나가게하는거임

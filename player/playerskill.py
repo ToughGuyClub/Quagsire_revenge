@@ -359,7 +359,7 @@ class EarthQuake:
 
     def use(self):
         game_world.add_collision_pair('EQ:enemy', self, None)
-        game_world.add_object(self, 3)
+        game_world.add_object(self, 1)
 
     def update(self):
         self.duration -= game_framework.frame_time
@@ -479,7 +479,7 @@ class WaterShield:
 class HyperBeam:
     def __init__(self,player):
         self.image = load_image(os.path.join('asset/player/skill', 'hyper_beam.png'))
-        self.duration = 4.0  # 지속 4초
+        self.duration = 3.0  # 지속 4초
         self.player=player
         self.dirX=0
         self.dirY=0
@@ -493,7 +493,7 @@ class HyperBeam:
         self.distance=1500  #플레이어로부터 떨어진 거리
         self.icon_clip = (200, 200, 200, 200)#아이콘 클립좌표
         self.damage=100
-        self.hit_interval = 0.2  # 적당한 데미지 주기
+        self.hit_interval = 0.5  # 적당한 데미지 주기
         self.hit_cooldowns = {}  # {enemy_obj : elapsed_time}
         self.push_degree=0.0
     def can_use(self, current_time):
@@ -511,7 +511,7 @@ class HyperBeam:
             game_world.remove_object(self)
             return
         self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % 5
-        if self.duration >= 3.5:
+        if self.duration >= 2.5:
             self.frameY = 0.0
         elif self.duration > 0.5:
             if self.charged==False:

@@ -70,7 +70,7 @@ def init():
         player_UI = Player_UI(player)
         game_world.add_object(player_UI, 1, True)
 
-    Onix()
+    #Onix(player)
     town = Town()
 
 

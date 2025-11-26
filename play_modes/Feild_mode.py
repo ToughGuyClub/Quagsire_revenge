@@ -43,6 +43,7 @@ def init():
         field_map = FOREST03(player)
     elif current_Map.current_map_id==9:
         field_map = DESERT(player)
+        #여기 푸시모드로 컷신 추가 예정
     elif current_Map.current_map_id==10:
         field_map = DUNGEON01(player)
     elif current_Map.current_map_id==11:
