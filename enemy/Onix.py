@@ -12,7 +12,7 @@ CLOSE_DIST = 120
 
 TIME_PER_ACTION = 1.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-
+quest_completed=False
 class Onix:
     image = None
 
@@ -80,6 +80,7 @@ class Onix:
         game_world.add_collision_pair('cannon:enemy', None, self)
         game_world.add_collision_pair('EQ:enemy', None, self)
 
+        game_world.enemy_list.append(self)
 
     # -------------------------
     # 유틸: 거리/방향
@@ -280,6 +281,7 @@ class Onix:
 
 
         self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * dt) % FRAMES_PER_ACTION
+        self.set_frameY()
         # 스킬 시전 타이머 감소
         if self.action_lock_timer >= 0:
             self.action_lock_timer -= dt
@@ -304,7 +306,7 @@ class Onix:
 
     def draw(self):
         image, frameY = self.animations.get(self.state, self.animations['idle'])
-
+        frameY = self.frameY
         if self.state == 'walk' or self.state=='idle':
             frame_width = 88
             frame_height = 112
@@ -345,6 +347,29 @@ class Onix:
     def get_bb(self):
         return (self.x - self.size//4, self.y - self.size//6,
                 self.x + self.size//4, self.y + (self.size + self.size//5)//2)
+    def set_frameY(self):
+        #각도계산
+        angle = self.angle_to_player()
+        angle = math.degrees(angle)
+        angle = (angle + 360) % 360
+
+        if 0<=angle<45:
+            self.frameY=5
+        elif 45<=angle<90:
+            self.frameY=4
+        elif 90<=angle<135:
+            self.frameY=3
+        elif 135<=angle<=180:
+            self.frameY=2
+        elif 180<=angle<225:
+            self.frameY=1
+        elif 225<=angle<270:
+            self.frameY=0
+        elif 270<=angle<315:
+            self.frameY=7
+        elif 315<=angle<360:
+            self.frameY=6
+
 
     def handle_collision(self, group, other):
         ishit = False
@@ -375,7 +400,12 @@ class Onix:
         if self.HP <= 0:
             DEATHEFFECTENEMY(self.x, self.y)
             # 퀘스트를 위해 있는 부분
-
+            import map.desert.desert_dialogue
+            from player.character import reset_pressed_keys
+            global quest_completed
+            quest_completed=True
+            reset_pressed_keys()
+            game_framework.push_mode(map.desert.desert_dialogue)
             game_world.remove_object(self)
 
         pass
@@ -622,3 +652,8 @@ class DEATHEFFECTENEMY:
 
     def draw(self):
         self.image.clip_draw(int(self.frame)*68, 0, 68,91 , self.x, self.y, self.scale,  self.scale*2)
+
+
+
+def get_quest_type():
+    return quest_completed

@@ -31,11 +31,18 @@ def init():
                     players_quest_status=o.quest_manager
                     break
 
-
-    dialogue = ["벌써 여기까지 오다니",
-                "너를 잡아가면 지우가 밥셔틀에서 풀어준다고했어!!",
-                "널잡아서 이 지긋지긋 노예생활을 끝낼거야",
-                "배틀이다 누오!"]
+    from enemy.Onix import get_quest_type
+    if get_quest_type()==False:
+        dialogue = ["벌써 여기까지 오다니",
+                    "너를 잡아가면 지우가 밥셔틀에서 풀어준다고했어!!",
+                    "널잡아서 이 지긋지긋 노예생활을 끝낼거야",
+                    "배틀이다 누오!"]
+    elif get_quest_type()==True:
+        dialogue = ["으윽 내 롱스톤이",
+                    "너무 강하잖아",
+                    "어떻게 너같은 쓰레기가 여기까지 온거지",
+                    "일단 도망가서 지우한테 말해야겠어",
+                    "도망가~~~~"]
     reset_dialogue_state()
     s_img=load_image(os.path.join('asset/enemy/onix', 'LEADER_Brock.png'))
     p_img=load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))

@@ -912,7 +912,7 @@ class FLASH:
         #적들 플래시상태로만들기
         for layer in game_world.world_temporary:
             for o in layer[:]:
-                if hasattr(o, 'is_enemy') and o.is_enemy:
+                if hasattr(o, 'is_enemy') and (o.is_enemy or o.is_onix):
                     o.flashed=True
 
     def update(self):
