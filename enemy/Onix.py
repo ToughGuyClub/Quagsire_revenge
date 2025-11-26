@@ -21,10 +21,18 @@ class Onix:
         self.image_idle = load_image(os.path.join('asset/enemy/Onix','Idle-Anim.png'))
         self.image_walk = load_image(os.path.join('asset/enemy/Onix','Walk-Anim.png'))
         self.image_shoot = load_image(os.path.join('asset/enemy/Onix','Shoot-Anim.png'))
-        self.image_attack = load_image(os.path.join('asset/enemy/Onix','Attack-Anim.png'))
+        self.image_attack = load_image(os.path.join('asset/enemy/Onix','Hop-Anim.png'))
         self.image_hurt = load_image(os.path.join('asset/enemy/Onix','Hurt-Anim.png'))
         self.x, self.y = 800,300
         self.player = player
+        self.animations = {
+            'idle': (self.image_idle, 0),
+            'walk': (self.image_walk, 0),
+            'attack': (self.image_attack, 0),
+            'shoot': (self.image_shoot, 0),
+            'hurt': (self.image_hurt, 0)
+        }
+        self.state = 'idle'
 
         # 애니메이션
         self.frameX = 0.0
@@ -51,8 +59,12 @@ class Onix:
         self.earth_timer = 8.0
         self.dash_timer = 4.0
         self.is_onix=True
+        #스킬상태
+        self.action_lock_timer = 0.0  # 스킬 시전 중 움직임 금지 시간
+
         # 돌진 상태
         self.dashing = False
+        self.moving = False
         self.dash_degree = 0.0
         self.dash_remain = 0.0
         self.dash_hit_done = False
@@ -86,7 +98,7 @@ class Onix:
     # 원거리 공격(원시의 힘)3번 연속
     def action_primitive_power(self):
         # 쿨다운 체크
-        if self.primitive_timer > 0:
+        if self.primitive_timer > 0 or self.action_lock_timer > 0:
             return BehaviorTree.FAIL
 
         for i in range(3):
@@ -95,11 +107,15 @@ class Onix:
             ACIENTPOWER(self,self.player , sx, sy)
 
         self.primitive_timer = self.cool_primitive
+
+        self.action_lock_timer = 3.0
+        self.state = 'attack'
+
         return BehaviorTree.SUCCESS
 
     # 중거리 공격: 지진
     def action_earthquake(self):
-        if self.earth_timer > 0:
+        if self.earth_timer > 0 or self.action_lock_timer > 0:
             return BehaviorTree.FAIL
 
         EarthQuake(self,self.player,0,0,self.angle_to_player())
@@ -107,6 +123,10 @@ class Onix:
         EarthQuake(self, self.player, 0, 0, self.angle_to_player()-30.0)
 
         self.earth_timer = self.cool_earthquake
+
+        self.action_lock_timer = 3.0
+        self.state = 'attack'
+
         return BehaviorTree.SUCCESS
 
     # 근거리 돌진:
@@ -175,6 +195,7 @@ class Onix:
 
     # 이동 액션: 플레이어 쪽으로 천천히 이동
     def action_move_towards(self):
+        self.moving=False
         # 돌진 중이면 이동을 막음(돌진 액션이 우선될 것)
         if self.dashing:
             return BehaviorTree.RUNNING
@@ -189,6 +210,7 @@ class Onix:
             # 보통 이동
             self.x += math.cos(angle) * self.speed * game_framework.frame_time
             self.y += math.sin(angle) * self.speed * game_framework.frame_time
+        self.moving=True
         return BehaviorTree.SUCCESS
 
 
@@ -240,17 +262,84 @@ class Onix:
             self.earth_timer -= dt
         if self.dash_timer > 0:
             self.dash_timer -= dt
+        #히트 업데이트
+        if self.is_hit:
+            self.hit_effect_timer -= dt
+            if self.hit_effect_timer <= 0:
+                self.is_hit = False
+
         # 프레임 업데이트
         FRAMES_PER_ACTION = 4
-        self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * dt) % FRAMES_PER_ACTION
+        if self.state == 'idle' or self.state == 'walk':
+            FRAMES_PER_ACTION = 4
 
-        # 행동 트리 실행
+        elif self.state == 'attack' or self.state == 'shoot':
+            FRAMES_PER_ACTION = 10
+        elif self.state == 'hurt':
+            FRAMES_PER_ACTION = 2
+
+
+        self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * dt) % FRAMES_PER_ACTION
+        # 스킬 시전 타이머 감소
+        if self.action_lock_timer >= 0:
+            self.action_lock_timer -= dt
+            self.state = 'attack'
+
+            # *** 시전 중에는 행동 트리를 멈춘다 ***
+            return
+        if  self.is_hit:
+            self.state = 'hurt'
+            return
+            # 행동 트리 실행
         self.bt.run()
+        print(self.animations)
+        if self.dashing:
+            self.state = 'attack'
+        elif self.is_hit:
+            self.state = 'hurt'
+        elif self.moving:
+            self.state = 'walk'
+        else:
+            self.state = 'idle'
 
     def draw(self):
-        # 간단히 idle 이미지 출력 (실제로는 상태에 따라 이미지 바꾸자)
-        self.image_idle.clip_draw(int(self.frameX) * 96, 0, 96, 104, self.x, self.y, self.size, self.size + self.size//4)
-        # 디버그 박스
+        image, frameY = self.animations.get(self.state, self.animations['idle'])
+
+        if self.state == 'walk' or self.state=='idle':
+            frame_width = 88
+            frame_height = 112
+
+            self.image_walk.clip_draw(int(self.frameX) * frame_width,
+                                      frameY * frame_height,
+                                      frame_width,
+                                      frame_height,
+                                      self.x,
+                                      self.y,
+                                      self.size,
+                                      self.size + self.size // 4)
+        elif self.state=='attack':
+            frame_width = 88
+            frame_height = 160
+            self.image_attack.clip_draw(int(self.frameX) * frame_width,
+                            frameY * frame_height,
+                            frame_width,
+                            frame_height,
+                            self.x,
+                            self.y,
+                            self.size,
+                            self.size + self.size // 4)
+        elif self.state=='hurt':
+            frame_width = 80
+            frame_height = 88
+            self.image_hurt.clip_draw(int(self.frameX) * frame_width,
+                            frameY * frame_height,
+                            frame_width,
+                            frame_height,
+                            self.x,
+                            self.y,
+                            self.size*0.8,
+                            self.size + self.size // 6)
+
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
@@ -270,8 +359,7 @@ class Onix:
                 ishit = True
                 print(f"Enemy HP: {self.HP}")
             else:
-                # --- 지속 스킬: 스킬에게 데미지 허가를 물어본다 ---
-                # other.can_damage(self) 는 True/False 리턴
+
                 if hasattr(other, "can_damage") and other.can_damage(self):
                     self.HP -= damage
                     ishit = True
@@ -496,7 +584,7 @@ class ONIX_HP:
         if not hasattr(self, 'font'):
             self.font = load_font('asset/screen/intro/introFont.ttf', 20)
         game_world.add_object(self, 4)
-
+        self.state=self.onix.state
     def update(self):
         pass
 
@@ -511,6 +599,8 @@ class ONIX_HP:
 
         # HP 텍스트
         hp_text = f"Onix HP: {self.onix.HP} / {self.onix.max_HP}"
+        state_text = f"State: {self.onix.state}"
+        self.font.draw(self.onix.x,self.onix.y, state_text, (255, 255,255))
         self.font.draw(900, 785, hp_text, (255, 255, 255))
 
 
@@ -528,6 +618,7 @@ class DEATHEFFECTENEMY:
         self.frame = (self.frame + 4.0 * ACTION_PER_TIME * game_framework.frame_time)
         if self.frame >=4:
             game_world.remove_object(self)
+
 
     def draw(self):
         self.image.clip_draw(int(self.frame)*68, 0, 68,91 , self.x, self.y, self.scale,  self.scale*2)

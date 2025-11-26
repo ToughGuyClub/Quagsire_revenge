@@ -20,7 +20,7 @@ class StateMachine:
                 self.next_state = self.rules[self.cur_state][check_event] #<-다음상태를 가져옴
                 self.cur_state.exit(state_event) #<-현재상태에서 exit호출
                 self.next_state.enter(state_event) #<-다음상태에서 enter호출
-                print(f"{event_to_string(state_event)}: {self.cur_state.__class__.__name__} -> {self.next_state.__class__.__name__}")
+               # print(f"{event_to_string(state_event)}: {self.cur_state.__class__.__name__} -> {self.next_state.__class__.__name__}")
                 self.cur_state = self.next_state #<-현재상태를 다음상태로 변경
                 return
         #이벤트에 대한 처리가 안됨
