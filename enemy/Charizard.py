@@ -9,20 +9,21 @@ from enemy.behavior_tree import BehaviorTree, Action, Sequence, Condition, Selec
 FAR_DIST = 450
 MID_DIST = 180
 CLOSE_DIST = 120
-
+width, height =  1400, 800
 TIME_PER_ACTION = 1.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-quest_completed=False
-class Onix:
+quest_completed=0
+class Charizard:
     image = None
 
     def __init__(self,player):
         # 이미지들
-        self.image_idle = load_image(os.path.join('asset/enemy/Onix','Idle-Anim.png'))
-        self.image_walk = load_image(os.path.join('asset/enemy/Onix','Walk-Anim.png'))
-        self.image_shoot = load_image(os.path.join('asset/enemy/Onix','Shoot-Anim.png'))
-        self.image_attack = load_image(os.path.join('asset/enemy/Onix','Hop-Anim.png'))
-        self.image_hurt = load_image(os.path.join('asset/enemy/Onix','Hurt-Anim.png'))
+        self.image_idle = load_image(os.path.join('asset/enemy/charizard','Idle-Anim.png'))
+        self.image_walk = load_image(os.path.join('asset/enemy/charizard','Walk-Anim.png'))
+        self.image_shoot = load_image(os.path.join('asset/enemy/charizard','Shoot-Anim.png'))
+        self.image_attack = load_image(os.path.join('asset/enemy/charizard','Shoot-Anim.png'))
+        self.image_hurt = load_image(os.path.join('asset/enemy/charizard','Hurt-Anim.png'))
+        self.image_hop = load_image(os.path.join('asset/enemy/charizard','Hop-Anim.png'))
         self.x, self.y = 800,300
         self.player = player
         self.animations = {
@@ -30,7 +31,8 @@ class Onix:
             'walk': (self.image_walk, 0),
             'attack': (self.image_attack, 0),
             'shoot': (self.image_shoot, 0),
-            'hurt': (self.image_hurt, 0)
+            'hurt': (self.image_hurt, 0),
+            'hop': (self.image_hop, 0),
         }
         self.state = 'idle'
 
@@ -50,17 +52,26 @@ class Onix:
         self.HP = 1000
         self.max_HP = 1000
         self.alive = True
-        self.hp_bar = ONIX_HP(self)
+        self.hp_bar = CHARIZARD_HP(self)
         # 공격 쿨다운 (초)
-        self.cool_primitive = 15.0    # 원거리 "원시의 힘"
+        self.cool_primitive = 5.0    # 원거리 "원시의 힘"
         self.cool_earthquake = 9.0   # 중거리 "지진"
         self.cool_dash = 5.0         # 근거리 돌진
-        self.primitive_timer = 14.0
+        self.primitive_timer = 3.0
         self.earth_timer = 8.0
         self.dash_timer = 4.0
         self.is_onix=True
         #스킬상태
         self.action_lock_timer = 0.0  # 스킬 시전 중 움직임 금지 시간
+
+        #자동미사일
+        self.missile_timer=0.0
+        self.missile_step=0
+        self.missile_charged=False
+
+        #필살기
+        self.special_timer=2.0#이게 0되는 순간 hop모션이랑 충격파 나오면서 화면에서 사라질거임 state도
+        self.hop_offset=0
 
         # 돌진 상태
         self.dashing = False
@@ -102,14 +113,14 @@ class Onix:
         if self.primitive_timer > 0 or self.action_lock_timer > 0:
             return BehaviorTree.FAIL
 
-        for i in range(3):
-            sx = (random.random() - 0.5) * 80  # 발사 위치 편차
-            sy = ((random.random() - 0.5) * 80)+200
-            ACIENTPOWER(self,self.player , sx, sy)
+
+        sx = (random.random() - 0.5) * 80  # 발사 위치 편차
+        sy = ((random.random() - 0.5) * 80)+200
+        SHOOTFIRE(self,self.player , sx, sy)
 
         self.primitive_timer = self.cool_primitive
 
-        self.action_lock_timer = 3.0
+        self.action_lock_timer = 1.0
         self.state = 'attack'
 
         return BehaviorTree.SUCCESS
@@ -125,7 +136,7 @@ class Onix:
 
         self.earth_timer = self.cool_earthquake
 
-        self.action_lock_timer = 3.0
+        self.action_lock_timer = 1.0
         self.state = 'attack'
 
         return BehaviorTree.SUCCESS
@@ -263,11 +274,65 @@ class Onix:
             self.earth_timer -= dt
         if self.dash_timer > 0:
             self.dash_timer -= dt
+        if self.special_timer>0:
+            self.special_timer-=dt
+        #필살기 발동
+        if self.special_timer<=0.0:
+            if self.state!='hop':
+                global quest_completed
+                quest_completed=1
+                #필살기 컷신
+                import map.volcano.volcano_dialogue
+                from player.character import reset_pressed_keys
+                reset_pressed_keys()
+                game_framework.push_mode(map.volcano.volcano_dialogue)
+                self.state='hop'
+            self.special_attack()
+            self.hop_offset+=dt*600
+            if self.hop_offset+self.y>900 and self.hop_offset<2000:
+                #여기서 필살기 객체 호출
+                ENERGYBALL(self.player)
+                self.hop_offset=2100
+                pass
+            FRAMES_PER_ACTION=8
+            if self.frameX < 7.0:
+                self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * dt) % FRAMES_PER_ACTION
+                self.frameY=7.0
+
+
+            return
+
         #히트 업데이트
         if self.is_hit:
             self.hit_effect_timer -= dt
             if self.hit_effect_timer <= 0:
                 self.is_hit = False
+        #미사일관련 업데이트
+        self.missile_timer -=dt
+        if self.missile_charged:
+            if self.missile_timer<=0.0:
+                #3연속 미사일
+                dx= random.randint(0,1200)
+                dy= random.randint(50,800)
+                FIREMISSILE(self.player,dx,dy)
+                self.missile_timer=0.1
+                self.missile_step-=1
+                if self.missile_step<=0:
+                    self.missile_charged=False
+                    self.missile_timer=5.0
+
+        elif self.missile_timer<=0.0:
+            #탄착지점 랜덤
+            dx= random.randint(0,1200)
+            dy= random.randint(50,800)
+            FIREMISSILE(self.player,dx,dy)
+            self.missile_timer=1.0
+            self.missile_step+=1
+            if self.missile_step>=5:
+                self.missile_timer = 0.1
+                self.missile_charged=True
+
+
 
         # 프레임 업데이트
         FRAMES_PER_ACTION = 4
@@ -304,12 +369,30 @@ class Onix:
         else:
             self.state = 'idle'
 
+    def special_attack(self):
+
+        pass
     def draw(self):
+
         image, frameY = self.animations.get(self.state, self.animations['idle'])
+        if self.state=='hop':
+            #필살기모션
+            frame_width=48
+            frame_height=96
+            self.image_hop.clip_draw(int(self.frameX) * frame_width,
+                            int(self.frameY) * frame_height,
+                            frame_width,
+                            frame_height,
+                            self.x,
+                            self.y +self.hop_offset,
+                            self.size*1.2,
+                            self.size*1.2)
+            pass
+
         frameY = self.frameY
         if self.state == 'walk' or self.state=='idle':
-            frame_width = 88
-            frame_height = 112
+            frame_width = 40
+            frame_height = 48
 
             self.image_walk.clip_draw(int(self.frameX) * frame_width,
                                       frameY * frame_height,
@@ -320,8 +403,8 @@ class Onix:
                                       self.size,
                                       self.size + self.size // 4)
         elif self.state=='attack':
-            frame_width = 88
-            frame_height = 160
+            frame_width = 56
+            frame_height = 56
             self.image_attack.clip_draw(int(self.frameX) * frame_width,
                             frameY * frame_height,
                             frame_width,
@@ -331,22 +414,22 @@ class Onix:
                             self.size,
                             self.size + self.size // 4)
         elif self.state=='hurt':
-            frame_width = 80
-            frame_height = 88
+            frame_width = 64
+            frame_height = 64
             self.image_hurt.clip_draw(int(self.frameX) * frame_width,
                             frameY * frame_height,
                             frame_width,
                             frame_height,
                             self.x,
                             self.y,
-                            self.size*0.8,
-                            self.size + self.size // 6)
+                            self.size*2.0,
+                            self.size + self.size // 3)
 
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return (self.x - self.size//4, self.y - self.size//6,
-                self.x + self.size//4, self.y + (self.size + self.size//5)//2)
+        return (self.x - self.size//4, self.y - self.size//6+self.hop_offset,
+                self.x + self.size//4, self.y + (self.size + self.size//5)//2+(self.hop_offset))
     def set_frameY(self):
         #각도계산
         angle = self.angle_to_player()
@@ -412,9 +495,9 @@ class Onix:
             game_world.remove_object(self)
 
         pass
-class ACIENTPOWER:
+class SHOOTFIRE:
     def __init__(self,enemy,player,sx,sy,step=1):
-        self.image = load_image(os.path.join('asset/enemy', 'boldore_skill.png'))
+        self.image = load_image(os.path.join('asset/enemy/charizard', 'shoot_fire.png'))
         self.enemy=enemy
         self.x = enemy.x
         self.y = enemy.y
@@ -431,6 +514,7 @@ class ACIENTPOWER:
         self.activation_timer = 1.0  # 발동 대기 시간
         self.push_degree = 0.0
         self.step=step
+        self.degree=0.0
         #월드에 넣기
         game_world.add_object(self, 4)
         game_world.add_collision_pair('player:enemy', None, self)
@@ -438,21 +522,26 @@ class ACIENTPOWER:
     def update(self):
         self.activation_timer -= game_framework.frame_time
         self.frame= (self.frame + 4.0 * ACTION_PER_TIME * game_framework.frame_time) % 4
+        if self.activation_timer<=0.9:
+
+            # step에 따라 3번까지 생성
+            if self.step < 5:
+                # sx랑 sy 다시설정
+                sx = (random.random() - 0.5) * 100  # 발사 위치 편차
+                sy = ((random.random() - 0.5) * 80) + 200
+                SHOOTFIRE(self.enemy, self.player, sx, sy, self.step + 1)
+
+                self.step = 10
         if self.activation_timer >=0.0:
             self.x=self.enemy.x +self.sx
             self.y=self.enemy.y +self.sy
-
+            dx = self.player.x - self.x
+            dy = self.player.y - self.y
+            self.degree = math.degrees(math.atan2(dy, dx))
+            self.degree=math.radians(self.degree)
         elif self.activation_timer <0.0:
             #플레이어 방향으로 직선 이동
             if self.dirX is None and self.dirY is None:
-                #step에 따라 3번까지 생성
-                if self.step<3:
-                    #sx랑 sy 다시설정
-                    sx= (random.random() - 0.5) * 100  # 발사 위치 편차
-                    sy= ((random.random() - 0.5) * 80)+200
-                    ACIENTPOWER(self.enemy,self.player, sx, sy, self.step+1)
-
-                    self.step=5
 
                 #방향
                 dx = self.player.x - self.x
@@ -470,11 +559,13 @@ class ACIENTPOWER:
         if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
             game_world.remove_object(self)
     def draw(self):
+        #플레이어를 향한 각도 계산
+
         if self.activation_timer >= 0:
-            self.image.clip_draw(int(self.frame), 0, 192,192 , self.x, self.y, self.scale*2,  self.scale*2)
+            self.image.clip_composite_draw(int(self.frame), 0, 97,47 ,self.degree,'', self.x, self.y, self.scale,  self.scale)
 
         elif self.activation_timer < 0:
-            self.image.clip_draw(int(self.frame), 192, 192, 192, self.x, self.y, self.scale*2, self.scale*2)
+            self.image.clip_composite_draw(int(self.frame), 0, 97, 47, self.degree,'',self.x, self.y, self.scale, self.scale)
         draw_rectangle(*self.get_bb())
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
@@ -483,6 +574,7 @@ class ACIENTPOWER:
             game_world.remove_object(self)
         elif group == 'EQ:enemy':
             game_world.remove_object(self)
+
 
 
 class EarthQuake:
@@ -579,7 +671,7 @@ class EarthQuake:
 
 class AttackBall:
     def __init__(self, x, y, dirX, dirY ,speed=10 ):
-        self.image = load_image(os.path.join('asset/enemy/Onix','basic_attack.png'))
+        self.image = load_image(os.path.join('asset/enemy/charizard','basic_attack.png'))
         self.x = x
         self.y = y
         self.dirX = dirX
@@ -611,13 +703,13 @@ class AttackBall:
         elif group == 'EQ:enemy':
             game_world.remove_object(self)
 
-class ONIX_HP:
-    def __init__(self, onix):
-        self.onix = onix
+class CHARIZARD_HP:
+    def __init__(self, charizard):
+        self.charizard = charizard
         if not hasattr(self, 'font'):
             self.font = load_font('asset/screen/intro/introFont.ttf', 20)
         game_world.add_object(self, 4)
-        self.state=self.onix.state
+        self.state=self.charizard.state
     def update(self):
         pass
 
@@ -626,14 +718,14 @@ class ONIX_HP:
         draw_rectangle(800, 750, 1200, 780, 255, 0, 0, 255, True)
 
         # HP 바
-        hp_ratio = self.onix.HP / self.onix.max_HP
+        hp_ratio = self.charizard.HP / self.charizard.max_HP
         hp_width = 400 * hp_ratio
         draw_rectangle(800, 750, 800 + hp_width, 780, 0, 255, 0, 255, True)
 
         # HP 텍스트
-        hp_text = f"Onix HP: {self.onix.HP} / {self.onix.max_HP}"
-        state_text = f"State: {self.onix.state}"
-        self.font.draw(self.onix.x,self.onix.y, state_text, (255, 255,255))
+        hp_text = f"Charizard HP: {self.charizard.HP} / {self.charizard.max_HP}"
+        state_text = f"State: {self.charizard.state}"
+        self.font.draw(self.charizard.x,self.charizard.y, state_text, (255, 255,255))
         self.font.draw(900, 785, hp_text, (255, 255, 255))
 
 
@@ -660,3 +752,110 @@ class DEATHEFFECTENEMY:
 
 def get_quest_type():
     return quest_completed
+
+
+class FIREMISSILE:
+    def __init__(self,player,dx,dy):
+        self.image = load_image(os.path.join('asset/enemy/charizard','missile.png'))
+        self.image_explode = load_image(os.path.join('asset/enemy/charizard','missile_explosed.png'))
+        self.dirX = dx
+        self.dirY = dy
+        self.x=dx-700
+        self.y=dy+700
+        self.speed = 15
+        self.scale = 64
+        self.frame = 0.0
+        self.damage = 0
+        self.player = player
+        self.timer=3.0
+        self.mark_strength=40
+        self.exploded=False
+        #월드에 넣기
+        game_world.add_object(self, 4)
+        game_world.add_collision_pair('player:enemy', None, self)
+    def update(self):
+        self.frame= (self.frame + 4.0 * ACTION_PER_TIME * game_framework.frame_time) % 4
+        self.timer -=game_framework.frame_time
+        if self.timer <=0.0:
+            game_world.remove_object(self)
+            return
+        if self.mark_strength<=200:
+            self.mark_strength+=40*game_framework.frame_time
+        #y=-x처럼이동
+        if not self.exploded:
+            self.x += self.speed * game_framework.frame_time * self.speed*5.0
+            self.y -= self.speed * game_framework.frame_time * self.speed*5.0
+        #만약 정해진탄착지점에 도착하면 폭발
+        if self.x >=self.dirX and self.y <=self.dirY and not self.exploded:
+            self.exploded=True
+            self.damage=50
+            self.frame=0.0
+            self.scale=self.scale*3
+            self.timer=1.0
+
+
+    def draw(self):
+        #2.0초 이상일때는 빨간색으로 표시
+        if self.timer>=2.0:
+            draw_rectangle(*self.get_bb(),255,0,0,int(self.mark_strength),True)
+            self.image.clip_draw(int(self.frame), 0, 144, 152, self.x, self.y, self.scale * 2, self.scale * 2)
+        else:
+            #터진거 표현
+            self.image_explode.clip_composite_draw(int(self.frame) * 83, 0, 83, 77,0.0 ,'h',self.x, self.y,
+                                         self.scale, self.scale)
+            draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        return self.dirX - self.scale/2 , self.dirY - self.scale/2 , self.dirX + self.scale/2 , self.dirY + self.scale/2
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            game_world.remove_object(self)
+
+class ENERGYBALL:
+    def __init__(self,player):
+        self.image = load_image(os.path.join('asset/enemy/charizard','special_skill.png'))
+        self.x =width//2
+        self.y= height+100
+        self.speed = 5
+        self.scale = 400
+        self.frame = 0.0
+        self.damage = 200
+        self.rect_brightness=10
+        self.exploded=False
+        self.exploded_decrease=False
+        self.player = player
+        game_world.add_object(self, 4)
+
+    def update(self):
+        self.frame= (self.frame + 4.0 * ACTION_PER_TIME * game_framework.frame_time) % 4
+
+        if self.y<=height//2:
+            #여기서 펑!!
+            self.exploded=True
+            if self.exploded_decrease==False:
+                self.rect_brightness+=700.0*game_framework.frame_time
+                if self.rect_brightness>=255:
+                    self.rect_brightness=255
+                    self.exploded_decrease=True
+            elif self.exploded_decrease:
+                self.rect_brightness -= 500.0 * game_framework.frame_time
+                if self.rect_brightness <= 0:
+                    self.player.cur_HP=self.player.cur_HP//2
+                    game_world.remove_object(self)
+        else:
+            self.y -= self.speed * game_framework.frame_time * self.speed * 5.0
+        #경계처리
+        if self.x < 0 or self.x > 1600 or self.y < 0 or self.y > 900:
+            game_world.remove_object(self)
+
+    def draw(self):
+        if self.exploded:
+            draw_rectangle(0,0,width,height,255,255,255,int(self.rect_brightness),True)
+        else:
+            self.image.clip_draw(int(self.frame)*220, 0, 220, 220, self.x, self.y, self.scale,self.scale)
+        draw_rectangle(*self.get_bb())
+    def get_bb(self):
+        return self.x - self.scale/4 , self.y - self.scale/4 , self.x + self.scale/4 , self.y + self.scale/4
+    def handle_collision(self, group, other):
+        if group == 'player:enemy':
+            game_world.remove_object(self)

@@ -6,7 +6,7 @@ from pico2d import *
 class QuestManager:
     def __init__(self):
         self.quest_list=[Q1(),Q2(),Q3()]
-        self.clear_quest=4
+        self.clear_quest=0
         self.current_index=0
         # intro → progress → complete
 
@@ -178,6 +178,9 @@ class Q3:
                 return 2
         return 0
     def draw(self):
+        self.p_Nimg.draw(110, 410, 200, 200)
+        self.s_Cimg.draw(1290, 410, 200, 200)
         pass
     def change_step(self,new_step):
         self.step=new_step
+

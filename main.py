@@ -5,6 +5,7 @@ import game_framework
 screen.mainScreen.init()
 
 SDL_SetRenderDrawBlendMode(pico2d.renderer, SDL_BLENDMODE_BLEND)
+
 game_framework.run(screen.mainScreen)
 
 
