@@ -16,7 +16,7 @@ class PRAIRIE01:
        # create_enemy('doctor',1300,40,player)
         import sound
         self.bgm = load_music(os.path.join('asset/map/prairie/prairie_bgm.mid'))
-        self.bgm.set_volume(sound.get_sound_volume()//10)
+        self.bgm.set_volume(sound.get_sound_volume())
         self.bgm.repeat_play()
     def update(self):
         pass
@@ -39,7 +39,7 @@ class PRAIRIE02:
 
         import sound
         self.bgm = load_music(os.path.join('asset/map/prairie/prairie_bgm.mid'))
-        self.bgm.set_volume(sound.get_sound_volume()//10)
+        self.bgm.set_volume(sound.get_sound_volume())
         self.bgm.repeat_play()
     def update(self):
         pass
@@ -63,7 +63,7 @@ class PRAIRIE03:
         create_enemy('doctor', 800, 260, player)
         import sound
         self.bgm = load_music(os.path.join('asset/map/prairie/prairie_bgm.mid'))
-        self.bgm.set_volume(sound.get_sound_volume()//10)
+        self.bgm.set_volume(sound.get_sound_volume())
         self.bgm.repeat_play()
     def update(self):
         pass

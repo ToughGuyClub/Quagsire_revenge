@@ -1,4 +1,4 @@
-sound_volum=32
+sound_volum=72
 
 
 cur_bgm_sound = None
