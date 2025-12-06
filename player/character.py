@@ -632,10 +632,7 @@ class RUN:
                     if next_map_id in [10,13]:
                         print("아직 이 지역으로 갈 수 없습니다.")
                         return
-                elif self.player.quest_manager.clear_quest==3:
-                    if next_map_id in [13]:
-                        print("아직 이 지역으로 갈 수 없습니다.")
-                        return
+
                 current_map.change_map(next_map_id)
                 self.player.x, self.player.y = spawn_x, spawn_y
                 return

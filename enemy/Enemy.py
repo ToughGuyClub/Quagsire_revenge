@@ -615,6 +615,8 @@ class Swimmer(Enemy):
                     self.target_player.quest_manager.check_progress(self.type)
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
+            if self in game_world.enemy_list:
+                game_world.enemy_list.remove(self)
             game_world.remove_object(self)
 
         # 플레이어 충돌
@@ -765,6 +767,8 @@ class BIKER(Enemy):
                     self.target_player.quest_manager.check_progress(self.type)
             if hasattr(self.target_player, "gain_exp"):
                 self.target_player.gain_exp(self.type * 20)
+            if self in game_world.enemy_list:
+                game_world.enemy_list.remove(self)
             game_world.remove_object(self)
 
         if group == 'player:enemy':

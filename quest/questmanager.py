@@ -5,9 +5,9 @@ from pico2d import *
 
 class QuestManager:
     def __init__(self):
-        self.quest_list=[Q1(),Q2(),Q3()]
-        self.clear_quest=0
-        self.current_index=0
+        self.quest_list=[Q1(),Q2(),Q3(),Q4(),Q5()]
+        self.clear_quest=3
+        self.current_index=3
         # intro → progress → complete
 
     def get_current_dialogue(self):
@@ -183,4 +183,83 @@ class Q3:
         pass
     def change_step(self,new_step):
         self.step=new_step
+class Q4:
+    def __init__(self):
+        self.state = "intro"
+        self.dialogues = {
+            "intro": [],
+            "progress": [],
+            "complete": [],
+        }
+        self.dialogues["intro"] = load_dialogue('asset/map/town/Snorlax/quest/q4.txt')
+        self.dialogues["progress"] = load_dialogue('asset/map/town/Snorlax/quest/process.txt')
+        self.dialogues["complete"] = load_dialogue('asset/map/town/Snorlax/quest/q4_complete.txt')
+        # intro → progress → complete
+        self.target=1
+        self.target_type = 98   #웅이 될건데 임시로 98해둠 나중에 바꿔야함
+        self.current=0
+        self.pt="연구원 처치 진행도: "
+        self.step=0
+        # 누오 잠만보 이미지
+        self.s_Nimg = load_image(os.path.join('asset/map/town/Snorlax', 'Normal.png'))
+        self.s_Cimg = load_image(os.path.join('asset/map/town/Snorlax', 'Crying.png'))
+        self.s_Iimg = load_image(os.path.join('asset/map/town/Snorlax', 'Inspired.png'))
+        self.p_Nimg = load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
+        self.p_Aimg = load_image(os.path.join('asset/player/Quagsire', 'Angry.png'))
 
+    def update_state(self, new_state):
+        self.state = new_state
+    def check_progress(self,target_type):
+        if self.target_type == target_type:
+            self.current += 1
+            # 현재 진행도 표시
+            print(self.pt + str(self.current) + "/" + str(self.target))
+            if self.current >= self.target:
+                self.state = "complete"
+                return 2
+        return 0
+    def draw(self):
+        self.p_Nimg.draw(110, 410, 200, 200)
+        self.s_Cimg.draw(1290, 410, 200, 200)
+        pass
+    def change_step(self,new_step):
+        self.step=new_step
+
+
+class Q5:
+    def __init__(self):
+        self.state = "intro"
+        self.dialogues = {
+            "intro": [],
+            "progress": [],
+            "complete": [],
+        }
+        self.dialogues["intro"] = load_dialogue('asset/map/town/Snorlax/quest/q5.txt')
+        self.dialogues["progress"] = load_dialogue('asset/map/town/Snorlax/quest/process.txt')
+        self.dialogues["complete"] = load_dialogue('asset/map/town/Snorlax/quest/q5_complete.txt')
+        # intro → progress → complete
+        self.target = 1
+        self.target_type = 99  #지우 될건데 임시로 98해둠 나중에 바꿔야함
+        self.current = 0
+        self.pt = "연구원 처치 진행도: "
+        self.step = 0
+        # 누오 잠만보 이미지
+        self.s_Nimg = load_image(os.path.join('asset/map/town/Snorlax', 'Normal.png'))
+        self.s_Cimg = load_image(os.path.join('asset/map/town/Snorlax', 'Crying.png'))
+        self.s_Iimg = load_image(os.path.join('asset/map/town/Snorlax', 'Inspired.png'))
+        self.p_Nimg = load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
+        self.p_Aimg = load_image(os.path.join('asset/player/Quagsire', 'Angry.png'))
+
+    def update_state(self, new_state):
+        self.state = new_state
+
+    def check_progress(self, target_type):
+        pass
+
+    def draw(self):
+        self.p_Nimg.draw(110, 410, 200, 200)
+        self.s_Cimg.draw(1290, 410, 200, 200)
+        pass
+
+    def change_step(self, new_step):
+        self.step = new_step

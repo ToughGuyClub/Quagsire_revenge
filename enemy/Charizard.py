@@ -13,6 +13,7 @@ width, height =  1400, 800
 TIME_PER_ACTION = 1.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 quest_completed=0
+special_attack_done=False
 class Charizard:
     image = None
 
@@ -279,6 +280,7 @@ class Charizard:
         #필살기 발동
         if self.special_timer<=0.0:
             if self.state!='hop':
+
                 global quest_completed
                 quest_completed=1
                 #필살기 컷신
@@ -294,6 +296,10 @@ class Charizard:
                 ENERGYBALL(self.player)
                 self.hop_offset=2100
                 pass
+            if self.hop_offset>=5000:
+                #화면에서 사라짐
+                self.special_timer=900.0
+
             FRAMES_PER_ACTION=8
             if self.frameX < 7.0:
                 self.frameX = (self.frameX + FRAMES_PER_ACTION * ACTION_PER_TIME * dt) % FRAMES_PER_ACTION
@@ -483,13 +489,13 @@ class Charizard:
         if self.HP <= 0:
             DEATHEFFECTENEMY(self.x, self.y)
             # 퀘스트를 위해 있는 부분
-            import map.desert.desert_dialogue
+            import map.volcano.volcano_dialogue
             from player.character import reset_pressed_keys
             global quest_completed
-            quest_completed=True
+            quest_completed=2
             reset_pressed_keys()
-            game_framework.push_mode(map.desert.desert_dialogue)
-            self.player.quest_manager.check_progress(98)
+            game_framework.push_mode(map.volcano.volcano_dialogue)
+            self.player.quest_manager.check_progress(99)
             game_world.remove_object(self.hp_bar)
             game_world.enemy_list.remove(self)
             game_world.remove_object(self)
@@ -841,6 +847,9 @@ class ENERGYBALL:
                 self.rect_brightness -= 500.0 * game_framework.frame_time
                 if self.rect_brightness <= 0:
                     self.player.cur_HP=self.player.cur_HP//2
+                    global special_attack_done
+                    self.player.special_timer=900.0
+                    self.player.state = 'walk'
                     game_world.remove_object(self)
         else:
             self.y -= self.speed * game_framework.frame_time * self.speed * 5.0

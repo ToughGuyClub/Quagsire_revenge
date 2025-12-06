@@ -1047,7 +1047,10 @@ class METEOR:
     def get_icon_clip(self):
         return self.image, self.icon_clip
     def get_bb(self):
-        return self.x - self.sizeX/4, self.y - self.sizeY/4, self.x + self.sizeX/4, self.y + self.sizeY/4
+        if self.explosion:
+            return self.x - self.sizeX/4, self.y - self.sizeY/4, self.x + self.sizeX/4, self.y + self.sizeY/4
+        else:
+            return self.x - 1, self.y +1000, self.x+ 1, self.y + 1002
 
     def can_damage(self, enemy):
         # interval dict 없다면 생성
