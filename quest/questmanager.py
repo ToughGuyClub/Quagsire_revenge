@@ -4,10 +4,11 @@ from pico2d import *
 
 
 class QuestManager:
-    def __init__(self):
-        self.quest_list=[Q1(),Q2(),Q3(),Q4(),Q5()]
-        self.clear_quest=3
-        self.current_index=3
+    def __init__(self,player):
+        self.quest_list=[Q1(player),Q2(player),Q3(player),Q4(player),Q5(player)]
+        self.clear_quest=0
+        self.current_index=0
+        self.player=player
         # intro → progress → complete
 
     def get_current_dialogue(self):
@@ -37,7 +38,7 @@ def load_dialogue(path):
         lines = f.readlines()
         return [line.strip() for line in lines]
 class Q1:
-    def __init__(self):
+    def __init__(self,player):
         self.state = "intro"
         self.dialogues = {
             "intro": [],
@@ -53,13 +54,14 @@ class Q1:
         self.current=0
         self.pt="연구원 처치 진행도: "
         self.step=0
+        self.player=player
         #누오 잠만보 이미지
         self.s_Nimg = load_image(os.path.join('asset/map/town/Snorlax', 'Normal.png'))
         self.s_Cimg = load_image(os.path.join('asset/map/town/Snorlax', 'Crying.png'))
         self.s_Iimg = load_image(os.path.join('asset/map/town/Snorlax', 'Inspired.png'))
         self.p_Nimg=load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
         self.p_Aimg = load_image(os.path.join('asset/player/Quagsire', 'Angry.png'))
-
+        self.pp_Iimg = load_image(os.path.join('asset/player/Clodsire', 'Normal.png'))
     def update_state(self, new_state):
         self.state = new_state
     def check_progress(self,target_type):
@@ -72,25 +74,17 @@ class Q1:
                 return 1
         return 0
     def draw(self):
-        if self.state=="intro":
+        if self.player.type == 1:
             self.p_Nimg.draw(110, 410, 200, 200)
-            self.s_Cimg.draw(1290, 410, 200, 200)
-        elif self.state=="progress":
-            self.s_Nimg.draw(1290, 410, 200, 200)
-            self.p_Nimg.draw(110, 410, 200, 200)
-        elif self.state=="complete":
-            if self.step==0:
-                self.s_Iimg.draw(1290, 410, 200, 200)
-                self.p_Nimg.draw(110, 410, 200, 200)
-            elif self.step==1:
-                self.s_Nimg.draw(1290, 410, 200, 200)
-                self.p_Aimg.draw(110, 410, 200, 200)
+        else:
+            self.pp_Iimg.draw(110, 410, 200, 200)
+        self.s_Cimg.draw(1290, 410, 200, 200)
         pass
     def change_step(self,new_step):
         self.step=new_step
 
 class Q2:
-    def __init__(self):
+    def __init__(self,player):
         self.state = "intro"
         self.dialogues = {
             "intro": [],
@@ -106,14 +100,14 @@ class Q2:
         self.current = 0
         self.pt = "연구원 처치 진행도: "
         self.step = 0
-
+        self.player=player
         #누오 잠만보 이미지
         self.s_Nimg = load_image(os.path.join('asset/map/town/Snorlax', 'Normal.png'))
         self.s_Cimg = load_image(os.path.join('asset/map/town/Snorlax', 'Crying.png'))
         self.s_Iimg = load_image(os.path.join('asset/map/town/Snorlax', 'Inspired.png'))
         self.p_Nimg = load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
         self.p_Aimg = load_image(os.path.join('asset/player/Quagsire', 'Angry.png'))
-
+        self.pp_Iimg = load_image(os.path.join('asset/player/Clodsire', 'Normal.png'))
 
     def update_state(self, new_state):
         self.state = new_state
@@ -127,23 +121,15 @@ class Q2:
                 return 2
         return 0
     def draw(self):
-        if self.state == "intro":
+        if self.player.type == 1:
             self.p_Nimg.draw(110, 410, 200, 200)
-            self.s_Cimg.draw(1290, 410, 200, 200)
-        elif self.state == "progress":
-            self.s_Nimg.draw(1290, 410, 200, 200)
-            self.p_Nimg.draw(110, 410, 200, 200)
-        elif self.state == "complete":
-            if self.step == 0:
-                self.s_Iimg.draw(1290, 410, 200, 200)
-                self.p_Nimg.draw(110, 410, 200, 200)
-            else:
-                self.s_Nimg.draw(1290, 410, 200, 200)
-                self.p_Nimg.draw(110, 410, 200, 200)
+        else:
+            self.pp_Iimg.draw(110, 410, 200, 200)
+        self.s_Cimg.draw(1290, 410, 200, 200)
     def change_step(self,new_step):
         self.step=new_step
 class Q3:
-    def __init__(self):
+    def __init__(self,player):
         self.state = "intro"
         self.dialogues = {
             "intro": [],
@@ -159,13 +145,14 @@ class Q3:
         self.current=0
         self.pt="연구원 처치 진행도: "
         self.step=0
+        self.player=player
         # 누오 잠만보 이미지
         self.s_Nimg = load_image(os.path.join('asset/map/town/Snorlax', 'Normal.png'))
         self.s_Cimg = load_image(os.path.join('asset/map/town/Snorlax', 'Crying.png'))
         self.s_Iimg = load_image(os.path.join('asset/map/town/Snorlax', 'Inspired.png'))
         self.p_Nimg = load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
         self.p_Aimg = load_image(os.path.join('asset/player/Quagsire', 'Angry.png'))
-
+        self.pp_Iimg = load_image(os.path.join('asset/player/Clodsire', 'Normal.png'))
     def update_state(self, new_state):
         self.state = new_state
     def check_progress(self,target_type):
@@ -178,13 +165,16 @@ class Q3:
                 return 2
         return 0
     def draw(self):
-        self.p_Nimg.draw(110, 410, 200, 200)
+        if self.player.type == 1:
+            self.p_Nimg.draw(110, 410, 200, 200)
+        else:
+            self.pp_Iimg.draw(110, 410, 200, 200)
         self.s_Cimg.draw(1290, 410, 200, 200)
         pass
     def change_step(self,new_step):
         self.step=new_step
 class Q4:
-    def __init__(self):
+    def __init__(self,player):
         self.state = "intro"
         self.dialogues = {
             "intro": [],
@@ -200,13 +190,14 @@ class Q4:
         self.current=0
         self.pt="연구원 처치 진행도: "
         self.step=0
+        self.player=player
         # 누오 잠만보 이미지
         self.s_Nimg = load_image(os.path.join('asset/map/town/Snorlax', 'Normal.png'))
         self.s_Cimg = load_image(os.path.join('asset/map/town/Snorlax', 'Crying.png'))
         self.s_Iimg = load_image(os.path.join('asset/map/town/Snorlax', 'Inspired.png'))
         self.p_Nimg = load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
         self.p_Aimg = load_image(os.path.join('asset/player/Quagsire', 'Angry.png'))
-
+        self.pp_Iimg = load_image(os.path.join('asset/player/Clodsire', 'Normal.png'))
     def update_state(self, new_state):
         self.state = new_state
     def check_progress(self,target_type):
@@ -219,7 +210,10 @@ class Q4:
                 return 2
         return 0
     def draw(self):
-        self.p_Nimg.draw(110, 410, 200, 200)
+        if self.player.type == 1:
+            self.p_Nimg.draw(110, 410, 200, 200)
+        else:
+            self.pp_Iimg.draw(110, 410, 200, 200)
         self.s_Cimg.draw(1290, 410, 200, 200)
         pass
     def change_step(self,new_step):
@@ -227,7 +221,7 @@ class Q4:
 
 
 class Q5:
-    def __init__(self):
+    def __init__(self,player):
         self.state = "intro"
         self.dialogues = {
             "intro": [],
@@ -243,12 +237,14 @@ class Q5:
         self.current = 0
         self.pt = "연구원 처치 진행도: "
         self.step = 0
+        self.player=player
         # 누오 잠만보 이미지
         self.s_Nimg = load_image(os.path.join('asset/map/town/Snorlax', 'Normal.png'))
         self.s_Cimg = load_image(os.path.join('asset/map/town/Snorlax', 'Crying.png'))
         self.s_Iimg = load_image(os.path.join('asset/map/town/Snorlax', 'Inspired.png'))
         self.p_Nimg = load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
         self.p_Aimg = load_image(os.path.join('asset/player/Quagsire', 'Angry.png'))
+        self.pp_Iimg = load_image(os.path.join('asset/player/Clodsire', 'Normal.png'))
 
     def update_state(self, new_state):
         self.state = new_state
@@ -257,7 +253,10 @@ class Q5:
         pass
 
     def draw(self):
-        self.p_Nimg.draw(110, 410, 200, 200)
+        if self.player.type == 1:
+            self.p_Nimg.draw(110, 410, 200, 200)
+        else:
+            self.pp_Iimg.draw(110, 410, 200, 200)
         self.s_Cimg.draw(1290, 410, 200, 200)
         pass
 

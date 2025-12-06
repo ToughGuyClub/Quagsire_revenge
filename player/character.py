@@ -85,7 +85,7 @@ TIME_PER_SPEED = 1
 
 
 class Bubble:
-    def __init__(self, x, y, degree,type=1):
+    def __init__(self, x, y, degree,dmg,type=1,):
         self.x = x
         self.y = y
         self.degree = degree
@@ -96,7 +96,7 @@ class Bubble:
             self.image = load_image(os.path.join('asset/player/clodsire','bubble_clodsire.png'))
         self.scale=32
         self.active=True
-        self.damage=5
+        self.damage=dmg
         self.frame=0
         self.type=type
     def update(self):
@@ -172,7 +172,7 @@ class Character:
         self.lock_move=False
 
         #퀘스트
-        self.quest_manager=QuestManager()
+        self.quest_manager=QuestManager(self)
 
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
@@ -397,7 +397,7 @@ class Character:
             pass
 
             print(f" Skill Point +1 (Total: {self.skill_points})")
-        self.max_exp = int(self.max_exp * 1.2)
+        self.max_exp = int(self.max_exp * 1.5)
         print(f" LEVEL UP! Lv.{self.level} | Next EXP: {self.max_exp}")
     def hit_check(self,e):
         return self.is_hit
@@ -699,7 +699,7 @@ class ATTACK:
         if self.player.attack_manager.trigger_attack(get_time()):
             (x, y) = handleEvent.get_mouse_pos()
             print(f'Attack at mouse position: ({x}, {y})')
-            bubble = Bubble(self.player.x, self.player.y, self.player.get_angle(x, y),self.player.type)
+            bubble = Bubble(self.player.x, self.player.y, self.player.get_angle(x, y),self.player.level*5,self.player.type)
             game_world.add_object(bubble, 2)
             game_world.add_collision_pair('bubble:enemy', bubble, None)
             #버블방향에 맞게 플레이어 각도수정
@@ -826,3 +826,5 @@ class HIT_EFFECT:
 
     def draw(self):
         self.font.draw(self.player.x-self.player.scale//4, self.y + self.offset, f"{self.dmg}", (255, 0, 0))
+
+
