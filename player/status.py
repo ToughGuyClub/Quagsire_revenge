@@ -32,6 +32,32 @@ class Status:
                 2:(load_image(os.path.join('asset/player/skill', 'thunder.png')), (0, 0, 104, 108))
             }
         }
+        self.skill_icons_p = {
+            1: {  # slot 2
+                1: (load_image(os.path.join('asset/player/skill', 'water_cannon_p.png')), (0, 0, 85, 120)),
+                2: (load_image(os.path.join('asset/player/skill', 'water_beam_p.png')), (200, 200, 200, 200)),
+                3: (load_image(os.path.join('asset/player/skill', 'hyper_beam.png')), (200, 200, 200, 200)),
+            },
+            2: {  # slot 2
+                1: (load_image(os.path.join('asset/player/skill', 'water_sheild_p.png')), (100, 100, 100, 100)),
+                2: (load_image(os.path.join('asset/player/skill', 'water_parrying_p.png')), (0, 0, 102, 75)),
+                3: (load_image(os.path.join('asset/player/skill', 'water_heal.png')), (170, 0, 85, 90))
+            },
+            3: {
+                1: (load_image(os.path.join('asset/player/skill', 'ice_spear_p.png')), (0, 0, 88, 16)),
+                2: (load_image(os.path.join('asset/player/skill', 'earth_quake.png')), (0, 0, 60, 60)),
+                3: (load_image(os.path.join('asset/player/skill', 'flash.png')), (0, 0, 256, 256)),
+            },
+            4: {
+                1: (load_image(os.path.join('asset/player/skill', 'meteor_p.png')), (0, 0, 100, 100)),
+                2: (load_image(os.path.join('asset/player/skill', 'thunder.png')), (0, 0, 104, 108)),
+            }
+        }
+
+        #캐릭터 선택창
+        self.character_quag = load_image(os.path.join('asset/player/Quagsire', 'Normal.png'))
+        self.character_clod = load_image(os.path.join('asset/player/Clodsire', 'Normal.png'))
+        self.selected_character = self.player.type
 
         if not hasattr(self, 'font'):
             self.font = load_font('asset/screen/intro/introFont.ttf', 30)
@@ -50,7 +76,7 @@ class Status:
         draw_rectangle(190, 90, 1210, 710, 47, 248, 240, 255, True)
         draw_rectangle(200, 100, 1200, 700, 0, 0, 0, 255, True)
         self.draw_skill_icon()
-
+        self.character_select_draw()
     # ==============================================
     # 스킬 아이콘 출력
     # ==============================================
@@ -74,6 +100,9 @@ class Status:
 
             # --- 아이콘 정보 가져오기 ---
             icon_info = self.skill_icons.get(slot, {}).get(skill_level, None)
+
+            if self.player.type == 2:
+                icon_info = self.skill_icons_p.get(slot, {}).get(skill_level, None)
             if icon_info:
                 draw_rectangle(
                     x - self.skill_size // 2, y - self.skill_size // 2,
@@ -92,6 +121,16 @@ class Status:
             # 좌우 화살표 표시
             self.arrowL_image.draw(x - self.skill_size - 10, y)
             self.arrowR_image.draw(x + self.skill_size + 10, y)
+    def character_select_draw(self):
+        # 캐릭터 선택창 배경
+
+        if self.selected_character == 1:
+            draw_rectangle(840, 240, 960, 360, 0, 0, 255, 255, True)
+        else:
+            draw_rectangle(980, 240, 1120, 360, 0, 0, 255, 255, True)
+        # 캐릭터 이미지 출력
+        self.character_quag.draw(900, 300, 100, 100)
+        self.character_clod.draw(1050, 300, 100, 100)
 
     # ==============================================
     # 업데이트 (입력, 상태변화용)

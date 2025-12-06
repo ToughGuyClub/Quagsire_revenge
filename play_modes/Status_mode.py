@@ -97,7 +97,12 @@ def handle_events():
                 if cur_level > 1:
                     player.skill_manager.current_skills[slot] -= 1
                     status.current_selected_skill[1] = player.skill_manager.current_skills[slot] - 1
-
+            if event.key==SDLK_1:
+                status.selected_character=1
+                player.type=1
+            elif event.key==SDLK_2:
+                status.selected_character=2
+                player.type=2
 
 def pause():
     pass
