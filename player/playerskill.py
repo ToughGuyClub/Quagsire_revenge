@@ -91,7 +91,10 @@ class PlayerSkillManager:
 
 class WaterCannon:
     def __init__(self,player):
-        self.image = load_image(os.path.join('asset/player/skill', 'water_cannon.png'))
+        if player.type==1:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_cannon.png'))
+        elif player.type==2:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_cannon_p.png'))
         self.duration = 1.0  # 지속 3초
         self.player=player
         self.dirX=0
@@ -196,7 +199,10 @@ class WaterCannon:
         return False
 class WaterBeam:
     def __init__(self,player):
-        self.image = load_image(os.path.join('asset/player/skill', 'water_beam.png'))
+        if player.type==1:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_beam.png'))
+        elif player.type==2:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_beam_p.png'))
         self.duration = 2.0  # 지속 2초
         self.player=player
         self.dirX=0
@@ -408,7 +414,10 @@ class EarthQuake:
 
 class WaterShield:
     def __init__(self,player):
-        self.image = load_image(os.path.join('asset/player/skill', 'water_sheild.png'))
+        if player.type==1:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_sheild.png'))
+        elif player.type==2:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_sheild_p.png'))
         self.duration = 5.0  # 지속 3초
         self.player=player
         self.frameX=0.0
@@ -594,7 +603,10 @@ class HyperBeam:
 
 class WaterParrying:
     def __init__(self,player):
-        self.image = load_image(os.path.join('asset/player/skill', 'water_parrying.png'))
+        if player.type==1:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_parrying.png'))
+        elif player.type==2:
+            self.image = load_image(os.path.join('asset/player/skill', 'water_parrying_p.png'))
         self.duration = 0.5  # 지속 1초
         self.player=player
         self.frame=0.0
@@ -732,7 +744,10 @@ class WaterHeal:
 
 class IceSpear:
     def __init__(self,player,angle=0.0):
-        self.image = load_image(os.path.join('asset/player/skill', 'ice_spear.png'))
+        if player.type==1:
+            self.image = load_image(os.path.join('asset/player/skill', 'ice_spear.png'))
+        elif player.type==2:
+            self.image = load_image(os.path.join('asset/player/skill', 'ice_spear_p.png'))
         self.duration = 4.0  # 지속 4초
         self.player=player
         self.dirX=0
@@ -948,7 +963,10 @@ class FLASH:
         pass
 class METEOR:
     def __init__(self,player,stack=0):
-        self.image = load_image(os.path.join('asset/player/skill', 'meteor.png'))
+        if player.type==1:
+            self.image = load_image(os.path.join('asset/player/skill', 'meteor.png'))
+        elif player.type==2:
+            self.image = load_image(os.path.join('asset/player/skill', 'meteor_p.png'))
         self.image_after = load_image(os.path.join('asset/player/skill', 'meteor_after.png'))
         self.duration = 5.0  # 지속 4초
         self.x=-100

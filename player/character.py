@@ -85,25 +85,36 @@ TIME_PER_SPEED = 1
 
 
 class Bubble:
-    def __init__(self, x, y, degree):
+    def __init__(self, x, y, degree,type=1):
         self.x = x
         self.y = y
         self.degree = degree
         self.speed = 50
-        self.image = load_image(os.path.join('asset/player','bubble.png'))
+        if type==1:
+            self.image = load_image(os.path.join('asset/player','bubble.png'))
+        elif type==2:
+            self.image = load_image(os.path.join('asset/player/clodsire','bubble_clodsire.png'))
         self.scale=32
         self.active=True
         self.damage=5
+        self.frame=0
+        self.type=type
     def update(self):
         #각도를 기준으로 이동
-
+        if self.type==2:
+            #프레임업데이트
+            self.frame = (self.frame + 3.0 * ACTION_PER_TIME * game_framework.frame_time) % 3
         self.x += math.cos(self.degree) * self.speed*game_framework.frame_time*10
         self.y += math.sin(self.degree) * self.speed*game_framework.frame_time*10
         if self.x < 0 or self.x > width or self.y < 0 or self.y > height:
             game_world.remove_object(self)
 
     def draw(self):
-        self.image.draw(self.x, self.y,self.scale,self.scale)
+        if self.type==1:
+            self.image.draw(self.x, self.y,self.scale,self.scale)
+
+        elif self.type==2:
+            self.image.clip_draw(int(self.frame)*192,384,192,192,self.x,self.y, self.scale, self.scale)
         draw_rectangle(*self.get_bb())
     def get_bb(self):
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
@@ -113,11 +124,12 @@ class Bubble:
             game_world.remove_object(self)
 
 class Character:
-    def __init__(self,cm, x=100, y=100):
+    def __init__(self,cm, x=100, y=100,type=1):
         #필요한 정보
         self.current_map = cm
         self.max_HP = 100
         self.cur_HP = 100
+        self.type=2
 
         self.frame_timer = 0
         self.frame_interval = 0.2
@@ -212,9 +224,14 @@ class Character:
 
         )
         # 스프라이트 이미지
-        self.image_walking = load_image(os.path.join('asset/player', 'Walk-Anim.png'))
-        self.image_idle = load_image(os.path.join('asset/player', 'Idle-Anim.png'))
-        self.image_normal_attack = load_image(os.path.join('asset/player', 'Shoot-Anim.png'))
+        if self.type==1:
+            self.image_walking = load_image(os.path.join('asset/player', 'Walk-Anim.png'))
+            self.image_idle = load_image(os.path.join('asset/player', 'Idle-Anim.png'))
+            self.image_normal_attack = load_image(os.path.join('asset/player', 'Shoot-Anim.png'))
+        elif self.type==2:
+            self.image_walking = load_image(os.path.join('asset/player/Clodsire', 'Walk-Anim.png'))
+            self.image_idle = load_image(os.path.join('asset/player/Clodsire', 'Idle-Anim.png'))
+            self.image_normal_attack = load_image(os.path.join('asset/player/Clodsire', 'Shoot-Anim.png'))
         self.frame = 0
 
     def draw(self):
@@ -473,25 +490,44 @@ class IDLE:
 
     def draw(self):
         p = self.player
-
-        if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
-            p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
-        elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
-            p.image_idle.clip_draw(int(p.frame) * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
-        elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
-            p.image_idle.clip_draw(int(p.frame) * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
-        elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
-            p.image_idle.clip_draw(int(p.frame) * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
-        elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
-            p.image_idle.clip_draw(int(p.frame) * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
-        elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
-            p.image_idle.clip_draw(int(p.frame) * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
-        elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
-            p.image_idle.clip_draw(int(p.frame) * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
-        elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
-            p.image_idle.clip_draw(int(p.frame) * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
-        else:
-            p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
+        if p.type==1:
+            if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
+                p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
+                p.image_idle.clip_draw(int(p.frame) * 48, 56, 48, 56, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
+                p.image_idle.clip_draw(int(p.frame) * 48, 112, 48, 56, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
+                p.image_idle.clip_draw(int(p.frame) * 48, 168, 48, 56, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
+                p.image_idle.clip_draw(int(p.frame) * 48, 224, 48, 56, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
+                p.image_idle.clip_draw(int(p.frame) * 48, 280, 48, 56, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
+                p.image_idle.clip_draw(int(p.frame) * 48, 336, 48, 56, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
+                p.image_idle.clip_draw(int(p.frame) * 48, 392, 48, 56, p.x, p.y, p.scale, p.scale)
+            else:
+                p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
+        elif p.type==2:
+            if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
+                p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
+                p.image_idle.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
+                p.image_idle.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
+                p.image_idle.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
+                p.image_idle.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
+                p.image_idle.clip_draw(int(p.frame) * 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
+                p.image_idle.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
+                p.image_idle.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+            else:
+                p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)  # 기본값
 
 
 class RUN:
@@ -616,24 +652,44 @@ class RUN:
 
     def draw(self):
         p = self.player
-        if p.dirX < 0 and p.dirY < 0:  # 좌하
-            p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
-        elif p.dirX < 0 and p.dirY == 0:  # 좌
-            p.image_walking.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
-        elif p.dirX < 0 and p.dirY > 0:  # 좌상
-            p.image_walking.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
-        elif p.dirX == 0 and p.dirY > 0:  # 상
-            p.image_walking.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
-        elif p.dirX > 0 and p.dirY > 0:  # 우상
-            p.image_walking.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
-        elif p.dirX > 0 and p.dirY == 0:  # 우
-            p.image_walking.clip_draw(int(p.frame)* 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
-        elif p.dirX > 0 and p.dirY < 0:  # 우하
-            p.image_walking.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
-        elif p.dirX == 0 and p.dirY < 0:  # 하
-            p.image_walking.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
-        else:
-            p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+        if p.type==1:
+            if p.dirX < 0 and p.dirY < 0:  # 좌하
+                p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX < 0 and p.dirY == 0:  # 좌
+                p.image_walking.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX < 0 and p.dirY > 0:  # 좌상
+                p.image_walking.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX == 0 and p.dirY > 0:  # 상
+                p.image_walking.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX > 0 and p.dirY > 0:  # 우상
+                p.image_walking.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX > 0 and p.dirY == 0:  # 우
+                p.image_walking.clip_draw(int(p.frame)* 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX > 0 and p.dirY < 0:  # 우하
+                p.image_walking.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX == 0 and p.dirY < 0:  # 하
+                p.image_walking.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+            else:
+                p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+        elif p.type==2:
+            if p.dirX < 0 and p.dirY < 0:  # 좌하
+                p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX < 0 and p.dirY == 0:  # 좌
+                p.image_walking.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX < 0 and p.dirY > 0:  # 좌상
+                p.image_walking.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX == 0 and p.dirY > 0:  # 상
+                p.image_walking.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX > 0 and p.dirY > 0:  # 우상
+                p.image_walking.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX > 0 and p.dirY == 0:  # 우
+                p.image_walking.clip_draw(int(p.frame)* 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX > 0 and p.dirY < 0:  # 우하
+                p.image_walking.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+            elif p.dirX == 0 and p.dirY < 0:  # 하
+                p.image_walking.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+            else:
+                p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
 
 
 class ATTACK:
@@ -646,7 +702,7 @@ class ATTACK:
         if self.player.attack_manager.trigger_attack(get_time()):
             (x, y) = handleEvent.get_mouse_pos()
             print(f'Attack at mouse position: ({x}, {y})')
-            bubble = Bubble(self.player.x, self.player.y, self.player.get_angle(x, y))
+            bubble = Bubble(self.player.x, self.player.y, self.player.get_angle(x, y),self.player.type)
             game_world.add_object(bubble, 2)
             game_world.add_collision_pair('bubble:enemy', bubble, None)
             #버블방향에 맞게 플레이어 각도수정
