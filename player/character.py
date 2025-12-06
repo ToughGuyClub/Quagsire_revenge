@@ -224,14 +224,14 @@ class Character:
 
         )
         # 스프라이트 이미지
-        if self.type==1:
-            self.image_walking = load_image(os.path.join('asset/player', 'Walk-Anim.png'))
-            self.image_idle = load_image(os.path.join('asset/player', 'Idle-Anim.png'))
-            self.image_normal_attack = load_image(os.path.join('asset/player', 'Shoot-Anim.png'))
-        elif self.type==2:
-            self.image_walking = load_image(os.path.join('asset/player/Clodsire', 'Walk-Anim.png'))
-            self.image_idle = load_image(os.path.join('asset/player/Clodsire', 'Idle-Anim.png'))
-            self.image_normal_attack = load_image(os.path.join('asset/player/Clodsire', 'Shoot-Anim.png'))
+
+        self.image_walking = load_image(os.path.join('asset/player', 'Walk-Anim.png'))
+        self.image_idle = load_image(os.path.join('asset/player', 'Idle-Anim.png'))
+        self.image_normal_attack = load_image(os.path.join('asset/player', 'Shoot-Anim.png'))
+
+        self.image_walking_p = load_image(os.path.join('asset/player/Clodsire', 'Walk-Anim.png'))
+        self.image_idle_p = load_image(os.path.join('asset/player/Clodsire', 'Idle-Anim.png'))
+        self.image_normal_attack_p = load_image(os.path.join('asset/player/Clodsire', 'Shoot-Anim.png'))
         self.frame = 0
 
     def draw(self):
@@ -511,23 +511,23 @@ class IDLE:
                 p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 56, p.x, p.y, p.scale, p.scale)  # 기본값
         elif p.type==2:
             if p.stopdirX < 0 and p.stopdirY < 0:  # 좌하
-                p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.stopdirX < 0 and p.stopdirY == 0:  # 좌
-                p.image_idle.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.stopdirX < 0 and p.stopdirY > 0:  # 좌상
-                p.image_idle.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.stopdirX == 0 and p.stopdirY > 0:  # 상
-                p.image_idle.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.stopdirX > 0 and p.stopdirY > 0:  # 우상
-                p.image_idle.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.stopdirX > 0 and p.stopdirY == 0:  # 우
-                p.image_idle.clip_draw(int(p.frame) * 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.stopdirX > 0 and p.stopdirY < 0:  # 우하
-                p.image_idle.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.stopdirX == 0 and p.stopdirY < 0:  # 하
-                p.image_idle.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
             else:
-                p.image_idle.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)  # 기본값
+                p.image_idle_p.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)  # 기본값
 
 
 class RUN:
@@ -670,23 +670,23 @@ class RUN:
                 p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
         elif p.type==2:
             if p.dirX < 0 and p.dirY < 0:  # 좌하
-                p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.dirX < 0 and p.dirY == 0:  # 좌
-                p.image_walking.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 40, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.dirX < 0 and p.dirY > 0:  # 좌상
-                p.image_walking.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 80, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.dirX == 0 and p.dirY > 0:  # 상
-                p.image_walking.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 120, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.dirX > 0 and p.dirY > 0:  # 우상
-                p.image_walking.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 160, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.dirX > 0 and p.dirY == 0:  # 우
-                p.image_walking.clip_draw(int(p.frame)* 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame)* 48, 200, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.dirX > 0 and p.dirY < 0:  # 우하
-                p.image_walking.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 240, 48, 40, p.x, p.y, p.scale, p.scale)
             elif p.dirX == 0 and p.dirY < 0:  # 하
-                p.image_walking.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 280, 48, 40, p.x, p.y, p.scale, p.scale)
             else:
-                p.image_walking.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
+                p.image_walking_p.clip_draw(int(p.frame) * 48, 0, 48, 40, p.x, p.y, p.scale, p.scale)
 
 
 class ATTACK:

@@ -32,9 +32,11 @@ class Thunder:
             self.image.clip_draw(int(self.frame) * 100, 0, 100, 100, self.x, self.y, 200, 200)
 
 class Step1_Thunder_Mode:
-    def __init__(self):
-        self.image = load_image(os.path.join('asset/player/Quagsire', 'Sleep.png'))
-
+    def __init__(self,type):
+        if type==1:
+            self.image = load_image(os.path.join('asset/player/Quagsire', 'Sleep.png'))
+        elif type==2:
+            self.image = load_image(os.path.join('asset/player/Clodsire', 'Joyous.png'))
         self.x = -300
         self.y = 400
         self.size = 500

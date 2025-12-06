@@ -32,7 +32,7 @@ def init():
             if isinstance(o, Character):  # 예시) Character 클래스에 player_flag=True 넣어두면 탐색 가능
                 player = o
                 thunder = Thunder(player.x,player.y)
-    qf = Step1_Thunder_Mode()
+    qf = Step1_Thunder_Mode(player.type)
     reset_half_stack()
 
     pass
