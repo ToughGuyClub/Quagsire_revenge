@@ -9,7 +9,10 @@ class Tree:
         self.y = y
         self.treetype = treetype
         self.image = load_image(os.path.join('asset/map/town','trees.png'))
-
+        import sound
+        self.bgm=load_music(os.path.join('asset/map/town','town_bgm.mp3'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def draw(self):
         self.image.clip_draw(0+ 47* self.treetype, 464 , 46, 48, self.x, self.y,100,100)
 

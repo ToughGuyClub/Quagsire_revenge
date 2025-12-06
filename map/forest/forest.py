@@ -14,6 +14,10 @@ class FOREST01:
         create_enemy('ruinmaniac', 660, 280, player)
         create_enemy('ruinmaniac', 710, 180, player)
         create_enemy('ranger', 910, 380, player)
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/forest/forest_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -33,6 +37,11 @@ class FOREST02:
         create_enemy('ruinmaniac', 810, 200, player)
         create_enemy('ranger', 610, 480, player)
         create_enemy('ranger', 630, 380, player)
+
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/forest/forest_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -54,6 +63,10 @@ class FOREST03:
         create_enemy('ranger', 580, 280, player)
         create_enemy('ranger', 740, 180, player)
 
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/forest/forest_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 

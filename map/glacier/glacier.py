@@ -14,6 +14,10 @@ class GLACIER01:
         create_enemy('swimmer', 1250, 580, player)
         create_enemy('swimmer', 50, 100, player)
         create_enemy('swimmer', 1250, 100, player)
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/glacier/glacier_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -29,6 +33,10 @@ class GLACIER02:
         create_enemy('swimmer', 1200, 150, player)
         create_enemy('captin', 600, 530, player)
         create_enemy('captin', 600, 150, player)
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/glacier/glacier_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -44,6 +52,10 @@ class GLACIER03:
         create_enemy('captin', 660, 170, player)
         create_enemy('captin', 720, 400, player)
         create_enemy('captin', 720, 270, player)
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/glacier/glacier_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 

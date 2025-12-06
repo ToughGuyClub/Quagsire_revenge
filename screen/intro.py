@@ -32,7 +32,7 @@ ball_frame = 0
 truck_x = -100
 blood_y = -400
 
-
+global bgm
 TIME_PER_ACTION = 0.2
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 6
@@ -83,6 +83,8 @@ def init():
     ball_frame = 0
     truck_x = -100
     blood_y = -400
+    global bgm
+    bgm=sound_oak()
 
 def update():
     global step, timer, text_index, dialogue_index, text_timer
@@ -134,6 +136,8 @@ def update():
             blood_y = prof_y
     elif step == 7:
         #메인게임화면으로 넘어감
+        global bgm
+        bgm=None
         game_framework.change_mode(play_modes.Town_mode)
 def draw():
     global ball_x
@@ -209,3 +213,10 @@ def finish():
 
 def pause(): pass
 def resume(): pass
+class sound_oak:
+    def __init__(self):
+        # 사운드
+        import sound
+        self.oak_bgm = load_music('asset/screen/intro/oak_bgm.mp3')
+        self.oak_bgm.set_volume(sound.get_sound_volume())
+        self.oak_bgm.repeat_play()

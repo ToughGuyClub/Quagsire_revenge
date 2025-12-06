@@ -14,7 +14,10 @@ class VOLCANO:
         from player.character import reset_pressed_keys
         reset_pressed_keys()
         game_framework.push_mode(map.volcano.volcano_dialogue)
-
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/volcano/volcano_bgm.mp3'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 

@@ -17,6 +17,10 @@ class DESERT:
         reset_pressed_keys()
         game_framework.push_mode(map.desert.desert_dialogue)
 
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/desert/desert_bgm.mp3'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 

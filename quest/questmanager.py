@@ -6,8 +6,8 @@ from pico2d import *
 class QuestManager:
     def __init__(self,player):
         self.quest_list=[Q1(player),Q2(player),Q3(player),Q4(player),Q5(player)]
-        self.clear_quest=0
-        self.current_index=0
+        self.clear_quest=4
+        self.current_index=4
         self.player=player
         # intro → progress → complete
 

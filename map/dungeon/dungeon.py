@@ -16,6 +16,11 @@ class DUNGEON01:
         create_enemy('rocker', 320, 200, player)
         #create_enemy('rival', 610, 480, player)
         create_enemy('rival', 120, 380, player)
+
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/dungeon/dungeon_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -37,6 +42,12 @@ class DUNGEON02:
         create_enemy('rocker', 810, 200, player)
         create_enemy('rival', 520, 380, player)
         create_enemy('rival', 600, 480, player)
+
+
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/dungeon/dungeon_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -60,6 +71,10 @@ class DUNGEON03:
         create_enemy('rival', 580, 280, player)
         create_enemy('rival', 740, 180, player)
 
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/dungeon/dungeon_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
 
     def update(self):
         pass

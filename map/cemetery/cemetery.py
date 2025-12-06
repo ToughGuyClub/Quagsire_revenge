@@ -16,6 +16,11 @@ class CEMETERY01:
         create_enemy('rocketman', 300, 400, player)
         create_enemy('rocketgirl', 600, 300, player)
         create_enemy('rocketgirl', 800, 500, player)
+
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/cemetery/cemetery_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -36,7 +41,10 @@ class CEMETERY02:
         create_enemy('rocketman', 400, 200, player)
         create_enemy('rocketgirl', 800, 500, player)
         create_enemy('rocketgirl', 500, 200, player)
-
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/cemetery/cemetery_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
@@ -58,6 +66,10 @@ class CEMETERY03:
         create_enemy('rocketman', 600, 300, player)
         create_enemy('rocketman', 500, 300, player)
         create_enemy('rocketgirl', 300, 200, player)
+        import sound
+        self.bgm = load_music(os.path.join('asset/map/cemetery/cemetery_bgm.mid'))
+        self.bgm.set_volume(sound.get_sound_volume())
+        self.bgm.repeat_play()
     def update(self):
         pass
 
