@@ -53,6 +53,11 @@ class Player_UI:
         }
         # 예: {1: (image, (0,0,64,64)), 2: (...), ...}
 
+        #포션
+        self.potion1_image = load_image(os.path.join('asset/player', 'POTION.png'))
+        self.potion2_image = load_image(os.path.join('asset/player', 'SUPERPOTION.png'))
+        self.potion3_image = load_image(os.path.join('asset/player', 'HYPERPOTION.png'))
+
         # --- UI 좌표/크기 ---
         self.skill_size = 64
         self.skill_spacing = 10
@@ -76,6 +81,7 @@ class Player_UI:
     def draw(self):
         self.draw_health_bar(self.player)
         self.draw_skill_cooldown(self.player)
+        self.draw_potion()
 
     # ================================================
     # 체력바
@@ -139,6 +145,19 @@ class Player_UI:
                                x + self.skill_size // 2, y + self.skill_size // 2,
                                0, 0, 0, 128, True)
                 self.font.draw(x - 20, y - 10, f"{cd:.1f}", (255, 0, 0))
-
+    def draw_potion(self):
+        #네모그리기
+        draw_rectangle(1200, 50, 1300, 150, 255, 255, 255, 255, True)
+        #포션 아이콘 그리기
+        if self.player.potion.type==1:
+            self.potion1_image.draw(1250,100,50,50)
+        elif self.player.potion.type==2:
+            self.potion2_image.draw(1250,100,50,50)
+        elif self.player.potion.type==3:
+            self.potion3_image.draw(1250,100,50,50)
+        if self.player.potion.cooldown>0.0:
+            draw_rectangle(1200, 50, 1300, 150, 0, 0, 0, 125, True)
+            self.font.draw(1220, 80, f"{self.player.potion.cooldown:.1f}", (255, 255, 255))
+#
     def update(self):
         pass

@@ -7,6 +7,7 @@ from sdl2 import SDL_KEYDOWN, SDLK_SPACE, SDLK_RIGHT, SDL_KEYUP, SDLK_LEFT, SDLK
 from player.playerskill import PlayerSkillManager
 from player.playerskill import HekirekiIssen
 from quest.questmanager import QuestManager
+from player.potion import POTION
 from player.status import Status
 import current_map
 import game_framework
@@ -129,7 +130,7 @@ class Character:
         self.current_map = cm
         self.max_HP = 100
         self.cur_HP = 100
-        self.type=2
+        self.type=1
 
         self.frame_timer = 0
         self.frame_interval = 0.2
@@ -173,6 +174,8 @@ class Character:
 
         #퀘스트
         self.quest_manager=QuestManager(self)
+        #포션
+        self.potion=POTION(self)
 
         self.IDLE = IDLE(self)
         self.RUN = RUN(self)
@@ -248,6 +251,16 @@ class Character:
             self.IDLE.draw()
 
     def update(self):
+        if self.cur_HP <= 0:
+            #사망하는거
+            import play_modes.Town_mode
+            #적 전부 초기화
+            self.cur_HP=self.max_HP
+            self.x=100
+            self.y=300
+            game_world.clear_temporary()
+            game_framework.change_mode(play_modes.Town_mode)
+            return
         if self.is_hit:
             self.hit_effect_timer-=game_framework.frame_time
             if self.hit_effect_timer<=0.0:
@@ -450,6 +463,9 @@ class Character:
             "quest": {
                 "clear_quest": self.quest_manager.clear_quest,
                 "current_index": self.quest_manager.current_index
+            },
+            "potion":{
+                "potion_type": self.potion.type
             }
         }
 
@@ -478,7 +494,8 @@ class Character:
         q=data["quest"]
         self.quest_manager.clear_quest=q["clear_quest"]
         self.quest_manager.current_index=q["current_index"]
-
+        pt=data["potion"]
+        self.potion.type=pt["potion_type"]
 
         print("게임 로드 완료!")
 

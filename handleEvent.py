@@ -109,7 +109,8 @@ def handle_events(player=None,world=None,current_Map=None):
                 import savefont
                 savefont.save_font(player)
                 player.save()
-
+            if event.key == SDLK_5:
+                player.potion.use_potion()
         elif event.type == SDL_KEYUP:
             pass
         if current_Map.get_current_map() == 2:

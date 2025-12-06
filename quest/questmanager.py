@@ -6,8 +6,8 @@ from pico2d import *
 class QuestManager:
     def __init__(self,player):
         self.quest_list=[Q1(player),Q2(player),Q3(player),Q4(player),Q5(player)]
-        self.clear_quest=3
-        self.current_index=3
+        self.clear_quest=0
+        self.current_index=0
         self.player=player
         # intro → progress → complete
 
@@ -71,6 +71,7 @@ class Q1:
             print(self.pt+str(self.current)+"/"+str(self.target))
             if self.current>=self.target:
                 self.state="complete"
+                self.player.potion.type = 1
                 return 1
         return 0
     def draw(self):
@@ -118,6 +119,7 @@ class Q2:
             print(self.pt + str(self.current) + "/" + str(self.target))
             if self.current>=self.target:
                 self.state="complete"
+                self.player.potion.type = 2
                 return 2
         return 0
     def draw(self):
@@ -162,6 +164,7 @@ class Q3:
             print(self.pt+str(self.current)+"/"+str(self.target))
             if self.current>=self.target:
                 self.state="complete"
+                self.player.potion.type = 3
                 return 2
         return 0
     def draw(self):

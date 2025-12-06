@@ -19,7 +19,7 @@ class Snorlax:
             self.image_sleep.clip_draw(int(self.frameX) * 40, self.frameY * 24, 40, 24, self.x, self.y, 40*4, 24*4)
         elif self.state=='idle':
             self.image_idle.clip_draw(int(self.frameX) * 32, self.frameY * 64, 32, 64, self.x, self.y, self.scale, self.scale+self.scale//2)
-        draw_rectangle(*self.get_bb())
+
         pass
     def update(self):
         if self.state=='idle':

@@ -1,7 +1,7 @@
 {
     "player": {
         "level": 2,
-        "exp": 100,
+        "exp": 20,
         "max_exp": 150,
         "max_HP": 110,
         "cur_HP": 110,
@@ -23,7 +23,10 @@
         ]
     },
     "quest": {
-        "clear_quest": 1,
-        "current_index": 1
+        "clear_quest": 0,
+        "current_index": 0
+    },
+    "potion": {
+        "potion_type": 1
     }
 }

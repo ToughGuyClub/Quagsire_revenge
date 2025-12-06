@@ -61,8 +61,7 @@ def draw():
     game_start.clip_draw(0,380,291,190, 1400//2, 600//2+100, 200, 100)
     game_start.clip_draw(0, 190, 291, 190, 1400 // 2, 600 // 2, 200, 100)
     game_start.clip_draw(0, 0, 291, 190, 1400 // 2, 600 // 2-100, 200, 100)
-    draw_rectangle(540, 360, 840, 450)  # 시작 버튼 영역
-    draw_rectangle(540, 250, 840, 330)  # 컨티
+
     update_canvas()
 def handle_events():
     global running
