@@ -188,7 +188,7 @@ class Enemy:
         game_world.add_collision_pair('EQ:enemy', None, ball)
     def draw(self):
         self.state_machine.draw()
-        draw_rectangle(*self.get_bb())
+
         #상태이상 효과도 그림
         if self.flashed:
             self.flashed_image.clip_draw(0, 0, 192, 192, self.x, self.y+30, 64, 64)
@@ -436,7 +436,7 @@ class AttackBall:
 
     def draw(self):
         self.image.clip_draw(self.frame * 32, 0, 32, 64, self.x, self.y, 32, 64)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -834,7 +834,7 @@ class BombAttack:
 
     def draw(self):
         self.image.clip_draw(int(self.frame), 576, 192,192 , self.x, self.y, 64, 64)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -867,7 +867,7 @@ class SLOWATTACK:
 
     def draw(self):
         self.image.clip_draw(int(self.frame), 0, 200,200 , self.x, self.y, self.scale*2,  self.scale*2)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -923,7 +923,7 @@ class SEAGULL:
                 self.image.clip_draw(int(self.frame)*32, 40*3, 32,40 , self.x, self.y , self.scale*2,  self.scale*2)
             elif self.dirY ==-1:
                 self.image.clip_draw(int(self.frame)*32, 40*7, 32,40 , self.x, self.y , self.scale*2,  self.scale*2)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -982,7 +982,7 @@ class ACIENTPOWER:
 
         elif self.activation_timer < 0:
             self.image.clip_draw(int(self.frame), 192, 192, 192, self.x, self.y, self.scale*2, self.scale*2)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -1036,7 +1036,7 @@ class MUSIC:
     def draw(self):
 
         self.image.clip_draw(self.stack*192, 384, 192, 192, self.x, self.y, self.scale*2, self.scale*2)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -1068,7 +1068,7 @@ class SHADOWBALL:
 
     def draw(self):
         self.image.clip_draw(int(self.frame), 0, 192,192 , self.x, self.y, self.scale,  self.scale)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):

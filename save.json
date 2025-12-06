@@ -1,25 +1,29 @@
 {
     "player": {
-        "level": 14,
-        "exp": 453,
-        "max_exp": 1058,
-        "max_HP": 339,
-        "cur_HP": 329.0,
-        "skill_points": 1,
-        "unlock_index": 0
+        "level": 2,
+        "exp": 100,
+        "max_exp": 150,
+        "max_HP": 110,
+        "cur_HP": 110,
+        "skill_points": 0,
+        "unlock_index": 1
     },
     "skills": {
         "current_skills": [
-            2,
             1,
-            1,
+            0,
+            0,
             0
         ],
         "current_unlock_skills": [
-            3,
-            3,
-            3,
-            3
+            1,
+            0,
+            0,
+            0
         ]
+    },
+    "quest": {
+        "clear_quest": 1,
+        "current_index": 1
     }
 }

@@ -6,8 +6,8 @@ from pico2d import *
 class QuestManager:
     def __init__(self,player):
         self.quest_list=[Q1(player),Q2(player),Q3(player),Q4(player),Q5(player)]
-        self.clear_quest=4
-        self.current_index=4
+        self.clear_quest=3
+        self.current_index=3
         self.player=player
         # intro → progress → complete
 
@@ -186,7 +186,7 @@ class Q4:
         self.dialogues["complete"] = load_dialogue('asset/map/town/Snorlax/quest/q4_complete.txt')
         # intro → progress → complete
         self.target=1
-        self.target_type = 98   #웅이 될건데 임시로 98해둠 나중에 바꿔야함
+        self.target_type = 99   #웅이 될건데 임시로 98해둠 나중에 바꿔야함
         self.current=0
         self.pt="연구원 처치 진행도: "
         self.step=0

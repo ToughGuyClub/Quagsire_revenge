@@ -850,7 +850,7 @@ class IceSpear:
                                        'h',
                                        self.x, self.y,
                                        self.sizeX,self.sizeY)
-        draw_rectangle(*self.get_bb())
+
     def handle_event(self, event):
         pass
     def handle_collision(self, group, other):
@@ -1038,7 +1038,7 @@ class METEOR:
             self.image.clip_draw(int(self.frame+1) * 98, 0, 98,100,self.x, self.y,self.sizeX,self.sizeY)
         elif self.explosion and int(self.frame)>3:
             self.image_after.clip_draw(0,0,256,128,self.x, self.y,self.sizeX/2,self.sizeY/2)
-        draw_rectangle(*self.get_bb())
+
     def handle_event(self, event):
         pass
     def handle_collision(self, group, other):

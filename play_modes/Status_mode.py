@@ -103,6 +103,14 @@ def handle_events():
             elif event.key==SDLK_2:
                 status.selected_character=2
                 player.type=2
+            #사운드 소리 크기조절
+            elif event.key==SDLK_3:
+                import sound
+                sound.set_sound_volume(sound.get_sound_volume()+10)
+                print(sound.get_sound_volume())
+            elif event.key==SDLK_4:
+                import sound
+                sound.set_sound_volume(sound.get_sound_volume()-10)
 
 def pause():
     pass

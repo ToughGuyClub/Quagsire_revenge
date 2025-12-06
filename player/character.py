@@ -115,7 +115,7 @@ class Bubble:
 
         elif self.type==2:
             self.image.clip_draw(int(self.frame)*192,384,192,192,self.x,self.y, self.scale, self.scale)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - 16, self.y - 16, self.x + 16, self.y + 16
 
@@ -246,7 +246,7 @@ class Character:
             self.RUN.draw()
         else:
             self.IDLE.draw()
-        draw_rectangle(*self.get_bb())
+
     def update(self):
         if self.is_hit:
             self.hit_effect_timer-=game_framework.frame_time
@@ -446,6 +446,10 @@ class Character:
             "skills": {
                 "current_skills": self.skill_manager.current_skills,
                 "current_unlock_skills": self.skill_manager.current_unlock_skills
+            },
+            "quest": {
+                "clear_quest": self.quest_manager.clear_quest,
+                "current_index": self.quest_manager.current_index
             }
         }
 
@@ -471,6 +475,10 @@ class Character:
         s = data["skills"]
         self.skill_manager.current_skills = s["current_skills"]
         self.skill_manager.current_unlock_skills = s["current_unlock_skills"]
+        q=data["quest"]
+        self.quest_manager.clear_quest=q["clear_quest"]
+        self.quest_manager.current_index=q["current_index"]
+
 
         print("게임 로드 완료!")
 

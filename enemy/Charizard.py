@@ -431,7 +431,6 @@ class Charizard:
                             self.size*2.0,
                             self.size + self.size // 3)
 
-        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return (self.x - self.size//4, self.y - self.size//6+self.hop_offset,
@@ -572,7 +571,7 @@ class SHOOTFIRE:
 
         elif self.activation_timer < 0:
             self.image.clip_composite_draw(int(self.frame), 0, 97, 47, self.degree,'',self.x, self.y, self.scale, self.scale)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -645,7 +644,7 @@ class EarthQuake:
         self.image.clip_draw(int(self.frame) * 60, 0, 60, 60,
                                            self.x, self.y,
                                            self.distance,self.distance)
-        draw_rectangle(*self.get_bb())
+
         pass
     def handle_event(self, event):
         pass
@@ -700,7 +699,7 @@ class AttackBall:
 
     def draw(self):
         self.image.clip_draw(self.frame * 192, 0, 192, 192, self.x, self.y, self.scale,self.scale)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/4 , self.y - self.scale/4 , self.x + self.scale/4 , self.y + self.scale/4
     def handle_collision(self, group, other):
@@ -730,8 +729,7 @@ class CHARIZARD_HP:
 
         # HP 텍스트
         hp_text = f"Charizard HP: {self.charizard.HP} / {self.charizard.max_HP}"
-        state_text = f"State: {self.charizard.state}"
-        self.font.draw(self.charizard.x,self.charizard.y, state_text, (255, 255,255))
+
         self.font.draw(900, 785, hp_text, (255, 255, 255))
 
 
@@ -809,7 +807,7 @@ class FIREMISSILE:
             #터진거 표현
             self.image_explode.clip_composite_draw(int(self.frame) * 83, 0, 83, 77,0.0 ,'h',self.x, self.y,
                                          self.scale, self.scale)
-            draw_rectangle(*self.get_bb())
+
 
     def get_bb(self):
         return self.dirX - self.scale/2 , self.dirY - self.scale/2 , self.dirX + self.scale/2 , self.dirY + self.scale/2
@@ -862,7 +860,8 @@ class ENERGYBALL:
             draw_rectangle(0,0,width,height,255,255,255,int(self.rect_brightness),True)
         else:
             self.image.clip_draw(int(self.frame)*220, 0, 220, 220, self.x, self.y, self.scale,self.scale)
-        draw_rectangle(*self.get_bb())
+
+
     def get_bb(self):
         return self.x - self.scale/4 , self.y - self.scale/4 , self.x + self.scale/4 , self.y + self.scale/4
     def handle_collision(self, group, other):

@@ -342,7 +342,8 @@ class Onix:
                             self.size*0.8,
                             self.size + self.size // 6)
 
-        draw_rectangle(*self.get_bb())
+
+
 
     def get_bb(self):
         return (self.x - self.size//4, self.y - self.size//6,
@@ -475,7 +476,7 @@ class ACIENTPOWER:
 
         elif self.activation_timer < 0:
             self.image.clip_draw(int(self.frame), 192, 192, 192, self.x, self.y, self.scale*2, self.scale*2)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/2 , self.y - self.scale/2 , self.x + self.scale/2 , self.y + self.scale/2
     def handle_collision(self, group, other):
@@ -547,7 +548,8 @@ class EarthQuake:
         self.image.clip_draw(int(self.frame) * 60, 0, 60, 60,
                                            self.x, self.y,
                                            self.distance,self.distance)
-        draw_rectangle(*self.get_bb())
+
+
         pass
     def handle_event(self, event):
         pass
@@ -602,7 +604,7 @@ class AttackBall:
 
     def draw(self):
         self.image.clip_draw(self.frame * 192, 0, 192, 192, self.x, self.y, self.scale,self.scale)
-        draw_rectangle(*self.get_bb())
+
     def get_bb(self):
         return self.x - self.scale/4 , self.y - self.scale/4 , self.x + self.scale/4 , self.y + self.scale/4
     def handle_collision(self, group, other):
@@ -633,7 +635,7 @@ class ONIX_HP:
         # HP 텍스트
         hp_text = f"Onix HP: {self.onix.HP} / {self.onix.max_HP}"
         state_text = f"State: {self.onix.state}"
-        self.font.draw(self.onix.x,self.onix.y, state_text, (255, 255,255))
+
         self.font.draw(900, 785, hp_text, (255, 255, 255))
 
 
