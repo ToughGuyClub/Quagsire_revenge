@@ -1,32 +1,32 @@
 {
     "player": {
-        "level": 7,
-        "exp": 1006,
-        "max_exp": 1135,
-        "max_HP": 176,
-        "cur_HP": 123.5,
+        "level": 11,
+        "exp": 1247,
+        "max_exp": 5743,
+        "max_HP": 256,
+        "cur_HP": 231.0,
         "skill_points": 0,
         "unlock_index": 2
     },
     "skills": {
         "current_skills": [
             2,
-            1,
-            1,
-            1
+            2,
+            2,
+            2
         ],
         "current_unlock_skills": [
+            3,
+            3,
             2,
-            2,
-            1,
-            1
+            2
         ]
     },
     "quest": {
-        "clear_quest": 2,
-        "current_index": 2
+        "clear_quest": 4,
+        "current_index": 4
     },
     "potion": {
-        "potion_type": 2
+        "potion_type": 3
     }
 }

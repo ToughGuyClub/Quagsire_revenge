@@ -71,7 +71,7 @@ class Charizard:
         self.missile_charged=False
 
         #필살기
-        self.special_timer=2.0#이게 0되는 순간 hop모션이랑 충격파 나오면서 화면에서 사라질거임 state도
+        self.special_timer=20.0#이게 0되는 순간 hop모션이랑 충격파 나오면서 화면에서 사라질거임 state도
         self.hop_offset=0
 
         # 돌진 상태
@@ -264,7 +264,8 @@ class Charizard:
         root_selector = Selector('RootSelector', far_seq, mid_seq, close_seq, move_and_attack_seq)
         self.bt = BehaviorTree(root_selector)
 
-
+    def draw_half(self):
+        pass
     # 업데이트
     def update(self):
         # 타이머 감소

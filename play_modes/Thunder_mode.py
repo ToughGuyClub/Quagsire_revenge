@@ -69,7 +69,20 @@ def update():
         if get_half_stack()>=60:
             #여기 있는 모든거 다 지우고 팝
             #리스트에서 모든 적 제거
-            game_world.clear_enemy()
+
+            #game_world.clear_enemy()
+            for e in game_world.enemy_list[:]:  # 리스트 복사본을 순회
+                r = getattr(e, 'is_onix', None)
+
+                if not r:  # 일반 적
+                    game_world.remove_object(e)
+                    game_world.enemy_list.remove(e)
+
+                else:  # 보스(onix)
+                    e.HP -= 100
+                    if e.HP <= 0:
+                        e.HP = 1
+
             Thunder_list.clear()
             game_framework.pop_mode()
     pass

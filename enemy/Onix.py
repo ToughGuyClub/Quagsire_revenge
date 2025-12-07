@@ -305,6 +305,8 @@ class Onix:
         else:
             self.state = 'idle'
 
+    def draw_half(self):
+        pass
     def draw(self):
         image, frameY = self.animations.get(self.state, self.animations['idle'])
         frameY = self.frameY
