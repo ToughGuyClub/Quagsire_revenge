@@ -9,6 +9,7 @@ from enemy.behavior_tree import BehaviorTree, Action, Sequence, Condition, Selec
 FAR_DIST = 450
 MID_DIST = 180
 CLOSE_DIST = 120
+Onix_dead=False
 
 TIME_PER_ACTION = 1.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
@@ -402,6 +403,8 @@ class Onix:
             DEATHEFFECTENEMY(self.x, self.y)
             # 퀘스트를 위해 있는 부분
             import map.desert.desert_dialogue
+            global Onix_dead
+            Onix_dead=True
             from player.character import reset_pressed_keys
             global quest_completed
             quest_completed=True
@@ -662,3 +665,7 @@ class DEATHEFFECTENEMY:
 
 def get_quest_type():
     return quest_completed
+
+
+def check_onix_dead():
+    return Onix_dead

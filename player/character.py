@@ -259,7 +259,8 @@ class Character:
             self.x=100
             self.y=300
             game_world.clear_temporary()
-            game_framework.change_mode(play_modes.Town_mode)
+            game_world.enemy_list.clear()
+            self.current_map.change_map(2)
             return
         if self.is_hit:
             self.hit_effect_timer-=game_framework.frame_time
@@ -416,7 +417,9 @@ class Character:
         return self.is_hit
 
     def unlock_skill(self):
-
+        #언락스킬 띄우기
+        from savefont import skillUnlock_font
+        skillUnlock_font(self)
         # 스킬 포인트가 없으면 종료
         if self.skill_points <= 0:
             return

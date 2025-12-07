@@ -5,7 +5,7 @@ import game_world
 import game_framework
 from enemy.behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 
-
+Charizard_dead=False
 FAR_DIST = 450
 MID_DIST = 180
 CLOSE_DIST = 120
@@ -488,6 +488,8 @@ class Charizard:
         if self.HP <= 0:
             DEATHEFFECTENEMY(self.x, self.y)
             # 퀘스트를 위해 있는 부분
+            global Charizard_dead
+            Charizard_dead=True
             import map.volcano.volcano_dialogue
             from player.character import reset_pressed_keys
             global quest_completed
@@ -867,3 +869,8 @@ class ENERGYBALL:
     def handle_collision(self, group, other):
         if group == 'player:enemy':
             game_world.remove_object(self)
+
+
+
+def check_charizard_dead():
+    return Charizard_dead
