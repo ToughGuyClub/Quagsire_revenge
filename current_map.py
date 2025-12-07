@@ -42,9 +42,9 @@ class MapConnection:
         # current_map_id : {"direction": (next_map_id, spawn_x, spawn_y)}
         self.links = {
             2: {  # Town Map
-                "east":  (3, 100, 400),   # 오른쪽 끝 → 늪지1
+                #"east":  (3, 100, 400),   # 오른쪽 끝 → 늪지1
                 #"east": (9, 100, 400),      #디버깅용 마을->사막
-                #"east":(19,100,400)      #디버깅용 마을->화산
+                "east":(19,100,400)      #디버깅용 마을->화산
             },
             3: {
                 "west":  (2, 1300, 400),  # 왼쪽 끝 → 마을맵

@@ -306,7 +306,62 @@ class Onix:
             self.state = 'idle'
 
     def draw_half(self):
-        pass
+        from screen.thunder_scene import get_half_stack
+        step = get_half_stack()
+
+        # 현재 보스 상태별 이미지와 프레임 크기 가져오기
+        if self.state in ('walk', 'idle'):
+            image = self.image_walk
+            frame_width = 88
+            frame_height = 112
+
+        elif self.state == 'attack':
+            image = self.image_attack
+            frame_width = 88
+            frame_height = 160
+
+        elif self.state == 'hurt':
+            image = self.image_hurt
+            frame_width = 80
+            frame_height = 88
+
+        else:
+            # 혹시 모르는 예외방지: 기본 idle
+            image = self.image_walk
+            frame_width = 88
+            frame_height = 112
+
+        fx = int(self.frameX) * frame_width
+        fy = int(self.frameY) * frame_height
+
+        # -------------------------
+        #  상체(위쪽 절반)
+        # -------------------------
+        image.clip_draw(
+            fx,
+            fy + frame_height//2,  # y 오프셋
+            frame_width,
+            frame_height // 2,  # 절반만
+            self.x + step,  # 오른쪽 이동
+            self.y + self.size * 0.25,  # 살짝 위
+            self.size,
+            (self.size + self.size // 4) / 2
+        )
+
+        # -------------------------
+        #  하체(아래쪽 절반)
+        # -------------------------
+        image.clip_draw(
+            fx,
+            fy,
+            frame_width,
+            frame_height // 2,
+            self.x - step,  # 왼쪽 이동
+            self.y - self.size * 0.25,  # 살짝 아래
+            self.size,
+            (self.size + self.size // 4) / 2
+        )
+
     def draw(self):
         image, frameY = self.animations.get(self.state, self.animations['idle'])
         frameY = self.frameY

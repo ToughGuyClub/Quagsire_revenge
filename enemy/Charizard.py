@@ -264,8 +264,7 @@ class Charizard:
         root_selector = Selector('RootSelector', far_seq, mid_seq, close_seq, move_and_attack_seq)
         self.bt = BehaviorTree(root_selector)
 
-    def draw_half(self):
-        pass
+
     # 업데이트
     def update(self):
         # 타이머 감소
@@ -379,6 +378,63 @@ class Charizard:
     def special_attack(self):
 
         pass
+    def draw_half(self):
+        from screen.thunder_scene import get_half_stack
+        step = get_half_stack()
+
+        # 현재 보스 상태별 이미지와 프레임 크기 가져오기
+        if self.state in ('walk', 'idle'):
+            image = self.image_walk
+            frame_width = 48
+            frame_height = 96
+
+        elif self.state == 'attack':
+            image = self.image_attack
+            frame_width = 56
+            frame_height = 56
+
+        elif self.state == 'hurt':
+            image = self.image_hurt
+            frame_width = 64
+            frame_height = 64
+
+        else:
+            # 혹시 모르는 예외방지: 기본 idle
+            image = self.image_walk
+            frame_width = 48
+            frame_height = 96
+
+        fx = int(self.frameX) * frame_width
+        fy = int(self.frameY) * frame_height
+
+        # -------------------------
+        #  상체(위쪽 절반)
+        # -------------------------
+        image.clip_draw(
+            fx,
+            fy + frame_height//2,  # y 오프셋
+            frame_width,
+            frame_height // 2,  # 절반만
+            self.x + step,  # 오른쪽 이동
+            self.y + self.size * 0.25,  # 살짝 위
+            self.size,
+            (self.size + self.size // 4) / 2
+        )
+
+        # -------------------------
+        #  하체(아래쪽 절반)
+        # -------------------------
+        image.clip_draw(
+            fx,
+            fy,
+            frame_width,
+            frame_height // 2,
+            self.x - step,  # 왼쪽 이동
+            self.y - self.size * 0.25,  # 살짝 아래
+            self.size,
+            (self.size + self.size // 4) / 2
+        )
+
     def draw(self):
 
         image, frameY = self.animations.get(self.state, self.animations['idle'])
